@@ -1,0 +1,9 @@
+# [START gae_python37_cloudsql_config]
+runtime: python37
+
+env_variables:
+  CLOUD_SQL_USERNAME: mastersql
+  CLOUD_SQL_PASSWORD: 12345678
+  CLOUD_SQL_DATABASE_NAME: yourney
+  CLOUD_SQL_CONNECTION_NAME: analog-memento-350402:us-central1:bangkit-tez2
+# [END gae_python37_cloudsql_config]
