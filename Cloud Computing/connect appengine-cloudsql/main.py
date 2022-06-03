@@ -46,7 +46,7 @@ def main():
 
     with cnx.cursor() as cursor:
         #query pending
-        cursor.execute('SELECT USERNAME FROM USER;)
+        cursor.execute('SELECT * FROM USER;)
         result = cursor.fetchall()
         current_msg = result[0][0]
     cnx.close()
