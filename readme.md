@@ -10,3 +10,5 @@ This is documentation about YourNey application
 |      Octyo Paswa Putra      | A7418F2990 | Mobile Development |
 |    Berliana Putri Buwono    | C7012F1282 |   Cloud Computing  |
 |        Renaldi Azhar        | C2012F1288 |   Cloud Computing  |
+# Our Design app
+[![figma](https://img.shields.io/badge/Figma-Our%20Design-success)](https://www.figma.com/file/XX8rOGgty7gRRNtktFIL9U/YourNey?node-id=0%3A1)
