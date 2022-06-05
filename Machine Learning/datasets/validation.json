@@ -56,9 +56,12 @@
         "intent": "eating",
         "utterances": [
             "makan",
+            "jajan",
             "enak",
             "murah",
             "banyak",
+            "dikit",
+            "sedikit",
             "gurih",
             "manis",
             "pedes",
