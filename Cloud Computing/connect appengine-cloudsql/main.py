@@ -109,7 +109,7 @@ def main():
 
     with cnx.cursor() as cursor:
         #query pending
-        cursor.execute('SELECT * FROM USER;)
+        cursor.execute('SELECT demo_db FROM demo_tbl;)
         result = cursor.fetchall()
         current_msg = result[0][0]
     cnx.close()
