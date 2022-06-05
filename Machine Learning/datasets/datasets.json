@@ -2,7 +2,8 @@
     "intents": [
     {
         "intent": "hiking",
-        "utterances": ["Beauty of mother nature",
+        "utterances": [
+            "Beauty of mother nature",
             "hutan",
             "bumi",
             "jejak",
@@ -22,7 +23,11 @@
             "cooking set",
             "carrier",
             "hammock",
-            "tenda"
+            "tenda",
+            "...",
+            "...",
+            "...",
+            "..."
         ],
         "answers": ["Pariwisata Gunung"]
     },  
@@ -47,8 +52,45 @@
             "swimming",
             "renang",
             "berenang",
-            "pengen liburan ke pantai"
+            "pengen liburan ke pantai",
+            "...",
+            "...",
+            "...",
+            "...",
+            "...",
+            "..."
         ],
         "answers": ["Pariwisata Pantai"]
+    },
+    {
+        "intent": "eating",
+        "utterances": [
+            "...",
+            "...",
+            "...",
+            "...",
+            "...",
+            "...",
+            "...",
+            "...",
+            "...",
+            "...",
+            "...",
+            "...",
+            "...",
+            "...",
+            "...",
+            "...",
+            "...",
+            "...",
+            "...",
+            "...",
+            "...",
+            "...",
+            "...",
+            "...",
+            "..."
+        ],
+        "answers": ["Pariwisata Kuliner"]
     }]
 }
