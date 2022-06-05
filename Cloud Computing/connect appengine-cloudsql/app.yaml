@@ -1,11 +1,9 @@
-runtime: python39
+# [START gae_python37_cloudsql_config]
+runtime: python37
 
-# Note: Saving credentials in environment variables is convenient, but not
-# secure - consider a more secure solution such as
-# Cloud Secret Manager (https://cloud.google.com/secret-manager) to help
-# keep secrets safe.
 env_variables:
-  INSTANCE_UNIX_SOCKET: /cloudsql/project-bangkit-352403:asia-southeast2:bangkit-tez
-  DB_USER: master
-  DB_PASS: 123
-  DB_NAME: demo
+  CLOUD_SQL_USERNAME: master
+  CLOUD_SQL_PASSWORD: 123
+  CLOUD_SQL_DATABASE_NAME: yourney
+  CLOUD_SQL_CONNECTION_NAME: project-bangkit-352403:asia-southeast2:bangkit-tez
+# [END gae_python37_cloudsql_config]

@@ -25,12 +25,8 @@ db_connection_name = os.environ.get('CLOUD_SQL_CONNECTION_NAME')
 
 app = Flask(__name__)
 
-@app.route('/')
-def hello():
-    """Return a friendly HTTP greeting."""
-    return 'Hello World!'
 
-@app.route('/getUserAll')
+@app.route('/')
 def main():
     # When deployed to App Engine, the `GAE_ENV` environment variable will be
     # set to `standard`
@@ -49,12 +45,15 @@ def main():
                               host=host, db=db_name)
 
     with cnx.cursor() as cursor:
-        cursor.execute('SELECT * FROM demo_tbl;')
+        cursor.execute('SELECT * FROM user;')
         result = cursor.fetchall()
         teks = result[0][1]
     cnx.close()
 
     return str(teks)
+# [END gae_python3_cloudsql_mysql]
+# [END gae_python38_cloudsql_mysql]
+
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=8080, debug=True)
