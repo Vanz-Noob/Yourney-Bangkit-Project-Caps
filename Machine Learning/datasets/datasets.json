@@ -1,52 +1,54 @@
-{ "intents": [
-  {
-      "intent": "hiking",
-      "utterances": ["Beauty of mother nature",
-          "hutan",
-          "bumi",
-          "jejak",
-          "eiger",
-          "adventure",
-          "hunting",
-          "tenang",
-          "menantang",
-          "main ke gunung",
-          "jalan sama macan",
-          "pendakian",
-          "pohon rindang",
-          "pohon",
-          "sungai",
-          "air terjun",
-          "senja",
-          "cooking set",
-          "carrier",
-          "hammock",
-          "tenda"
-      ],
-      "answers": ["Pariwisata Gunung"]
-  },  {
-      "intent": "swimming",
-      "utterances": [
-          "bali",
-          "labuan bajo",
-          "pangandaran",
-          "mantai",
-          "sunshine",
-          "under the sun",
-          "soul shine",
-          "sun is up",
-          "sky is blue",
-          "uluwatu",
-          "beach",
-          "dive",
-          "diving",
-          "swim",
-          "swam",
-          "swimming",
-          "renang",
-          "berenang",
-          "pengen liburan ke pantai"
-      ],
-      "answers": ["Pariwisata Pantai"]
-  }]
+{   
+    "intents": [
+    {
+        "intent": "hiking",
+        "utterances": ["Beauty of mother nature",
+            "hutan",
+            "bumi",
+            "jejak",
+            "eiger",
+            "adventure",
+            "hunting",
+            "tenang",
+            "menantang",
+            "main ke gunung",
+            "jalan sama macan",
+            "pendakian",
+            "pohon rindang",
+            "pohon",
+            "sungai",
+            "air terjun",
+            "senja",
+            "cooking set",
+            "carrier",
+            "hammock",
+            "tenda"
+        ],
+        "answers": ["Pariwisata Gunung"]
+    },  
+    {
+        "intent": "swimming",
+        "utterances": [
+            "bali",
+            "labuan bajo",
+            "pangandaran",
+            "mantai",
+            "sunshine",
+            "under the sun",
+            "soul shine",
+            "sun is up",
+            "sky is blue",
+            "uluwatu",
+            "beach",
+            "dive",
+            "diving",
+            "swim",
+            "swam",
+            "swimming",
+            "renang",
+            "berenang",
+            "pengen liburan ke pantai"
+        ],
+        "answers": ["Pariwisata Pantai"]
+    }]
 }
