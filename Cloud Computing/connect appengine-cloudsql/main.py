@@ -14,8 +14,9 @@
 
 # [START gae_python38_cloudsql_mysql]
 # [START gae_python3_cloudsql_mysql]
+from crypt import methods
 import os
-from flask import Flask
+from flask import Flask, request, jsonify
 import pymysql
 
 db_user = os.environ.get('CLOUD_SQL_USERNAME')
@@ -25,9 +26,12 @@ db_connection_name = os.environ.get('CLOUD_SQL_CONNECTION_NAME')
 
 app = Flask(__name__)
 
-
-@app.route('/')
-def main():
+@app.route("/")
+def hello():
+    return "Hello, World!"
+    
+@app.route('/db')
+def db():
     # When deployed to App Engine, the `GAE_ENV` environment variable will be
     # set to `standard`
     if os.environ.get('GAE_ENV') == 'standard':
@@ -47,10 +51,95 @@ def main():
     with cnx.cursor() as cursor:
         cursor.execute('SELECT * FROM user;')
         result = cursor.fetchall()
-        teks = result[0][1]
+        # teks = result[0][1]
+    cnx.close()
+    if result == 0:
+        js = {
+            "code" : "gagal",
+        }
+    else:
+        js = {
+            "code" : "sukses",
+            "idUser" : result[0][0],
+            "username" : result[0][1],
+            "password" : result[0][2],
+        }
+    return jsonify(js)
+    # return str(teks)
+    
+#login
+@app.route('/login')
+def login():
+    prm_username = str(request.args.get("username"))
+    prm_password = str(request.args.get("password"))
+    if os.environ.get('GAE_ENV') == 'standard':
+        # If deployed, use the local socket interface for accessing Cloud SQL
+        unix_socket = '/cloudsql/{}'.format(db_connection_name)
+        cnx = pymysql.connect(user=db_user, password=db_password,
+                                unix_socket=unix_socket, db=db_name)
+    else:
+        # If running locally, use the TCP connections instead
+        # Set up Cloud SQL Proxy (cloud.google.com/sql/docs/mysql/sql-proxy)
+        # so that your application can use 127.0.0.1:3306 to connect to your
+        # Cloud SQL instance
+        host = '127.0.0.1'
+        cnx = pymysql.connect(user=db_user, password=db_password,
+                                host=host, db=db_name)
+    with cnx.cursor() as cursor:
+        cursor.execute("select * from user where username='"+prm_username+"' and password='"+prm_password+"';")
+        result = cursor.fetchall()
     cnx.close()
 
-    return str(teks)
+    if result == 0:
+        js = {
+            "code" : "gagal",
+        }
+    else:
+        js = {
+            "code" : "sukses",
+            "msg" : "Selamat datang",
+        }
+    return jsonify(js)
+
+#register
+@app.route("/register", methods=["POST"])
+def register():
+    prm_username = request.args.get("username")
+    prm_password = request.args.get("password")
+
+
+    if os.environ.get('GAE_ENV') == 'standard':
+        # If deployed, use the local socket interface for accessing Cloud SQL
+        unix_socket = '/cloudsql/{}'.format(db_connection_name)
+        cnx = pymysql.connect(user=db_user, password=db_password,
+                              unix_socket=unix_socket, db=db_name)
+    else:
+        host = '127.0.0.1'
+        cnx = pymysql.connect(user=db_user, password=db_password,
+                              host=host, db=db_name)
+    
+    with cnx.cursor() as cursor:
+        cursor.execute("insert into user(username, password) values ('"+prm_username+"', '"+prm_password+"');")
+        # cursor.execute("insert into user(username, password) values (%s, %s), (prm_username, prm_password);")
+        result = cursor.fetchone()
+        cnx.commit()
+    cnx.close()
+
+    with cnx.cursor() as cursor:
+        cursor.execute("select * from user where username='"+prm_username+"' and password='"+prm_password+"';")
+        result = cursor.fetchall()
+    cnx.close()
+
+    if result == 0:
+        js = {
+            "code" : "gagal",
+        }
+    else:
+        js = {
+            "code" : "sukses",
+            "msg" : "Selamat datang",
+        }
+    return jsonify(js)
 # [END gae_python3_cloudsql_mysql]
 # [END gae_python38_cloudsql_mysql]
 
