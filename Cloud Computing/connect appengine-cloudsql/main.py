@@ -68,25 +68,27 @@ def db():
     # return str(teks)
     
 #login
-@app.route('/login')
+@app.route('/login', methods=["POST"])
 def login():
-    prm_username = str(request.args.get("username"))
-    prm_password = str(request.args.get("password"))
+    # prm_username = str(request.args.get("username"))
+    # prm_password = str(request.args.get("password"))
+    prm_username = request.args.get("username")
+    prm_password = request.args.get("password")
+    # prm_username = request.form['username']
+    # prm_password = request.form['password']
     if os.environ.get('GAE_ENV') == 'standard':
         # If deployed, use the local socket interface for accessing Cloud SQL
         unix_socket = '/cloudsql/{}'.format(db_connection_name)
         cnx = pymysql.connect(user=db_user, password=db_password,
                                 unix_socket=unix_socket, db=db_name)
     else:
-        # If running locally, use the TCP connections instead
-        # Set up Cloud SQL Proxy (cloud.google.com/sql/docs/mysql/sql-proxy)
-        # so that your application can use 127.0.0.1:3306 to connect to your
-        # Cloud SQL instance
         host = '127.0.0.1'
         cnx = pymysql.connect(user=db_user, password=db_password,
                                 host=host, db=db_name)
     with cnx.cursor() as cursor:
         cursor.execute("select * from user where username='"+prm_username+"' and password='"+prm_password+"';")
+        # cursor.execute("SELECT * FROM user WHERE username='"+prm_username+"' AND password='"+prm_password+"';")
+        cursor.execute("SELECT * FROM user WHERE username = %s AND password = %s",(prm_username, prm_password))
         result = cursor.fetchall()
     cnx.close()
 
@@ -102,12 +104,12 @@ def login():
     return jsonify(js)
 
 #register
-@app.route("/register", methods=["POST"])
+@app.route("/register", methods=["POST", "GET"])
 def register():
-    prm_username = request.args.get("username")
-    prm_password = request.args.get("password")
-
-
+    # prm_username = request.args.get("username")
+    # prm_password = request.args.get("password")
+    prm_username = request.form.get['username']
+    prm_password = request.form.get['password']
     if os.environ.get('GAE_ENV') == 'standard':
         # If deployed, use the local socket interface for accessing Cloud SQL
         unix_socket = '/cloudsql/{}'.format(db_connection_name)
@@ -119,14 +121,17 @@ def register():
                               host=host, db=db_name)
     
     with cnx.cursor() as cursor:
-        cursor.execute("insert into user(username, password) values ('"+prm_username+"', '"+prm_password+"');")
-        # cursor.execute("insert into user(username, password) values (%s, %s), (prm_username, prm_password);")
+        # cursor.execute("insert into user(username, password) values ('"+prm_username+"', '"+prm_password+"');")
+        cursor.execute("INSERT INTO user(username, password) VALUES ('"+prm_username+"', '"+prm_password+"');")
+        # cursor.execute("INSERT INTO user(username, password) VALUES (%s, %s)", (prm_username, prm_password))
         result = cursor.fetchone()
         cnx.commit()
     cnx.close()
 
     with cnx.cursor() as cursor:
-        cursor.execute("select * from user where username='"+prm_username+"' and password='"+prm_password+"';")
+        # cursor.execute("select * from user where username='"+prm_username+"' and password='"+prm_password+"';")
+        cursor.execute("SELECT * FROM user WHERE username='"+prm_username+"' and password='"+prm_password+"';")
+        # cursor.execute("SELECT * FROM user WHERE username = %s AND password = %s",(prm_username, prm_password))
         result = cursor.fetchall()
     cnx.close()
 
@@ -140,6 +145,10 @@ def register():
             "msg" : "Selamat datang",
         }
     return jsonify(js)
+
+@app.route('/output')
+def output():
+    pass
 # [END gae_python3_cloudsql_mysql]
 # [END gae_python38_cloudsql_mysql]
 
