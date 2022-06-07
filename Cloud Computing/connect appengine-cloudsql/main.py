@@ -26,92 +26,47 @@ db_connection_name = os.environ.get('CLOUD_SQL_CONNECTION_NAME')
 
 app = Flask(__name__)
 
-@app.route("/")
+@app.route("/", methods=["GET"])
 def hello():
-    return "Hello, World!"
+    return "Hello, World This Is Yourney!"
     
 @app.route('/db')
 def db():
-    # When deployed to App Engine, the `GAE_ENV` environment variable will be
-    # set to `standard`
-    if os.environ.get('GAE_ENV') == 'standard':
-        # If deployed, use the local socket interface for accessing Cloud SQL
-        unix_socket = '/cloudsql/{}'.format(db_connection_name)
-        cnx = pymysql.connect(user=db_user, password=db_password,
-                              unix_socket=unix_socket, db=db_name)
-    else:
-        # If running locally, use the TCP connections instead
-        # Set up Cloud SQL Proxy (cloud.google.com/sql/docs/mysql/sql-proxy)
-        # so that your application can use 127.0.0.1:3306 to connect to your
-        # Cloud SQL instance
-        host = '127.0.0.1'
-        cnx = pymysql.connect(user=db_user, password=db_password,
-                              host=host, db=db_name)
-
-    with cnx.cursor() as cursor:
-        cursor.execute('SELECT * FROM user;')
-        result = cursor.fetchall()
-        # teks = result[0][1]
-    cnx.close()
-    if result == 0:
-        js = {
-            "code" : "gagal",
-        }
-    else:
-        js = {
-            "code" : "sukses",
-            "idUser" : result[0][0],
-            "username" : result[0][1],
-            "password" : result[0][2],
-        }
-    return jsonify(js)
-    # return str(teks)
+    #sudah okay
+    users = []
+    if request.method == 'GET':
+        if os.environ.get('GAE_ENV') == 'standard':
+            # If deployed, use the local socket interface for accessing Cloud SQL
+            unix_socket = '/cloudsql/{}'.format(db_connection_name)
+            cnx = pymysql.connect(user=db_user, password=db_password,
+                                unix_socket=unix_socket, db=db_name)
+        else:
+            # If running locally, use the TCP connections instead
+            # Set up Cloud SQL Proxy (cloud.google.com/sql/docs/mysql/sql-proxy)
+            # so that your application can use 127.0.0.1:3306 to connect to your
+            # Cloud SQL instance
+            host = '127.0.0.1'
+            cnx = pymysql.connect(user=db_user, password=db_password,
+                                host=host, db=db_name)
+        with cnx.cursor() as cursor:
+            cursor.execute('SELECT * FROM user;')
+            for row in cursor:
+                users.append({'idUser': row[0], 'username': row[1], 'password': row[2]})
+            cnx.close()
+        return jsonify(users)
+       
     
 #login
-@app.route('/login', methods=["POST"])
+@app.route("/login",methods=["POST", "GET"])
 def login():
-    # prm_username = str(request.args.get("username"))
-    # prm_password = str(request.args.get("password"))
-    prm_username = request.args.get("username")
-    prm_password = request.args.get("password")
-    # prm_username = request.form['username']
-    # prm_password = request.form['password']
+    username = str(request.args.get("username"))
+    password = str(request.args.get("password"))
+    
+    #kalau pakai request.from error 400
+    # username = request.form['username']
+    # password = request.form['password']
+    #connect database
     if os.environ.get('GAE_ENV') == 'standard':
-        # If deployed, use the local socket interface for accessing Cloud SQL
-        unix_socket = '/cloudsql/{}'.format(db_connection_name)
-        cnx = pymysql.connect(user=db_user, password=db_password,
-                                unix_socket=unix_socket, db=db_name)
-    else:
-        host = '127.0.0.1'
-        cnx = pymysql.connect(user=db_user, password=db_password,
-                                host=host, db=db_name)
-    with cnx.cursor() as cursor:
-        cursor.execute("select * from user where username='"+prm_username+"' and password='"+prm_password+"';")
-        # cursor.execute("SELECT * FROM user WHERE username='"+prm_username+"' AND password='"+prm_password+"';")
-        cursor.execute("SELECT * FROM user WHERE username = %s AND password = %s",(prm_username, prm_password))
-        result = cursor.fetchall()
-    cnx.close()
-
-    if result == 0:
-        js = {
-            "code" : "gagal",
-        }
-    else:
-        js = {
-            "code" : "sukses",
-            "msg" : "Selamat datang",
-        }
-    return jsonify(js)
-
-#register
-@app.route("/register", methods=["POST", "GET"])
-def register():
-    # prm_username = request.args.get("username")
-    # prm_password = request.args.get("password")
-    prm_username = request.form.get['username']
-    prm_password = request.form.get['password']
-    if os.environ.get('GAE_ENV') == 'standard':
-        # If deployed, use the local socket interface for accessing Cloud SQL
         unix_socket = '/cloudsql/{}'.format(db_connection_name)
         cnx = pymysql.connect(user=db_user, password=db_password,
                               unix_socket=unix_socket, db=db_name)
@@ -119,38 +74,66 @@ def register():
         host = '127.0.0.1'
         cnx = pymysql.connect(user=db_user, password=db_password,
                               host=host, db=db_name)
-    
+        
+    #querying sql
     with cnx.cursor() as cursor:
-        # cursor.execute("insert into user(username, password) values ('"+prm_username+"', '"+prm_password+"');")
-        cursor.execute("INSERT INTO user(username, password) VALUES ('"+prm_username+"', '"+prm_password+"');")
-        # cursor.execute("INSERT INTO user(username, password) VALUES (%s, %s)", (prm_username, prm_password))
+        cursor.execute('SELECT * FROM user WHERE username = %s AND password = %s;', (username, password))
         result = cursor.fetchone()
-        cnx.commit()
-    cnx.close()
-
-    with cnx.cursor() as cursor:
-        # cursor.execute("select * from user where username='"+prm_username+"' and password='"+prm_password+"';")
-        cursor.execute("SELECT * FROM user WHERE username='"+prm_username+"' and password='"+prm_password+"';")
-        # cursor.execute("SELECT * FROM user WHERE username = %s AND password = %s",(prm_username, prm_password))
-        result = cursor.fetchall()
+        
     cnx.close()
 
     if result == 0:
         js = {
-            "code" : "gagal",
+            "code": "gagal",
         }
     else:
         js = {
-            "code" : "sukses",
-            "msg" : "Selamat datang",
+            "username": username,
+            "password": password,
+            "code": "sukses",
         }
+    #konek ke database bisa, ke simpan juga bisa tetapi input user gak bisa alian none di postmannya
     return jsonify(js)
 
-@app.route('/output')
-def output():
-    pass
-# [END gae_python3_cloudsql_mysql]
-# [END gae_python38_cloudsql_mysql]
+#login
+@app.route("/register",methods=["POST", "GET"])
+def register():
+    username = str(request.args.get("username"))
+    password = str(request.args.get("password"))
+    
+    #kalau pakai request.from error 400
+    # username = request.form['username']
+    # password = request.form['password']
+    jsonify ={"username":username,"password":password}
+    #connect database
+    if os.environ.get('GAE_ENV') == 'standard':
+        unix_socket = '/cloudsql/{}'.format(db_connection_name)
+        cnx = pymysql.connect(user=db_user, password=db_password,
+                              unix_socket=unix_socket, db=db_name)
+    else:
+        host = '127.0.0.1'
+        cnx = pymysql.connect(user=db_user, password=db_password,
+                              host=host, db=db_name)
+    #querying sql
+    with cnx.cursor() as cursor:
+        cursor.execute('INSERT INTO user (username, password) VALUES (%s, %s);', (username, password))
+        result = cursor.fetchone()
+       
+    cnx.close()
+    
+    if result == 0:
+        js = {
+            "code": "gagal",
+        }
+    else:
+        js = {
+            "username": username,
+            "password": password,
+            "code": "sukses",
+        }
+    #konek ke database bisa, ke simpan juga bisa tetapi input user gak bisa alian none di postmannya
+    return jsonify(js)
+
 
 
 if __name__ == '__main__':
