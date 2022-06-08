@@ -18,6 +18,8 @@ from crypt import methods
 import os
 from flask import Flask, request, jsonify
 import pymysql
+from passlib.hash import sha256_crypt
+import re
 
 db_user = os.environ.get('CLOUD_SQL_USERNAME')
 db_password = os.environ.get('CLOUD_SQL_PASSWORD')
@@ -51,26 +53,25 @@ def db():
        
     
 #login
-#sudah okay
 @app.route("/login",methods=["POST", "GET"])
 def login():
     request_data = request.get_json()
     username = request_data['username']
     password = request_data['password']
-
+    Hpassword = sha256_crypt.encrypt(password)
     #connect database
     if os.environ.get('GAE_ENV') == 'standard':
         unix_socket = '/cloudsql/{}'.format(db_connection_name)
         cnx = pymysql.connect(user=db_user, password=db_password,
                               unix_socket=unix_socket, db=db_name)
-      
+
     #querying sql
     with cnx.cursor() as cursor:
-        cursor.execute('SELECT * FROM user WHERE username = %s AND password = %s;', (username, password))
+        #bisa dapat di sql inject minta saran buat logika verifynya sha256_crypt.verify(password, result['password'] == result['pasword'])
+        cursor.execute('SELECT * FROM user WHERE username = %s AND password =%s', (username, Hpassword))
         result = cursor.fetchone()
         cnx.commit()
     cnx.close()
-
     if result == 0:
         js = {
             "code": "gagal",
@@ -78,20 +79,19 @@ def login():
     else:
         js = {
             "username": username,
-            "password": password,
+            "password": Hpassword,
             "code": "sukses",
         }
-        
     return jsonify(js)
 
 #register
-#sudah okay
 @app.route("/register",methods=["POST", "GET"])
 def register():
     request_data = request.get_json()
     username = request_data['username']
     password = request_data['password']
-        
+    Hpassword = sha256_crypt.encrypt(password)   
+    
     #connect database
     if os.environ.get('GAE_ENV') == 'standard':
         unix_socket = '/cloudsql/{}'.format(db_connection_name)
@@ -103,7 +103,7 @@ def register():
                               host=host, db=db_name)
     #querying sql
     with cnx.cursor() as cursor:
-        cursor.execute('INSERT INTO user (username, password) VALUES (%s, %s);', (username, password))
+        cursor.execute('INSERT INTO user (username, password) VALUES (%s, %s);', (username, Hpassword))
         result = cursor.fetchone()
         cnx.commit()
     cnx.close()
@@ -115,10 +115,55 @@ def register():
     else:
         js = {
             "username": username,
-            "password": password,
+            "password": Hpassword,
             "code": "sukses",
         }
     return jsonify(js)
+
+#masih ada yang salah
+# @app.route("/register",methods=["POST", "GET"])
+# def register():
+#     request_data = request.get_json()
+#     username = request_data['username']
+#     password = request_data['password']
+#     Hpassword = sha256_crypt.encrypt(password)
+    
+#     #connect database
+#     if os.environ.get('GAE_ENV') == 'standard':
+#         unix_socket = '/cloudsql/{}'.format(db_connection_name)
+#         cnx = pymysql.connect(user=db_user, password=db_password,
+#                               unix_socket=unix_socket, db=db_name)
+#     with cnx.cursor() as cursor:
+#         cursor.execute('SELECT * FROM user WHERE username=%s',(username))
+#         user = cursor.fetchone()
+#         if user:
+#             js = {"code": "Account already exists !"}
+#         elif not re.match(r'[A-Za-z0-9]+', username):
+#             js = {"code": "Username must contain only characters and numbers !"}
+#         elif not username or not password:
+#             js = {"code": :"Please fill out the form !"}
+#         else:
+#             cursor.execute('INSERT INTO user (username, password) VALUES (%s, %s);', (username, Hpassword))
+#             result = cursor.fetchone()
+#             cnx.commit()
+#     cnx.close()
+#     #querying sql
+#     # with cnx.cursor() as cursor:
+#     #     cursor.execute('INSERT INTO user (username, password) VALUES (%s, %s);', (username, Hpassword))
+#     #     result = cursor.fetchone()
+#     #     cnx.commit()
+#     # cnx.close()
+#     if result == 0:
+#         js = {
+#             "code": "gagal",
+#         }
+#     else:
+#         js = {
+#             "username": username,
+#             "password": Hpassword,
+#             "code": "sukses",
+#         }
+#     return jsonify(js)
 
 
 
