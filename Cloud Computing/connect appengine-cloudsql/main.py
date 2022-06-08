@@ -40,46 +40,35 @@ def db():
             unix_socket = '/cloudsql/{}'.format(db_connection_name)
             cnx = pymysql.connect(user=db_user, password=db_password,
                                 unix_socket=unix_socket, db=db_name)
-        else:
-            # If running locally, use the TCP connections instead
-            # Set up Cloud SQL Proxy (cloud.google.com/sql/docs/mysql/sql-proxy)
-            # so that your application can use 127.0.0.1:3306 to connect to your
-            # Cloud SQL instance
-            host = '127.0.0.1'
-            cnx = pymysql.connect(user=db_user, password=db_password,
-                                host=host, db=db_name)
         with cnx.cursor() as cursor:
             cursor.execute('SELECT * FROM user;')
             for row in cursor:
                 users.append({'idUser': row[0], 'username': row[1], 'password': row[2]})
             cnx.close()
         return jsonify(users)
+    else:
+        return 'Invalid request'
        
     
 #login
+#sudah okay
 @app.route("/login",methods=["POST", "GET"])
 def login():
-    username = str(request.args.get("username"))
-    password = str(request.args.get("password"))
-    
-    #kalau pakai request.from error 400
-    # username = request.form['username']
-    # password = request.form['password']
+    request_data = request.get_json()
+    username = request_data['username']
+    password = request_data['password']
+
     #connect database
     if os.environ.get('GAE_ENV') == 'standard':
         unix_socket = '/cloudsql/{}'.format(db_connection_name)
         cnx = pymysql.connect(user=db_user, password=db_password,
                               unix_socket=unix_socket, db=db_name)
-    else:
-        host = '127.0.0.1'
-        cnx = pymysql.connect(user=db_user, password=db_password,
-                              host=host, db=db_name)
-        
+      
     #querying sql
     with cnx.cursor() as cursor:
         cursor.execute('SELECT * FROM user WHERE username = %s AND password = %s;', (username, password))
         result = cursor.fetchone()
-        
+        cnx.commit()
     cnx.close()
 
     if result == 0:
@@ -92,19 +81,17 @@ def login():
             "password": password,
             "code": "sukses",
         }
-    #konek ke database bisa, ke simpan juga bisa tetapi input user gak bisa alian none di postmannya
+        
     return jsonify(js)
 
-#login
+#register
+#sudah okay
 @app.route("/register",methods=["POST", "GET"])
 def register():
-    username = str(request.args.get("username"))
-    password = str(request.args.get("password"))
-    
-    #kalau pakai request.from error 400
-    # username = request.form['username']
-    # password = request.form['password']
-    jsonify ={"username":username,"password":password}
+    request_data = request.get_json()
+    username = request_data['username']
+    password = request_data['password']
+        
     #connect database
     if os.environ.get('GAE_ENV') == 'standard':
         unix_socket = '/cloudsql/{}'.format(db_connection_name)
@@ -118,7 +105,7 @@ def register():
     with cnx.cursor() as cursor:
         cursor.execute('INSERT INTO user (username, password) VALUES (%s, %s);', (username, password))
         result = cursor.fetchone()
-       
+        cnx.commit()
     cnx.close()
     
     if result == 0:
@@ -131,7 +118,6 @@ def register():
             "password": password,
             "code": "sukses",
         }
-    #konek ke database bisa, ke simpan juga bisa tetapi input user gak bisa alian none di postmannya
     return jsonify(js)
 
 
