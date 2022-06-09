@@ -12,11 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# [START gae_python37_cloudsql_mysql]
+# [START gae_python38_cloudsql_mysql]
+# [START gae_python3_cloudsql_mysql]
+from crypt import methods
 import os
-
-from flask import Flask
+from flask import Flask, request, jsonify
 import pymysql
+from passlib.hash import sha256_crypt
+import re
 
 db_user = os.environ.get('CLOUD_SQL_USERNAME')
 db_password = os.environ.get('CLOUD_SQL_PASSWORD')
@@ -25,34 +28,143 @@ db_connection_name = os.environ.get('CLOUD_SQL_CONNECTION_NAME')
 
 app = Flask(__name__)
 
-
-@app.route('/')
-def main():
-    # When deployed to App Engine, the `GAE_ENV` environment variable will be
-    # set to `standard`
+@app.route("/", methods=["GET"])
+def hello():
+    return "Hello, World This Is Yourney!"
+    
+@app.route('/db')
+def db():
+    #sudah okay
+    users = []
+    if request.method == 'GET':
+        if os.environ.get('GAE_ENV') == 'standard':
+            # If deployed, use the local socket interface for accessing Cloud SQL
+            unix_socket = '/cloudsql/{}'.format(db_connection_name)
+            cnx = pymysql.connect(user=db_user, password=db_password,
+                                unix_socket=unix_socket, db=db_name)
+        with cnx.cursor() as cursor:
+            cursor.execute('SELECT * FROM user;')
+            for row in cursor:
+                users.append({'idUser': row[0], 'username': row[1], 'password': row[2]})
+            cnx.close()
+        return jsonify(users)
+    else:
+        return 'Invalid request'
+       
+    
+#login
+@app.route("/login",methods=["POST", "GET"])
+def login():
+    request_data = request.get_json()
+    username = request_data['username']
+    password = request_data['password']
+    Hpassword = sha256_crypt.encrypt(password)
+    #connect database
     if os.environ.get('GAE_ENV') == 'standard':
-        # If deployed, use the local socket interface for accessing Cloud SQL
+        unix_socket = '/cloudsql/{}'.format(db_connection_name)
+        cnx = pymysql.connect(user=db_user, password=db_password,
+                              unix_socket=unix_socket, db=db_name)
+
+    #querying sql
+    with cnx.cursor() as cursor:
+        #bisa dapat di sql inject minta saran buat logika verifynya sha256_crypt.verify(password, result['password'] == result['pasword'])
+        cursor.execute('SELECT * FROM user WHERE username = %s AND password =%s', (username, Hpassword))
+        result = cursor.fetchone()
+        cnx.commit()
+    cnx.close()
+    if result == 0:
+        js = {
+            "code": "gagal",
+        }
+    else:
+        js = {
+            "username": username,
+            "password": Hpassword,
+            "code": "sukses",
+        }
+    return jsonify(js)
+
+#register
+@app.route("/register",methods=["POST", "GET"])
+def register():
+    request_data = request.get_json()
+    username = request_data['username']
+    password = request_data['password']
+    Hpassword = sha256_crypt.encrypt(password)   
+    
+    #connect database
+    if os.environ.get('GAE_ENV') == 'standard':
         unix_socket = '/cloudsql/{}'.format(db_connection_name)
         cnx = pymysql.connect(user=db_user, password=db_password,
                               unix_socket=unix_socket, db=db_name)
     else:
-        # If running locally, use the TCP connections instead
-        # Set up Cloud SQL Proxy (cloud.google.com/sql/docs/mysql/sql-proxy)
-        # so that your application can use 127.0.0.1:3306 to connect to your
-        # Cloud SQL instance
         host = '127.0.0.1'
         cnx = pymysql.connect(user=db_user, password=db_password,
                               host=host, db=db_name)
-
+    #querying sql
     with cnx.cursor() as cursor:
-        #query pending
-        cursor.execute('SELECT USERNAME FROM USER;)
-        result = cursor.fetchall()
-        current_msg = result[0][0]
+        cursor.execute('INSERT INTO user (username, password) VALUES (%s, %s);', (username, Hpassword))
+        result = cursor.fetchone()
+        cnx.commit()
     cnx.close()
+    
+    if result == 0:
+        js = {
+            "code": "gagal",
+        }
+    else:
+        js = {
+            "username": username,
+            "password": Hpassword,
+            "code": "sukses",
+        }
+    return jsonify(js)
 
-    return str(current_msg)
-# [END gae_python37_cloudsql_mysql]
+#masih ada yang salah
+# @app.route("/register",methods=["POST", "GET"])
+# def register():
+#     request_data = request.get_json()
+#     username = request_data['username']
+#     password = request_data['password']
+#     Hpassword = sha256_crypt.encrypt(password)
+    
+#     #connect database
+#     if os.environ.get('GAE_ENV') == 'standard':
+#         unix_socket = '/cloudsql/{}'.format(db_connection_name)
+#         cnx = pymysql.connect(user=db_user, password=db_password,
+#                               unix_socket=unix_socket, db=db_name)
+#     with cnx.cursor() as cursor:
+#         cursor.execute('SELECT * FROM user WHERE username=%s',(username))
+#         user = cursor.fetchone()
+#         if user:
+#             js = {"code": "Account already exists !"}
+#         elif not re.match(r'[A-Za-z0-9]+', username):
+#             js = {"code": "Username must contain only characters and numbers !"}
+#         elif not username or not password:
+#             js = {"code": :"Please fill out the form !"}
+#         else:
+#             cursor.execute('INSERT INTO user (username, password) VALUES (%s, %s);', (username, Hpassword))
+#             result = cursor.fetchone()
+#             cnx.commit()
+#     cnx.close()
+#     #querying sql
+#     # with cnx.cursor() as cursor:
+#     #     cursor.execute('INSERT INTO user (username, password) VALUES (%s, %s);', (username, Hpassword))
+#     #     result = cursor.fetchone()
+#     #     cnx.commit()
+#     # cnx.close()
+#     if result == 0:
+#         js = {
+#             "code": "gagal",
+#         }
+#     else:
+#         js = {
+#             "username": username,
+#             "password": Hpassword,
+#             "code": "sukses",
+#         }
+#     return jsonify(js)
+
 
 
 if __name__ == '__main__':
