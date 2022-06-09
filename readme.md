@@ -1,4 +1,4 @@
-![image](https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fskilltekno.com%2Fwp-content%2Fuploads%2F2020%2F12%2FPendaftaran-Bangkit-2021-Google-Indonesia-GRATIS-Sertifikasi-Bagi-Mahasiswa-SkillTekno-768x432.png&f=1&nofb=1)
+![image](https://drive.google.com/file/d/19rgHcKkET2cyouzHlS7Ms6ClaWgHzTMQ/view?usp=sharing)
 # Bangkit Capstone Project
 This is documentation about YourNey application
 # Our Member
