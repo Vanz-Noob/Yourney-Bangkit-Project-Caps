@@ -1,4 +1,4 @@
-![image](https://drive.google.com/file/d/19rgHcKkET2cyouzHlS7Ms6ClaWgHzTMQ/view?usp=sharing)
+![ex_logo_2-removebg-preview](https://user-images.githubusercontent.com/52117843/172763987-bba730d3-4ab3-45d0-a656-2c3f4b253a3b.png)
 # Bangkit Capstone Project
 This is documentation about YourNey application
 # Our Member
