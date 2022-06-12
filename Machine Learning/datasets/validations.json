@@ -17,7 +17,17 @@
             "travel",
             "wonderful indonesia",
             "landscape",
-            "indotravel"
+            "indotravel",
+            "forest",
+            "hiking trail",
+            "mata air",
+            "hiking adventures",
+            "backpacking",
+            "outdoor",
+            "peak",
+            "kawah",
+            "merapi",
+            "kebun teh"
         ],
         "answers": ["Pariwisata Gunung"]
     },  
@@ -38,7 +48,17 @@
             "anyer",
             "beach vibes",
             "boat",
-            "kapal"
+            "kapal",            
+            "pesiar",
+            "nelayan",
+            "mancing",
+            "banana boat",
+            "swam",
+            "pariwisata pantai",
+            "pasir",
+            "sunburn",
+            "life's a beach",
+            "beach walk"
         ],
         "answers": ["Pariwisata Pantai"]
     },
@@ -59,7 +79,17 @@
             "vegetarian",
             "cheese",
             "delicious",
-            "eat"
+            "eat",
+            "jajanan",
+            "masakan nusantara",
+            "doyan makan",
+            "seenak masakan ibu",
+            "cemilan",
+            "camilan",
+            "kue",
+            "food addict",
+            "pariwisata kuliner",
+            "cemilan hits"
         ],
         "answers": ["Pariwisata Kuliner"]
     }]
