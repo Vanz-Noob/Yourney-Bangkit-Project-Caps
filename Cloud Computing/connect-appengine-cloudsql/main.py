@@ -206,7 +206,7 @@ def register():
     return jsonify(js)
 
 #adding kategori
-@app.route("/destinasi/add",methods=["POST", "GET"])
+@app.route("/kategori/add",methods=["POST", "GET"])
 def register():
     request_data = request.get_json()
     id_kategori = request_data['id_kategori']
