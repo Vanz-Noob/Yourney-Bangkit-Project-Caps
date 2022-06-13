@@ -31,6 +31,8 @@ app = Flask(__name__)
 @app.route("/", methods=["GET"])
 def hello():
     return "Hello, World This Is Yourney!"
+
+#cek destinasi
 @app.route('/destinasi')
 def destinasi():
     destinasi = []
@@ -170,7 +172,7 @@ def register():
     return jsonify(js)
 
 #adding destinasi
-@app.route("/destinasi/add",methods=["POST", "GET"])
+@app.route("/addDest",methods=["POST", "GET"])
 def destinasi():
     request_data = request.get_json()
     deskripsi = request_data['destinasi']
@@ -206,7 +208,7 @@ def destinasi():
     return jsonify(js)
 
 #adding kategori
-@app.route("/kategori/add",methods=["POST", "GET"])
+@app.route("/addKate",methods=["POST", "GET"])
 def kategori():
     request_data = request.get_json()
     id_kategori = request_data['id_kategori']
