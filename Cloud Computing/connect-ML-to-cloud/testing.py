@@ -105,30 +105,35 @@ userid = get_userid("nadinelist")
 list_tweet = get_tweets(userid)
 print(list_tweet)
 
+import google.auth
+from google.cloud import storage
+
 import logging
 import os
-from google.cloud import cloudstorage #masih error
 import cloudstorage as gcs
 import webapp2
 
 from google.appengine.api import app_identity
 
-def get(self):
-  bucket_name = os.environ.get('yourney',
-                               app_identity.get_default_gcs_bucket_name())
+#def get(self):
+#  bucket_name = os.environ.get('yourney',app_identity.get_default_gcs_bucket_name())
 
-  self.response.headers['Content-Type'] = 'text/plain'
-  self.response.write('Demo GCS Application running from Version: '
-                      + os.environ['CURRENT_VERSION_ID'] + '\n')
-  self.response.write('Using bucket name: ' + yourney + '\n\n')
+#  self.response.headers['Content-Type'] = 'text/plain'
+#  self.response.write('Demo GCS Application running from Version: '+ os.environ['CURRENT_VERSION_ID'] + '\n')
+#  self.response.write('Using bucket name: ' + yourney + '\n\n')
 
-
-
-root_path = 'gdrive/My Drive/Colab Notebooks/datasets/'
-with open(root_path + 'datasets.json') as json_data:
+root_path1 = 'https://storage.cloud.google.com/yourney/datasets/datasets.json?authuser=5'
+root_path2 = 'https://storage.cloud.google.com/yourney/datasets/validations.json?authuser=5'
+with open(root_path1) as json_data:
     intents = json.load(json_data)
-with open(root_path + 'validations.json') as json_data:
+with open(root_path2) as json_data:
     validation = json.load(json_data)
+
+#root_path = 'gdrive/My Drive/Colab Notebooks/datasets/'
+#with open(root_path + 'datasets.json') as json_data:
+#    intents = json.load(json_data)
+#with open(root_path + 'validations.json') as json_data:
+#    validation = json.load(json_data)
 
 # Labelling data
 def labelling_data(intents):
@@ -179,12 +184,21 @@ validation_padded = pad_sequences(validation_sequences, maxlen=max_length, paddi
 import pickle
 
 # Pickle format
-with open('gdrive/My Drive/Colab Notebooks/tokenizer.pickle', 'wb') as handle:
+#with open('gdrive/My Drive/Colab Notebooks/tokenizer.pickle', 'wb') as handle:
+#    pickle.dump(tokenizer, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+# JSON format
+#tokenizer_json = tokenizer.to_json()
+#with open('gdrive/My Drive/Colab Notebooks/tokenizer.json', 'w', encoding='utf-8') as f:
+#    f.write(json.dumps(tokenizer_json, ensure_ascii=False))
+    
+# Pickle format
+with open('https://storage.cloud.google.com/yourney-bucket/datasets/tokenizer.pickle?authuser=5', 'wb') as handle:
     pickle.dump(tokenizer, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 # JSON format
 tokenizer_json = tokenizer.to_json()
-with open('gdrive/My Drive/Colab Notebooks/tokenizer.json', 'w', encoding='utf-8') as f:
+with open('https://storage.cloud.google.com/yourney-bucket/datasets/tokenizer.pickle?authuser=5', 'w', encoding='utf-8') as f:
     f.write(json.dumps(tokenizer_json, ensure_ascii=False))
 
 # Creating target/label tensor
@@ -210,9 +224,14 @@ responses = {}
 for idx in target_index_word.keys():
   target_index_word[idx] = response_for_every_label[target_index_word[idx]][0]
 
-path = 'gdrive/My Drive/Colab Notebooks/'
-with open(path + "response.json", "w") as outfile: 
+#path = 'gdrive/My Drive/Colab Notebooks/'
+#with open(path + "response.json", "w") as outfile: 
+#    json.dump(target_index_word, outfile)
+
+path = 'https://storage.cloud.google.com/yourney/datasets/response.json?authuser=5'
+with open(path, "w") as outfile: 
     json.dump(target_index_word, outfile)
+
 
 # Tuning hyperparameter
 total_words = len(tokenizer.word_index) + 1
