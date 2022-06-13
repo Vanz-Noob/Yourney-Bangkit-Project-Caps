@@ -1,8 +1,8 @@
 {   
-    "intents": [
+    "hobbies": [
     {
-        "intent": "hiking",
-        "utterances": [
+        "hobby": "hiking",
+        "keywords": [
             "Beauty of mother nature",
             "hutan",
             "bumi",
@@ -54,11 +54,11 @@
             "extreme",
             "adventurous"
         ],
-        "answers": ["Pariwisata Gunung"]
+        "recommendation": ["Pariwisata Gunung"]
     },  
     {
-        "intent": "swimming",
-        "utterances": [
+        "hobby": "swimming",
+        "keywords": [
             "bali",
             "labuan bajo",
             "pangandaran",
@@ -110,11 +110,11 @@
             "healing",
             "summer"
         ],
-        "answers": ["Pariwisata Pantai"]
+        "recommendation": ["Pariwisata Pantai"]
     },
     {
-        "intent": "eating",
-        "utterances": [
+        "hobby": "eating",
+        "keywords": [
             "seafood",
             "jajan",
             "makan",
@@ -166,6 +166,6 @@
             "halal",
             "bakso"
         ],
-        "answers": ["Pariwisata Kuliner"]
+        "recommendation": ["Pariwisata Kuliner"]
     }]
 }

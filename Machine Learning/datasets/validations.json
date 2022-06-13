@@ -1,8 +1,8 @@
 { 
-    "intents": [
+    "hobbies": [
     {
-        "intent": "hiking",
-        "utterances": [
+        "hobby": "hiking",
+        "keywords": [
             "mountain",
             "river",
             "lake",
@@ -54,11 +54,11 @@
             "ekstrem",
             "petualangan"
         ],
-        "answers": ["Pariwisata Gunung"]
+        "recommendation": ["Pariwisata Gunung"]
     },  
     {
-        "intent": "swimming",
-        "utterances": [
+        "hobby": "swimming",
+        "keywords": [
             "vitamin sea",
             "lombok",
             "ombak",
@@ -110,11 +110,11 @@
             "summer vibes",
             "baju renang"
         ],
-        "answers": ["Pariwisata Pantai"]
+        "recommendation": ["Pariwisata Pantai"]
     },
     {
-        "intent": "eating",
-        "utterances": [
+        "hobby": "eating",
+        "keywords": [
             "foodie",
             "pasta",
             "mukbangers",
@@ -166,6 +166,6 @@
             "dinner",
             "baso"
         ],
-        "answers": ["Pariwisata Kuliner"]
+        "recommendation": ["Pariwisata Kuliner"]
     }]
 }
