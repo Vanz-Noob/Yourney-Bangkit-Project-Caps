@@ -68,22 +68,17 @@ def login():
     #querying sql
     with cnx.cursor() as cursor:
         #bisa dapat di sql inject minta saran buat logika verifynya sha256_crypt.verify(password, result['password'] == result['pasword'])
-        cursor.execute('SELECT * FROM user WHERE username = %s AND password =%s', (username, Hpassword))
-        result = cursor.fetchone()
-        cnx.commit()
+        cursor.execute('SELECT * FROM user WHERE username = %s', (username, ))
+        user = cursor.fetchone()
     cnx.close()
-    if result == 0:
-        js = {
-            "code": "gagal",
-        }
+    if len(user) > 0:
+        if sha256_crypt.verify(password, user[2]):
+            return jsonify({'status': 'success', 'idUser': user[0], 'username': user[1]})
+        else:
+            return jsonify({'status': 'failed', 'message': 'Wrong password'})
     else:
-        js = {
-            "username": username,
-            "password": Hpassword,
-            "code": "sukses",
-        }
-    return jsonify(js)
-
+        return jsonify({'status': 'failed', 'message': 'Wrong username'})
+ 
 #register
 @app.route("/register",methods=["POST", "GET"])
 def register():
