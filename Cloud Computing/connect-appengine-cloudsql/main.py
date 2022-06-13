@@ -171,7 +171,7 @@ def register():
 
 #adding destinasi
 @app.route("/destinasi/add",methods=["POST", "GET"])
-def register():
+def destinasi():
     request_data = request.get_json()
     deskripsi = request_data['destinasi']
     id_destinasi = request_data['id_destinasi']
@@ -207,7 +207,7 @@ def register():
 
 #adding kategori
 @app.route("/kategori/add",methods=["POST", "GET"])
-def register():
+def kategori():
     request_data = request.get_json()
     id_kategori = request_data['id_kategori']
     nama_kategori = request_data['nama_kategori']
@@ -223,7 +223,7 @@ def register():
                               host=host, db=db_name)
     #querying sql
     with cnx.cursor() as cursor:
-        cursor.execute('INSERT INTO katehori (id_kategori, nama_kategori) VALUES (%s, %s);', (id_kategori, nama_kategori))
+        cursor.execute('INSERT INTO kategori (id_kategori, nama_kategori) VALUES (%s, %s);', (id_kategori, nama_kategori))
         result = cursor.fetchone()
         cnx.commit()
     cnx.close()
