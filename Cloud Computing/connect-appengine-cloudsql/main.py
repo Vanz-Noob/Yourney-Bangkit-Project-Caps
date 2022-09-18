@@ -111,7 +111,7 @@ def destinasi():
         }
     return jsonify(js)
 
-# # cek kategori
+# cek kategori
 # @app.route('/kategori')
 # def kategori():
 #     kategori = []
@@ -131,7 +131,7 @@ def destinasi():
 #     else:
 #         return 'Invalid request'
 
-# # adding kategori
+# adding kategori
 # @app.route("/addkate", methods=["POST", "GET"])
 # def kategori():
 #     request_data = request.get_json()
