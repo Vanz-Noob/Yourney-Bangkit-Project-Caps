@@ -28,10 +28,12 @@ db_connection_name = os.environ.get('CLOUD_SQL_CONNECTION_NAME')
 
 app = Flask(__name__)
 
+#test route
 @app.route("/", methods=["GET"])
 def hello():
     return "Hello, World This Is Yourney!"
 
+#show all destinasi
 @app.route('/destinasi')
 def destinasi():
     destinasi = []
@@ -49,7 +51,27 @@ def destinasi():
         return jsonify(destinasi)
     else:
         return 'Invalid request'  
-        
+       
+#show all destinasi
+@app.route('/kategori')
+def destinasi():
+    kategori = []
+    if request.method == 'GET':
+        if os.environ.get('GAE_ENV') == 'standard':
+            # If deployed, use the local socket interface for accessing Cloud SQL
+            unix_socket = '/cloudsql/{}'.format(db_connection_name)
+            cnx = pymysql.connect(user=db_user, password=db_password,
+                                unix_socket=unix_socket, db=db_name)
+        with cnx.cursor() as cursor:
+            cursor.execute('SELECT * FROM kategori;')
+            for row in cursor:
+                kategori.append({'id_kategori': row[0], 'nama_destinasi': row[1]})
+            cnx.close()
+        return jsonify(destinasi)
+    else:
+        return 'Invalid request'  
+
+#cek DB
 @app.route('/db')
 def db():
     #sudah okay
