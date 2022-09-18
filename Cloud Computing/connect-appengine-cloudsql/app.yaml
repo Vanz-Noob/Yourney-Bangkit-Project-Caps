@@ -5,5 +5,5 @@ env_variables:
   CLOUD_SQL_USERNAME: master
   CLOUD_SQL_PASSWORD: 123
   CLOUD_SQL_DATABASE_NAME: yourney
-  CLOUD_SQL_CONNECTION_NAME: lunar-linker-352511:asia-southeast2:bangkit-yourney
+  CLOUD_SQL_CONNECTION_NAME: yourney-app-353202:asia-southeast2:yourney-sql
 # [END gae_python37_cloudsql_config]
