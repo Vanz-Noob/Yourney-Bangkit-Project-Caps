@@ -28,12 +28,11 @@ db_connection_name = os.environ.get('CLOUD_SQL_CONNECTION_NAME')
 
 app = Flask(__name__)
 
-#test route
-@app.route("/", methods=["GET"])
+@app.route('/', methods=["GET"])
 def hello():
     return "Hello, World This Is Yourney!"
 
-#show all destinasi
+#get all destinasi
 @app.route('/destinasi')
 def destinasi():
     destinasi = []
@@ -52,9 +51,9 @@ def destinasi():
     else:
         return 'Invalid request'  
        
-#show all destinasi
+#get all kategori
 @app.route('/kategori')
-def destinasi():
+def kategori():
     kategori = []
     if request.method == 'GET':
         if os.environ.get('GAE_ENV') == 'standard':
@@ -65,13 +64,13 @@ def destinasi():
         with cnx.cursor() as cursor:
             cursor.execute('SELECT * FROM kategori;')
             for row in cursor:
-                kategori.append({'id_kategori': row[0], 'nama_destinasi': row[1]})
+                kategori.append({'id_kategori': row[0], 'nama_kategori': row[1]})
             cnx.close()
-        return jsonify(destinasi)
+        return jsonify(kategori)
     else:
-        return 'Invalid request'  
+        return 'Invalid request'
 
-#cek DB
+#get all db
 @app.route('/db')
 def db():
     #sudah okay
@@ -93,7 +92,7 @@ def db():
        
     
 #login
-@app.route("/login",methods=["POST", "GET"])
+@app.route('/login',methods=["POST", "GET"])
 def login():
     request_data = request.get_json()
     username = request_data['username']
@@ -120,7 +119,7 @@ def login():
         return jsonify({'status': 'failed', 'message': 'Wrong username'})
  
 #register
-@app.route("/register",methods=["POST", "GET"])
+@app.route('/register',methods=["POST", "GET"])
 def register():
     request_data = request.get_json()
     username = request_data['username']
@@ -155,52 +154,73 @@ def register():
         }
     return jsonify(js)
 
-#masih ada yang salah
-# @app.route("/register",methods=["POST", "GET"])
-# def register():
-#     request_data = request.get_json()
-#     username = request_data['username']
-#     password = request_data['password']
-#     Hpassword = sha256_crypt.encrypt(password)
+#add destinasi
+@app.route('/addDest',methods=["POST", "GET"])
+def addDestinasi():
+    request_data = request.get_json()
+    nama_destinasi = request_data['nama_destinasi']
+    deskripsi = request_data['deskripsi']
+   
+    #connect database
+    if os.environ.get('GAE_ENV') == 'standard':
+        unix_socket = '/cloudsql/{}'.format(db_connection_name)
+        cnx = pymysql.connect(user=db_user, password=db_password,
+                              unix_socket=unix_socket, db=db_name)
+    else:
+        host = '127.0.0.1'
+        cnx = pymysql.connect(user=db_user, password=db_password,
+                              host=host, db=db_name)
+    #querying sql
+    with cnx.cursor() as cursor:
+        cursor.execute('INSERT INTO destinasi (nama_destinasi, deskripsi) VALUES (%s, %s);', (nama_destinasi, deskripsi))
+        result = cursor.fetchone()
+        cnx.commit()
+    cnx.close()
     
-#     #connect database
-#     if os.environ.get('GAE_ENV') == 'standard':
-#         unix_socket = '/cloudsql/{}'.format(db_connection_name)
-#         cnx = pymysql.connect(user=db_user, password=db_password,
-#                               unix_socket=unix_socket, db=db_name)
-#     with cnx.cursor() as cursor:
-#         cursor.execute('SELECT * FROM user WHERE username=%s',(username))
-#         user = cursor.fetchone()
-#         if user:
-#             js = {"code": "Account already exists !"}
-#         elif not re.match(r'[A-Za-z0-9]+', username):
-#             js = {"code": "Username must contain only characters and numbers !"}
-#         elif not username or not password:
-#             js = {"code": :"Please fill out the form !"}
-#         else:
-#             cursor.execute('INSERT INTO user (username, password) VALUES (%s, %s);', (username, Hpassword))
-#             result = cursor.fetchone()
-#             cnx.commit()
-#     cnx.close()
-#     #querying sql
-#     # with cnx.cursor() as cursor:
-#     #     cursor.execute('INSERT INTO user (username, password) VALUES (%s, %s);', (username, Hpassword))
-#     #     result = cursor.fetchone()
-#     #     cnx.commit()
-#     # cnx.close()
-#     if result == 0:
-#         js = {
-#             "code": "gagal",
-#         }
-#     else:
-#         js = {
-#             "username": username,
-#             "password": Hpassword,
-#             "code": "sukses",
-#         }
-#     return jsonify(js)
+    if result == 0:
+        js = {
+            "code": "gagal",
+        }
+    else:
+        js = {
+            "nama_destinasi": nama_destinasi,
+            "deskripsi": deskripsi,
+            "code": "sukses",
+        }
+    return jsonify(js)
 
-
+#add kategori
+@app.route('/addKate',methods=["POST", "GET"])
+def addKategori():
+    request_data = request.get_json()
+    nama_kategori = request_data['nama_kategori']
+   
+    #connect database
+    if os.environ.get('GAE_ENV') == 'standard':
+        unix_socket = '/cloudsql/{}'.format(db_connection_name)
+        cnx = pymysql.connect(user=db_user, password=db_password,
+                              unix_socket=unix_socket, db=db_name)
+    else:
+        host = '127.0.0.1'
+        cnx = pymysql.connect(user=db_user, password=db_password,
+                              host=host, db=db_name)
+    #querying sql
+    with cnx.cursor() as cursor:
+        cursor.execute('INSERT INTO kategori (nama_kategori) VALUES (%s);', (nama_kategori))
+        result = cursor.fetchone()
+        cnx.commit()
+    cnx.close()
+    
+    if result == 0:
+        js = {
+            "code": "gagal",
+        }
+    else:
+        js = {
+            "nama_kategori": nama_kategori,
+            "code": "sukses",
+        }
+    return jsonify(js)
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=8080, debug=True)
