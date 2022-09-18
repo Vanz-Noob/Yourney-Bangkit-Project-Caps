@@ -111,61 +111,61 @@ def destinasi():
         }
     return jsonify(js)
 
-# cek kategori
-@app.route('/kategori')
-def kategori():
-    kategori = []
-    if request.method == 'GET':
-        if os.environ.get('GAE_ENV') == 'standard':
-            # If deployed, use the local socket interface for accessing Cloud SQL
-            unix_socket = '/cloudsql/{}'.format(db_connection_name)
-            cnx = pymysql.connect(user=db_user, password=db_password,
-                                  unix_socket=unix_socket, db=db_name)
-        with cnx.cursor() as cursor:
-            cursor.execute('SELECT * FROM kategori;')
-            for row in cursor:
-                kategori.append(
-                    {'id_kategori': row[0], 'nama_kategori': row[1]})
-            cnx.close()
-        return jsonify(kategori)
-    else:
-        return 'Invalid request'
+# # cek kategori
+# @app.route('/kategori')
+# def kategori():
+#     kategori = []
+#     if request.method == 'GET':
+#         if os.environ.get('GAE_ENV') == 'standard':
+#             # If deployed, use the local socket interface for accessing Cloud SQL
+#             unix_socket = '/cloudsql/{}'.format(db_connection_name)
+#             cnx = pymysql.connect(user=db_user, password=db_password,
+#                                   unix_socket=unix_socket, db=db_name)
+#         with cnx.cursor() as cursor:
+#             cursor.execute('SELECT * FROM kategori;')
+#             for row in cursor:
+#                 kategori.append(
+#                     {'id_kategori': row[0], 'nama_kategori': row[1]})
+#             cnx.close()
+#         return jsonify(kategori)
+#     else:
+#         return 'Invalid request'
 
-# adding kategori
-@app.route("/addkate", methods=["POST", "GET"])
-def kategori():
-    request_data = request.get_json()
-    id_kategori = request_data['id_kategori']
-    nama_kategori = request_data['nama_kategori']
+# # adding kategori
+# @app.route("/addkate", methods=["POST", "GET"])
+# def kategori():
+#     request_data = request.get_json()
+#     id_kategori = request_data['id_kategori']
+#     nama_kategori = request_data['nama_kategori']
 
-    # connect database
-    if os.environ.get('GAE_ENV') == 'standard':
-        unix_socket = '/cloudsql/{}'.format(db_connection_name)
-        cnx = pymysql.connect(user=db_user, password=db_password,
-                              unix_socket=unix_socket, db=db_name)
-    else:
-        host = '127.0.0.1'
-        cnx = pymysql.connect(user=db_user, password=db_password,
-                              host=host, db=db_name)
-    # querying sql
-    with cnx.cursor() as cursor:
-        cursor.execute(
-            'INSERT INTO kategori (nama_kategori) VALUES (%s);', 
-            (nama_kategori))
-        result = cursor.fetchone()
-        cnx.commit()
-    cnx.close()
+#     # connect database
+#     if os.environ.get('GAE_ENV') == 'standard':
+#         unix_socket = '/cloudsql/{}'.format(db_connection_name)
+#         cnx = pymysql.connect(user=db_user, password=db_password,
+#                               unix_socket=unix_socket, db=db_name)
+#     else:
+#         host = '127.0.0.1'
+#         cnx = pymysql.connect(user=db_user, password=db_password,
+#                               host=host, db=db_name)
+#     # querying sql
+#     with cnx.cursor() as cursor:
+#         cursor.execute(
+#             'INSERT INTO kategori (nama_kategori) VALUES (%s);', 
+#             (nama_kategori))
+#         result = cursor.fetchone()
+#         cnx.commit()
+#     cnx.close()
 
-    if result == 0:
-        js = {
-            "code": "gagal",
-        }
-    else:
-        js = {
-            "id_kategori": id_kategori,
-            "nama_kategori": nama_kategori
-        }
-    return jsonify(js)
+#     if result == 0:
+#         js = {
+#             "code": "gagal",
+#         }
+#     else:
+#         js = {
+#             "id_kategori": id_kategori,
+#             "nama_kategori": nama_kategori
+#         }
+#     return jsonify(js)
 
 # login
 @app.route("/login", methods=["POST", "GET"])
