@@ -6,4 +6,5 @@ env_variables:
   CLOUD_SQL_PASSWORD: 123
   CLOUD_SQL_DATABASE_NAME: yourney
   CLOUD_SQL_CONNECTION_NAME: yourney-app-353202:asia-southeast2:yourney-sql
+  SEKRIT: b84c4b474542d10090a98739faa51e7429650525394fc800c720733bc3f27b24
 # [END gae_python37_cloudsql_config]

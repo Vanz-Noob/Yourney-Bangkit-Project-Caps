@@ -15,18 +15,48 @@
 # [START gae_python38_cloudsql_mysql]
 # [START gae_python3_cloudsql_mysql]
 from crypt import methods
+from hashlib import algorithms_available
+from lib2to3.pgen2 import token
 import os
-from flask import Flask, request, jsonify
+from flask import Flask, jsonify, request, make_response
 import pymysql
 from passlib.hash import sha256_crypt
 import re
+from functools import wraps
+import jwt
+from datetime import datetime
 
+# global resources
 db_user = os.environ.get('CLOUD_SQL_USERNAME')
 db_password = os.environ.get('CLOUD_SQL_PASSWORD')
 db_name = os.environ.get('CLOUD_SQL_DATABASE_NAME')
 db_connection_name = os.environ.get('CLOUD_SQL_CONNECTION_NAME')
+secret = os.environ.get('SEKRIT')
 
 app = Flask(__name__)
+
+def token_req(f):
+    @wraps(f)
+    def decorator(*args, **kwargs):
+        # parsing token pada endpoint
+        token = request.args.get('token')
+        # pengecekan token
+        if not token:
+            return make_response (
+                jsonify({
+                    "msg":"token not found",
+                }), 404 
+            )
+        try:
+            output = jwt.decode(token, secret, algorithms=["HS256"])
+        except:
+            return make_response (
+                jsonify({
+                    "msg": "invalid token"
+                }), 500
+            )
+        return f(*args, **kwargs)
+    return decorator
 
 @app.route('/', methods=["GET"])
 def hello():
@@ -72,6 +102,7 @@ def kategori():
 
 #get all db
 @app.route('/db')
+@token_req
 def db():
     #sudah okay
     users = []
@@ -88,7 +119,11 @@ def db():
             cnx.close()
         return jsonify(users)
     else:
-        return 'Invalid request'
+        return jsonify(
+            {
+                "msg": "login not found"
+            }, 500
+        )
        
     
 #login
@@ -106,17 +141,33 @@ def login():
 
     #querying sql
     with cnx.cursor() as cursor:
-        #bisa dapat di sql inject minta saran buat logika verifynya sha256_crypt.verify(password, result['password'] == result['pasword'])
         cursor.execute('SELECT * FROM user WHERE username = %s', (username, ))
         user = cursor.fetchone()
     cnx.close()
+    # cek username dengan pass
     if len(user) > 0:
         if sha256_crypt.verify(password, user[2]):
-            return jsonify({'status': 'success', 'idUser': user[0], 'username': user[1]})
+            token = jwt.encode(
+                {
+                    "username":user[2],
+                    "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=10)
+                }, secret, algorithm="HS256"
+            )
+            return jsonify(
+                {'status': 'success', 
+                 'idUser': user[0], 
+                 'username': user[1]}, 200
+                )
         else:
-            return jsonify({'status': 'failed', 'message': 'Wrong password'})
+            return jsonify(
+                {'status': 'failed', 
+                 'message': 'Wrong password'}, 400
+                )
     else:
-        return jsonify({'status': 'failed', 'message': 'Wrong username'})
+        return jsonify(
+            {'status': 'failed',
+             'message': 'Wrong username'}, 400
+            )
  
 #register
 @app.route('/register',methods=["POST", "GET"])
@@ -145,13 +196,19 @@ def register():
     if result == 0:
         js = {
             "code": "gagal",
-        }
+        }, 400
     else:
+        token = jwt.encode(
+            {
+                "username":username,
+                "password":Hpassword,
+                "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=10)
+            }, secret, algorithm="HS256"
+        )
         js = {
             "username": username,
-            "password": Hpassword,
             "code": "sukses",
-        }
+        }, 200
     return jsonify(js)
 
 #add destinasi
@@ -180,13 +237,13 @@ def addDestinasi():
     if result == 0:
         js = {
             "code": "gagal",
-        }
+        }, 400
     else:
         js = {
             "nama_destinasi": nama_destinasi,
             "deskripsi": deskripsi,
             "code": "sukses",
-        }
+        }, 200
     return jsonify(js)
 
 #add kategori
@@ -214,12 +271,12 @@ def addKategori():
     if result == 0:
         js = {
             "code": "gagal",
-        }
+        }, 400
     else:
         js = {
             "nama_kategori": nama_kategori,
             "code": "sukses",
-        }
+        }, 200
     return jsonify(js)
 
 if __name__ == '__main__':
