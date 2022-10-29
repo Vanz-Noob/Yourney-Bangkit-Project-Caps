@@ -1,116 +1,99 @@
-# Copyright 2018 Google LLC
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
-# [START gae_python38_cloudsql_mysql]
-# [START gae_python3_cloudsql_mysql]
 from crypt import methods
+from msilib.schema import Binary, File
+# import db
 import os
-from flask import Flask, request, jsonify
+# import uuid
 import pymysql
+from unittest import result
 from passlib.hash import sha256_crypt
-import re
+from webbrowser import get
+from flask import Flask, jsonify, request, make_response
+# from flask_sqlalchemy import SQLAlchemy
+from db import get_destinasi, get_kategori, post_destinasi, post_kategori, get_db, open_conn
 
 db_user = os.environ.get('CLOUD_SQL_USERNAME')
 db_password = os.environ.get('CLOUD_SQL_PASSWORD')
 db_name = os.environ.get('CLOUD_SQL_DATABASE_NAME')
 db_connection_name = os.environ.get('CLOUD_SQL_CONNECTION_NAME')
 
+# convert data blob menjadi binary
+def InsertBlob(FilePath):
+    with open(FilePath, "rb") as File:
+        BinaryData = File.read()
+    return BinaryData
+
+# convert data binary jadi blob
+def BinaryToFile(BinaryData, Filepath):
+    with open(Filepath, "wb") as File:
+        FileData = File.write(BinaryData)
+    return FileData
+    
+
+# cek API
 app = Flask(__name__)
-
-@app.route("/", methods=["GET"])
+@app.route('/', methods=['GET'])
 def hello():
-    return "Hello, World This Is Yourney!"
+    return jsonify({"message" : "hello world"})
 
-#cek destinasi
-@app.route('/destinasi')
+# get DB
+@app.route('/db', methods=['GET'])
+def get_user():
+    return get_db()
+
+# cek DB destinasi
+@app.route('/destinasi', methods=['GET'])
 def destinasi():
-    destinasi = []
-    if request.method == 'GET':
-        if os.environ.get('GAE_ENV') == 'standard':
-            # If deployed, use the local socket interface for accessing Cloud SQL
-            unix_socket = '/cloudsql/{}'.format(db_connection_name)
-            cnx = pymysql.connect(user=db_user, password=db_password,
-                                unix_socket=unix_socket, db=db_name)
-        with cnx.cursor() as cursor:
-            cursor.execute('SELECT * FROM destinasi;')
-            for row in cursor:
-                destinasi.append({'id_destinasi': row[0], 'nama_destinasi': row[2], 'deskripsi': row[3]})
-            cnx.close()
-        return jsonify(destinasi)
-    else:
-        return 'Invalid request'  
+    return get_destinasi()
+
+# tambah destinasi ke DB
+@app.route('/addDest', methods=['POST'])
+def addDest():
+    request_data = request.get_json()
+    deskripsi = request_data['deskripsi']
+    nama_destinasi = request_data['nama_destinasi']
+    InsertBlob(deskripsi)
     
-#cek kategori
-@app.route('/kategori')
+    #connect database
+    if os.environ.get('GAE_ENV') == 'standard':
+        unix_socket = '/cloudsql/{}'.format(db_connection_name)
+        cnx = pymysql.connect(user=db_user, password=db_password,
+                              unix_socket=unix_socket, db=db_name)
+
+    #querying sql
+    with cnx.cursor() as cursor:
+        cursor.execute('INSERT INTO destinasi (nama_destinasi, deskripsi) VALUES (%s, %s);', (nama_destinasi, InsertBlob))
+        result = cursor.fetchone()
+        cnx.commit()
+    cnx.close()
+    if result == 0:
+        js = {
+            "code": "gagal",
+        }
+    else:
+        js = {
+            "nama_destinasi": nama_destinasi,
+            "code": "sukses",
+        }
+    return jsonify(js)
+    
+    
+# cek kategori DB
+@app.route('/kategori', methods=['GET'])
 def kategori():
-    kategori = []
-    if request.method == 'GET':
-        if os.environ.get('GAE_ENV') == 'standard':
-            # If deployed, use the local socket interface for accessing Cloud SQL
-            unix_socket = '/cloudsql/{}'.format(db_connection_name)
-            cnx = pymysql.connect(user=db_user, password=db_password,
-                                unix_socket=unix_socket, db=db_name)
-        with cnx.cursor() as cursor:
-            cursor.execute('SELECT * FROM kategori;')
-            for row in cursor:
-                kategori.append({'id_kategori': row[0], 'nama_kategori': row[1]})
-            cnx.close()
-        return jsonify(kategori)
-    else:
-        return 'Invalid request'  
+    return get_kategori()
 
-#cek destinasi
-@app.route('/destinasi')
-def destinasi():
-    destinasi = []
-    if request.method == 'GET':
-        if os.environ.get('GAE_ENV') == 'standard':
-            # If deployed, use the local socket interface for accessing Cloud SQL
-            unix_socket = '/cloudsql/{}'.format(db_connection_name)
-            cnx = pymysql.connect(user=db_user, password=db_password,
-                                unix_socket=unix_socket, db=db_name)
-        with cnx.cursor() as cursor:
-            cursor.execute('SELECT * FROM destinasi;')
-            for row in cursor:
-                destinasi.append({'id_destinasi': row[0], 'nama_destinasi': row[2], 'deskripsi': row[3]})
-            cnx.close()
-        return jsonify(destinasi)
-    else:
-        return 'Invalid request'  
-        
-@app.route('/db')
-def db():
-    #sudah okay
-    users = []
-    if request.method == 'GET':
-        if os.environ.get('GAE_ENV') == 'standard':
-            # If deployed, use the local socket interface for accessing Cloud SQL
-            unix_socket = '/cloudsql/{}'.format(db_connection_name)
-            cnx = pymysql.connect(user=db_user, password=db_password,
-                                unix_socket=unix_socket, db=db_name)
-        with cnx.cursor() as cursor:
-            cursor.execute('SELECT * FROM user;')
-            for row in cursor:
-                users.append({'idUser': row[0], 'username': row[1], 'password': row[2]})
-            cnx.close()
-        return jsonify(users)
-    else:
-        return 'Invalid request'
-       
-    
+# tambah kategori ke DB
+@app.route('/addKate', methods=['POST'])
+def add_kategori():
+    if not request.is_json:
+        return jsonify({"Message": "Missing JSON"}), 400
+    post_kategori(request.get_json())
+    return jsonify ({"Message" : "Kategori berhasil ditambahkan"}), 200
+
+
+
 #login
-@app.route("/login",methods=["POST", "GET"])
+@app.route("/login",methods=["POST"])
 def login():
     request_data = request.get_json()
     username = request_data['username']
@@ -170,80 +153,7 @@ def register():
             "code": "sukses",
         }
     return jsonify(js)
-
-#adding destinasi
-@app.route("/addDest",methods=["POST", "GET"])
-def destinasi():
-    request_data = request.get_json()
-    deskripsi = request_data['destinasi']
-    id_destinasi = request_data['id_destinasi']
-    nama_destinasi = request_data['nama_destinasi']
     
-    #connect database
-    if os.environ.get('GAE_ENV') == 'standard':
-        unix_socket = '/cloudsql/{}'.format(db_connection_name)
-        cnx = pymysql.connect(user=db_user, password=db_password,
-                              unix_socket=unix_socket, db=db_name)
-    else:
-        host = '127.0.0.1'
-        cnx = pymysql.connect(user=db_user, password=db_password,
-                              host=host, db=db_name)
-    #querying sql
-    with cnx.cursor() as cursor:
-        cursor.execute('INSERT INTO destinasi (deskripsi, id_deskripsi, nama_destinasi) VALUES (%s, %s);', (deskripsi, id_destinasi, nama_destinasi))
-        result = cursor.fetchone()
-        cnx.commit()
-    cnx.close()
     
-    if result == 0:
-        js = {
-            "code": "gagal",
-        }
-    else:
-        js = {
-            "deskripsi": deskripsi,
-            "id_destinasi": id_destinasi,
-            "nama_destinasi": nama_destinasi
-        }
-    return jsonify(js)
-
-#adding kategori
-@app.route("/addKate",methods=["POST", "GET"])
-def kategori():
-    request_data = request.get_json()
-    id_kategori = request_data['id_kategori']
-    nama_kategori = request_data['nama_kategori']
-    
-    #connect database
-    if os.environ.get('GAE_ENV') == 'standard':
-        unix_socket = '/cloudsql/{}'.format(db_connection_name)
-        cnx = pymysql.connect(user=db_user, password=db_password,
-                              unix_socket=unix_socket, db=db_name)
-    else:
-        host = '127.0.0.1'
-        cnx = pymysql.connect(user=db_user, password=db_password,
-                              host=host, db=db_name)
-    #querying sql
-    with cnx.cursor() as cursor:
-        cursor.execute('INSERT INTO kategori (id_kategori, nama_kategori) VALUES (%s, %s);', (id_kategori, nama_kategori))
-        result = cursor.fetchone()
-        cnx.commit()
-    cnx.close()
-    
-    if result == 0:
-        js = {
-            "code": "gagal",
-        }
-    else:
-        js = {
-            "id_kategori": id_kategori,
-            "nama_kategori": nama_kategori
-        }
-    return jsonify(js)
-
-
-
-
-
 if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=8080, debug=True)
+    app.run()
