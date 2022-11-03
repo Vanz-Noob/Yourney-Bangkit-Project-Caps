@@ -2,6 +2,7 @@ from crypt import methods
 from msilib.schema import Binary, File
 # import db
 import os
+from re import S
 # import uuid
 import pymysql
 from unittest import result
@@ -22,12 +23,23 @@ def InsertBlob(FilePath):
         BinaryData = File.read()
     return BinaryData
 
-# convert data binary jadi blob
-def BinaryToFile(BinaryData, Filepath):
-    with open(Filepath, "wb") as File:
-        FileData = File.write(BinaryData)
-    return FileData
-    
+# dapatin file image dengan passing nilai id_destinasi
+def RetrieveBlobImage(ID):
+    if os.environ.get('GAE_ENV') == 'standard':
+        unix_socket = '/cloudsql/{}'.format(db_connection_name)
+        cnx = pymysql.connect(user=db_user, password=db_password,
+                                unix_socket=unix_socket, db=db_name)
+
+    #querying sql
+    with cnx.cursor() as cursor:
+        cursor.execute("SELECT * FROM destinasi WHERE id_destinasi= '{0}'")
+        result = cursor.fetchone()[4]
+        StoredFilePath = "Outputs/img{0}.jpg".format(str(ID))
+        print(result)
+        with open(StoredFilePath, "wb") as File:
+            File.write(result)
+    cnx.close()
+
 
 # cek API
 app = Flask(__name__)
