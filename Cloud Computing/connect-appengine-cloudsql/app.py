@@ -165,7 +165,71 @@ def register():
             "code": "sukses",
         }
     return jsonify(js)
+<<<<<<< HEAD
+=======
+
+#adding destinasi
+@app.route("/destinasi/add",methods=["POST", "GET"])
+def register():
+    request_data = request.get_json()
+    deskripsi = request_data['destinasi']
+    id_destinasi = request_data['id_destinasi']
+    nama_destinasi = request_data['nama_destinasi']
+>>>>>>> parent of 97b6af2 (feat: update deskripsi & kategori)
     
     
+<<<<<<< HEAD
+=======
+    if result == 0:
+        js = {
+            "code": "gagal",
+        }
+    else:
+        js = {
+            "deskripsi": deskripsi,
+            "id_destinasi": id_destinasi,
+            "nama_destinasi": nama_destinasi
+        }
+    return jsonify(js)
+
+#adding kategori
+@app.route("/kategori/add",methods=["POST", "GET"])
+def register():
+    request_data = request.get_json()
+    id_kategori = request_data['id_kategori']
+    nama_kategori = request_data['nama_kategori']
+    
+    #connect database
+    if os.environ.get('GAE_ENV') == 'standard':
+        unix_socket = '/cloudsql/{}'.format(db_connection_name)
+        cnx = pymysql.connect(user=db_user, password=db_password,
+                              unix_socket=unix_socket, db=db_name)
+    else:
+        host = '127.0.0.1'
+        cnx = pymysql.connect(user=db_user, password=db_password,
+                              host=host, db=db_name)
+    #querying sql
+    with cnx.cursor() as cursor:
+        cursor.execute('INSERT INTO katehori (id_kategori, nama_kategori) VALUES (%s, %s);', (id_kategori, nama_kategori))
+        result = cursor.fetchone()
+        cnx.commit()
+    cnx.close()
+    
+    if result == 0:
+        js = {
+            "code": "gagal",
+        }
+    else:
+        js = {
+            "id_kategori": id_kategori,
+            "nama_kategori": nama_kategori
+        }
+    return jsonify(js)
+
+
+
+
+
+>>>>>>> parent of 97b6af2 (feat: update deskripsi & kategori)
 if __name__ == '__main__':
     app.run()
