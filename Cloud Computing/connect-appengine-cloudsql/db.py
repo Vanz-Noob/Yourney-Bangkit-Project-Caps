@@ -73,7 +73,6 @@ def get_db():
 #         conn.commit()
 #         conn.close()
 
-
 def post_kategori(kategori):
     conn = open_conn()
     with conn.cursor() as cursor:
