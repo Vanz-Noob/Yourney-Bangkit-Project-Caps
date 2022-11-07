@@ -138,12 +138,12 @@ def login():
             return jsonify({'status': 'failed', 'message': 'Wrong password'})
     else:
         return jsonify({'status': 'failed', 'message': 'Wrong username'})
- 
-#register user
+    
+    
+ #register
 @app.route("/register",methods=["POST", "GET"])
 def register():
     request_data = request.get_json()
-    create_time = datetime.now()
     username = request_data['username']
     password = request_data['password']
     jeniskelamin = request_data['jeniskelamin']
@@ -161,7 +161,7 @@ def register():
                               host=host, db=db_name)
     #querying sql
     with cnx.cursor() as cursor:
-        cursor.execute('INSERT INTO user (create_time, username, password, jeniskelamin, tempatlahir) VALUES (%s, %s, %s, %s, %s);', (create_time, username, password, jeniskelamin, tempatlahir))
+        cursor.execute('INSERT INTO user (username, password, jeniskelamin, tempatlahir) VALUES (%s, %s, %s, %s);', (username, Hpassword, jeniskelamin, tempatlahir))
         result = cursor.fetchone()
         cnx.commit()
         cursor.execute('SELECT id_user FROM user WHERE username=%s;',(username))
@@ -176,14 +176,14 @@ def register():
         }
     else:
         js = {
-            "created" : create_time,
             "username": username,
             "password": Hpassword,
-            "jenis_kelamin" : jeniskelamin,
-            "tempat_lahir" : tempatlahir,
+            "jeniskelamin" : jeniskelamin,
+            "tempatlahir" : tempatlahir,
             "code": "sukses",
         }
     return jsonify(js)
+
 
 # adding category to user
 @app.route("/addKateUser",methods=["POST", "GET"])
