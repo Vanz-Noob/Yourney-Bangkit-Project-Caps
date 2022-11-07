@@ -178,6 +178,7 @@ def register():
 @app.route("/addDest",methods=["POST", "GET"])
 def addDest():
     request_data = request.get_json()
+    id_destinasi = request_data['id_destinasi']
     id_kategori2 = request_data['id_kategori2']
     nama_destinasi = request_data['nama_destinasi']
     deskripsi = request_data['deskripsi']
@@ -194,7 +195,7 @@ def addDest():
                               host=host, db=db_name)
     #querying sql
     with cnx.cursor() as cursor:
-        cursor.execute('INSERT INTO destinasi (id_kategori2, nama_destinasi, deskripsi, pic_deskripsi) VALUES (%s, %s, %s, %s);', (id_kategori2, nama_destinasi, deskripsi, pic_destinasi))
+        cursor.execute('INSERT INTO destinasi (id_destinasi, id_kategori2, nama_destinasi, deskripsi, pic_deskripsi) VALUES (%s, %s, %s, %s, %s);', (id_destinasi, id_kategori2, nama_destinasi, deskripsi, pic_destinasi))
         result = cursor.fetchone()
         cnx.commit()
     cnx.close()
@@ -205,8 +206,11 @@ def addDest():
         }
     else:
         js = {
+            "id_destinasi" : id_destinasi,
+            "id_kategori" : id_kategori2,
             "nama_destinasi": nama_destinasi,
             "deskripsi": deskripsi,
+            "URL gambar" : pic_destinasi,
             "code": "sukses",
         }
     return jsonify(js)
@@ -215,6 +219,7 @@ def addDest():
 @app.route("/addKate",methods=["POST", "GET"])
 def addKate():
     request_data = request.get_json()
+    id_kategori = request_data['id_kategori']
     id_dataset1 = request_data['id_dataset1']
     id_destinasi1 = request_data['id_destinasi1']
     nama_kategori = request_data['nama_kategori']
@@ -230,7 +235,7 @@ def addKate():
                               host=host, db=db_name)
     #querying sql
     with cnx.cursor() as cursor:
-        cursor.execute('INSERT INTO kategori (id_dataset1, nama_kategori) VALUES (%s, %s);', (id_kategori, nama_kategori))
+        cursor.execute('INSERT INTO kategori (id_kategori, id_dataset1, id_destinasi1, nama_kategori) VALUES (%s, %s, %s, %s);', (id_kategori, id_dataset1, id_destinasi1, nama_kategori))
         result = cursor.fetchone()
         cnx.commit()
     cnx.close()
@@ -242,6 +247,8 @@ def addKate():
     else:
         js = {
             "id_kategori": id_kategori,
+            "id_dataset" : id_dataset1,
+            "id_destinasi" : id_destinasi1,
             "nama_kategori": nama_kategori
         }
     return jsonify(js)
