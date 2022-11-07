@@ -20,6 +20,7 @@ from flask import Flask, request, jsonify
 import pymysql
 from passlib.hash import sha256_crypt
 import re
+from datetime import datetime
 
 db_user = os.environ.get('CLOUD_SQL_USERNAME')
 db_password = os.environ.get('CLOUD_SQL_PASSWORD')
@@ -71,7 +72,7 @@ def kategori():
         return 'Invalid request'  
 
 
-# cek db
+# cek db user
 @app.route('/db')
 def db():
     #sudah okay
@@ -138,12 +139,15 @@ def login():
     else:
         return jsonify({'status': 'failed', 'message': 'Wrong username'})
  
-#register
+#register user
 @app.route("/register",methods=["POST", "GET"])
 def register():
     request_data = request.get_json()
+    create_time = datetime.now()
     username = request_data['username']
     password = request_data['password']
+    jeniskelamin = request_data['jeniskelamin']
+    tempatlahir = request_data['tempatlahir']
     Hpassword = sha256_crypt.encrypt(password)   
     
     #connect database
@@ -157,8 +161,12 @@ def register():
                               host=host, db=db_name)
     #querying sql
     with cnx.cursor() as cursor:
-        cursor.execute('INSERT INTO user (username, password) VALUES (%s, %s);', (username, Hpassword))
+        cursor.execute('INSERT INTO user (create_time, username, password, jeniskelamin, tempatlahir) VALUES (%s, %s, %s, %s, %s);', (create_time, username, password, jeniskelamin, tempatlahir))
         result = cursor.fetchone()
+        cnx.commit()
+        cursor.execute('SELECT id_user FROM user WHERE username=%s;',(username))
+        id_user = cursor.fetchone()
+        cursor.execute('INSERT INTO kategori(id_kategori_user) VALUES(%s);', (id_user))
         cnx.commit()
     cnx.close()
     
@@ -168,21 +176,21 @@ def register():
         }
     else:
         js = {
+            "created" : create_time,
             "username": username,
             "password": Hpassword,
+            "jenis_kelamin" : jeniskelamin,
+            "tempat_lahir" : tempatlahir,
             "code": "sukses",
         }
     return jsonify(js)
 
-#adding destinasi
-@app.route("/addDest",methods=["POST", "GET"])
-def addDest():
+# adding category to user
+@app.route("/addKateUser",methods=["POST", "GET"])
+def addKateUserr():
     request_data = request.get_json()
-    id_destinasi = request_data['id_destinasi']
-    id_kategori2 = request_data['id_kategori2']
-    nama_destinasi = request_data['nama_destinasi']
-    deskripsi = request_data['deskripsi']
-    pic_destinasi = request_data['pic_destinasi']
+    id_user = request_data['id_user']
+    id_kategori1 = request_data['id_kategori1']
     
     #connect database
     if os.environ.get('GAE_ENV') == 'standard':
@@ -195,7 +203,7 @@ def addDest():
                               host=host, db=db_name)
     #querying sql
     with cnx.cursor() as cursor:
-        cursor.execute('INSERT INTO destinasi (id_destinasi, id_kategori2, nama_destinasi, deskripsi, pic_deskripsi) VALUES (%s, %s, %s, %s, %s);', (id_destinasi, id_kategori2, nama_destinasi, deskripsi, pic_destinasi))
+        cursor.execute('UPDATE user SET id_kategori1=%s WHERE id_user=%s ;', (id_kategori1, id_user))
         result = cursor.fetchone()
         cnx.commit()
     cnx.close()
@@ -206,11 +214,80 @@ def addDest():
         }
     else:
         js = {
-            "id_destinasi" : id_destinasi,
+            "code": "sukses",
+        }
+    return jsonify(js)
+
+# change status user
+@app.route("/addKateUser",methods=["POST", "GET"])
+def addKateUserr():
+    request_data = request.get_json()
+    id_user = request_data['id_user']
+    status = request_data['status']
+    
+    #connect database
+    if os.environ.get('GAE_ENV') == 'standard':
+        unix_socket = '/cloudsql/{}'.format(db_connection_name)
+        cnx = pymysql.connect(user=db_user, password=db_password,
+                              unix_socket=unix_socket, db=db_name)
+    else:
+        host = '127.0.0.1'
+        cnx = pymysql.connect(user=db_user, password=db_password,
+                              host=host, db=db_name)
+    #querying sql
+    with cnx.cursor() as cursor:
+        cursor.execute('UPDATE user SET status=%s WHERE id_user=%s ;', (status, id_user))
+        result = cursor.fetchone()
+        cnx.commit()
+    cnx.close()
+    
+    if result == 0:
+        js = {
+            "code": "gagal",
+        }
+    else:
+        js = {
+            "code": "sukses",
+        }
+    return jsonify(js)
+
+#adding destinasi
+@app.route("/addDest",methods=["POST", "GET"])
+def addDest():
+    request_data = request.get_json()
+    id_kategori2 = request_data['id_kategori2']
+    nama_destinasi = request_data['nama_destinasi']
+    deskripsi = request_data['deskripsi']
+    pic_destinasi = request_data['pic_destinasi']
+    url_destinasi = request_data['url_destinasi']
+    
+    #connect database
+    if os.environ.get('GAE_ENV') == 'standard':
+        unix_socket = '/cloudsql/{}'.format(db_connection_name)
+        cnx = pymysql.connect(user=db_user, password=db_password,
+                              unix_socket=unix_socket, db=db_name)
+    else:
+        host = '127.0.0.1'
+        cnx = pymysql.connect(user=db_user, password=db_password,
+                              host=host, db=db_name)
+    #querying sql
+    with cnx.cursor() as cursor:
+        cursor.execute('INSERT INTO destinasi (id_kategori2, nama_destinasi, deskripsi, pic_destinasi, url_destinasi) VALUES (%s, %s, %s, %s, %s);', (id_kategori2, nama_destinasi, deskripsi, pic_destinasi, url_destinasi))
+        result = cursor.fetchone()
+        cnx.commit()
+    cnx.close()
+    
+    if result == 0:
+        js = {
+            "code": "gagal",
+        }
+    else:
+        js = {
             "id_kategori" : id_kategori2,
             "nama_destinasi": nama_destinasi,
             "deskripsi": deskripsi,
             "URL gambar" : pic_destinasi,
+            "URL destinasi" : url_destinasi,
             "code": "sukses",
         }
     return jsonify(js)
@@ -220,8 +297,6 @@ def addDest():
 def addKate():
     request_data = request.get_json()
     id_kategori = request_data['id_kategori']
-    id_dataset1 = request_data['id_dataset1']
-    id_destinasi1 = request_data['id_destinasi1']
     nama_kategori = request_data['nama_kategori']
     
     #connect database
@@ -235,7 +310,7 @@ def addKate():
                               host=host, db=db_name)
     #querying sql
     with cnx.cursor() as cursor:
-        cursor.execute('INSERT INTO kategori (id_kategori, id_dataset1, id_destinasi1, nama_kategori) VALUES (%s, %s, %s, %s);', (id_kategori, id_dataset1, id_destinasi1, nama_kategori))
+        cursor.execute('INSERT INTO kategori (id_kategori, nama_kategori) VALUES (%s, %s);', (id_kategori, nama_kategori))
         result = cursor.fetchone()
         cnx.commit()
     cnx.close()
@@ -247,9 +322,41 @@ def addKate():
     else:
         js = {
             "id_kategori": id_kategori,
-            "id_dataset" : id_dataset1,
-            "id_destinasi" : id_destinasi1,
             "nama_kategori": nama_kategori
+        }
+    return jsonify(js)
+
+#update tabel kategori
+@app.route("/updateKate",methods=["POST", "GET"])
+def updateKate():
+    request_data = request.get_json()
+    id_kategori_user = request_data['id_kategori_user']
+    id_dataset1 = request_data['id_dataset1']
+    id_destinasi1 = request_data['id_destinasi1']
+    
+    #connect database
+    if os.environ.get('GAE_ENV') == 'standard':
+        unix_socket = '/cloudsql/{}'.format(db_connection_name)
+        cnx = pymysql.connect(user=db_user, password=db_password,
+                              unix_socket=unix_socket, db=db_name)
+    else:
+        host = '127.0.0.1'
+        cnx = pymysql.connect(user=db_user, password=db_password,
+                              host=host, db=db_name)
+    #querying sql
+    with cnx.cursor() as cursor:
+        cursor.execute('UPDATE kategori SET id_dataset1=%s, id_destinasi1=%s WHERE id_kategori_user=%s ;', (id_dataset1, id_destinasi1, id_kategori_user))
+        result = cursor.fetchone()
+        cnx.commit()
+    cnx.close()
+    
+    if result == 0:
+        js = {
+            "code": "gagal",
+        }
+    else:
+        js = {
+            "code" : "berhasil"
         }
     return jsonify(js)
 
