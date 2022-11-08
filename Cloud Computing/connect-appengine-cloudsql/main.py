@@ -146,8 +146,8 @@ def register():
     request_data = request.get_json()
     username = request_data['username']
     password = request_data['password']
-    jeniskelamin = request_data['jeniskelamin']
-    tempatlahir = request_data['tempatlahir']
+    jenis_kelamin = request_data['jenis_kelamin']
+    tempat_lahir = request_data['tempat_lahir']
     Hpassword = sha256_crypt.encrypt(password)   
     
     #connect database
@@ -161,12 +161,13 @@ def register():
                               host=host, db=db_name)
     #querying sql
     with cnx.cursor() as cursor:
-        cursor.execute('INSERT INTO user (username, password, jeniskelamin, tempatlahir) VALUES (%s, %s, %s, %s);', (username, Hpassword, jeniskelamin, tempatlahir))
+        cursor.execute('INSERT INTO user (username, password, jenis_kelamin, tempat_lahir) VALUES (%s, %s, %s, %s);', (username, Hpassword, jenis_kelamin, tempat_lahir))
         result = cursor.fetchone()
         cnx.commit()
         cursor.execute('SELECT id_user FROM user WHERE username=%s;',(username))
         id_user = cursor.fetchone()
         cursor.execute('INSERT INTO kategori(id_kategori_user) VALUES(%s);', (id_user))
+        cursor.execute('UPDATE user SET id_kategori1=%s WHERE id_user=%s;', (id_user, id_user))
         cnx.commit()
     cnx.close()
     
@@ -178,8 +179,8 @@ def register():
         js = {
             "username": username,
             "password": Hpassword,
-            "jeniskelamin" : jeniskelamin,
-            "tempatlahir" : tempatlahir,
+            "jeniskelamin" : jenis_kelamin,
+            "tempatlahir" : tempat_lahir,
             "code": "sukses",
         }
     return jsonify(js)
