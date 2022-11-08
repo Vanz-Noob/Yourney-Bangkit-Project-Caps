@@ -1,0 +1,37 @@
+1 user memiliki 
+> 1 tabel kategori
+> 1 tabel destinasi
+> 1 tabel dataset
+===========================
+user registrasi mengisi
+>create_time
+>username
+>password
+>jeniskelamin
+>tempatlahir
+
+(insert tabel kategori)
+id_user ==> id_kategori_user
+
+(update tabel user)
+id_kategori1 ==> id_kategori_user
+============================
+jika memang di tabel user id_kategori1 masih kosong ML crawling data dan
+isi terlebih dahulu tabel kategori
+(insert)
+>nama_kategori
+
+jika sudah isi tabel dataset
+(insert)
+>cleaned_tweet
+
+update tabel kategori
+(update tabel)
+>id_dataset ==> id_dataset1 di tabel kategori
+>id_destinasi ==> id_destinasi1 di tabel kategori
+
+update tabel dataset
+(update tabel)
+>id_kategori ==> id_kategori3 di tabel dataset
+====================================
+
