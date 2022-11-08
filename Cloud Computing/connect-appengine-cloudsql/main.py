@@ -65,7 +65,7 @@ def kategori():
         with cnx.cursor() as cursor:
             cursor.execute('SELECT * FROM kategori;')
             for row in cursor:
-                kategori.append({'id_kategori': row[0], 'id_dataset': row[1], 'id_destinasi': row[2], 'nama_kategori': row[3]})
+                kategori.append({'id_kategori': row[1], 'id_dataset': row[2], 'id_destinasi': row[3], 'nama_kategori': row[4]})
             cnx.close()
         return jsonify(kategori)
     else:
@@ -86,7 +86,7 @@ def db():
         with cnx.cursor() as cursor:
             cursor.execute('SELECT * FROM user;')
             for row in cursor:
-                users.append({'id_user': row[0], 'id_kategori': row[1], 'username': row[3], 'password': row[4], 'status': row[5]})
+                users.append({'created_time': row[2], 'id_user': row[0], 'id_kategori': row[1], 'username': row[3], 'password': row[4], 'status': row[7]})
             cnx.close()
         return jsonify(users)
     else:
@@ -132,8 +132,8 @@ def login():
         user = cursor.fetchone()
     cnx.close()
     if len(user) > 0:
-        if sha256_crypt.verify(password, user[2]):
-            return jsonify({'status': 'success', 'idUser': user[0], 'username': user[1]})
+        if sha256_crypt.verify(password, user[4]):
+            return jsonify({'status': 'success', 'idUser': user[0], 'username': user[3]})
         else:
             return jsonify({'status': 'failed', 'message': 'Wrong password'})
     else:
@@ -186,9 +186,9 @@ def register():
     return jsonify(js)
 
 
-# adding category to user
-@app.route("/addKateUser",methods=["POST", "GET"])
-def addKateUserr():
+# update category to user
+@app.route("/UpdateKateUser",methods=["POST", "GET"])
+def UpdateKateUser():
     request_data = request.get_json()
     id_user = request_data['id_user']
     id_kategori1 = request_data['id_kategori1']
@@ -220,8 +220,8 @@ def addKateUserr():
     return jsonify(js)
 
 # change status user
-@app.route("/addKateUser",methods=["POST", "GET"])
-def addKateUserr():
+@app.route("/UpStatUser",methods=["POST", "GET"])
+def UpStatUser():
     request_data = request.get_json()
     id_user = request_data['id_user']
     status = request_data['status']
@@ -256,7 +256,6 @@ def addKateUserr():
 @app.route("/addDest",methods=["POST", "GET"])
 def addDest():
     request_data = request.get_json()
-    id_kategori2 = request_data['id_kategori2']
     nama_destinasi = request_data['nama_destinasi']
     deskripsi = request_data['deskripsi']
     pic_destinasi = request_data['pic_destinasi']
@@ -273,7 +272,7 @@ def addDest():
                               host=host, db=db_name)
     #querying sql
     with cnx.cursor() as cursor:
-        cursor.execute('INSERT INTO destinasi (id_kategori2, nama_destinasi, deskripsi, pic_destinasi, url_destinasi) VALUES (%s, %s, %s, %s, %s);', (id_kategori2, nama_destinasi, deskripsi, pic_destinasi, url_destinasi))
+        cursor.execute('INSERT INTO destinasi (nama_destinasi, deskripsi, pic_destinasi, url_destinasi) VALUES (%s, %s, %s, %s);', (nama_destinasi, deskripsi, pic_destinasi, url_destinasi))
         result = cursor.fetchone()
         cnx.commit()
     cnx.close()
@@ -284,7 +283,6 @@ def addDest():
         }
     else:
         js = {
-            "id_kategori" : id_kategori2,
             "nama_destinasi": nama_destinasi,
             "deskripsi": deskripsi,
             "URL gambar" : pic_destinasi,
