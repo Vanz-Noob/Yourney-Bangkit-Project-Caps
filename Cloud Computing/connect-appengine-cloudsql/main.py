@@ -402,8 +402,86 @@ def updateKateSet():
 #         }
 #     return jsonify(js)
 
+# @app.route('/GetDesc',methods=["POST", "GET"])
+# def GetDesc():
+#     request_data = request.get_json()
+#     nama_destinasi = request_data['nama_destinasi']
+#     deskripsi = []
+#     if request.method == 'GET':
+#         if os.environ.get('GAE_ENV') == 'standard':
+#             # If deployed, use the local socket interface for accessing Cloud SQL
+#             unix_socket = '/cloudsql/{}'.format(db_connection_name)
+#             cnx = pymysql.connect(user=db_user, password=db_password,
+#                                 unix_socket=unix_socket, db=db_name)
+#         with cnx.cursor() as cursor:
+#             cursor.execute('SELECT deskripsi FROM destinasi WHERE nama_destinasi=%s;', (nama_destinasi))
+#             result =cursor.fetchone()
+#             deskripsi.append({result})
 
+#dapatin deskripsi dari nama destinasi tertentu
+@app.route("/GetDesc",methods=["POST", "GET"])
+def GetDesc():
+    request_data = request.get_json()
+    nama_destinasi = request_data['nama_destinasi']
 
+    
+    #connect database
+    if os.environ.get('GAE_ENV') == 'standard':
+        unix_socket = '/cloudsql/{}'.format(db_connection_name)
+        cnx = pymysql.connect(user=db_user, password=db_password,
+                              unix_socket=unix_socket, db=db_name)
+    else:
+        host = '127.0.0.1'
+        cnx = pymysql.connect(user=db_user, password=db_password,
+                              host=host, db=db_name)
+    #querying sql
+    with cnx.cursor() as cursor:
+        cursor.execute('SELECT deskripsi FROM destinasi WHERE nama_destinasi=%s;', (nama_destinasi))
+        result = cursor.fetchone()
+        cnx.commit()
+    cnx.close()
+    
+    if result == 0:
+        js = {
+            "code": "gagal",
+        }
+    else:
+        js = {
+            "deskripsi": result,
+        }
+    return jsonify(js)      
 
+#search destinasi
+@app.route('/search',methods=["POST", "GET"])
+def search():
+    request_data = request.get_json()
+    nama_destinasi = request_data['nama_destinasi']
+    search = []
+    if request.method == 'POST':
+        if os.environ.get('GAE_ENV') == 'standard':
+            # If deployed, use the local socket interface for accessing Cloud SQL
+            unix_socket = '/cloudsql/{}'.format(db_connection_name)
+            cnx = pymysql.connect(user=db_user, password=db_password,
+                                unix_socket=unix_socket, db=db_name)
+    #     with cnx.cursor() as cursor:
+    #         cursor.execute('SELECT * FROM destinasi WHERE nama_destinasi LIKE %s ORDER BY nama_destinasi;', (nama_destinasi))
+    #         result = cursor.fetchall()
+    #     cnx.close()
+    #     return jsonify(result)
+    # else:
+    #     return 'invalid request'
+        with cnx.cursor() as cursor:
+            cursor.execute('SELECT * FROM destinasi WHERE nama_destinasi LIKE %s ORDER BY nama_destinasi;', (nama_destinasi))
+            for row in cursor:
+                search.append({'id_destinasi': row[0], 'id_kategori_destinasi': row[1], 'nama_desinasi': row[2], 'deskripsi': row[3], 'pic_destinasi': row[4], 'url_destinasi': row[5]})
+            cnx.close()
+        return jsonify(search)
+    else:
+        return 'Invalid request'
+
+    
+        
+
+    
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=8080, debug=True)
