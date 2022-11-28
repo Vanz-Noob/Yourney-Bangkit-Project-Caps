@@ -1,0 +1,14 @@
+.foot{
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 10vh;
+    background-color: #00A58F;
+}
+.footer{
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 50px;
+}
