@@ -37,7 +37,7 @@ def hello():
 def GetNull():
     null = []
     #connect database
-    if request.method == 'POST':
+    if request.method == 'GET':
         if os.environ.get('GAE_ENV') == 'standard':
             unix_socket = '/cloudsql/{}'.format(db_connection_name)
             cnx = pymysql.connect(user=db_user, password=db_password,
