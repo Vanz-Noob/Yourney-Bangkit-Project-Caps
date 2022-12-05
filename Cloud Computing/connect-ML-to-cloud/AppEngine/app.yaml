@@ -1,0 +1,9 @@
+# [START gae_python37_cloudsql_config]
+runtime: python37
+
+env_variables:
+  CLOUD_SQL_USERNAME: root
+  CLOUD_SQL_PASSWORD: 123
+  CLOUD_SQL_DATABASE_NAME: yourney
+  CLOUD_SQL_CONNECTION_NAME: yourney-app-353202:us-central1:bangkit-tez1
+# [END gae_python37_cloudsql_config]
