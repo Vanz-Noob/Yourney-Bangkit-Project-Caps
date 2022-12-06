@@ -162,12 +162,14 @@ def register():
     #querying sql
     with cnx.cursor() as cursor:
         cursor.execute('INSERT INTO user (username, password, jenis_kelamin, tempat_lahir) VALUES (%s, %s, %s, %s);', (username, Hpassword, jenis_kelamin, tempat_lahir))
-        result = cursor.fetchone()
+        cnx.commit()
         cursor.execute('SELECT id_user FROM user WHERE username=%s;',(username))
         id_user = cursor.fetchone()
         cursor.execute('INSERT INTO kategori(id_kategori_user) VALUES(%s);', (id_user))
+        cnx.commit()
         cursor.execute('UPDATE user SET id_kategori1=%s WHERE id_user=%s;', (id_user, id_user))
         cnx.commit()
+        result = cursor.fetchone()
     cnx.close()
     
     if result == 0:
@@ -178,12 +180,11 @@ def register():
         js = {
             "username": username,
             "password": Hpassword,
-            "jeniskelamin" : jenis_kelamin,
-            "tempatlahir" : tempat_lahir,
+            "jenis_kelamin" : jenis_kelamin,
+            "tempat_lahir" : tempat_lahir,
             "code": "sukses",
         }
     return jsonify(js)
-
 
 # # update category to user
 # @app.route("/UpdateKateUser",methods=["POST", "GET"])
