@@ -183,7 +183,7 @@ def register():
         result = cursor.fetchone()
     cnx.close()
 
-    if len(result) > 0:
+    if result:
         return jsonify(
             {
                 'message': 'user already exist'
@@ -203,11 +203,7 @@ def register():
         result = cursor.fetchone()
     cnx.close()
     
-    if len(result) == 0:
-        js = {
-            "code": "gagal",
-        }
-    else:
+    if result:
         js = {
             "username": username,
             "password": Hpassword,
@@ -215,6 +211,10 @@ def register():
             "tempat_lahir" : tempat_lahir,
             "code": "sukses",
         }
+    else:
+        js = {
+            "code": "gagal",
+        },400
     return jsonify(js)
 
 # # update category to user
