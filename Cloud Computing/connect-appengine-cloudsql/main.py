@@ -511,7 +511,7 @@ def search():
     # else:
     #     return 'Invalid request'
     args = request.args
-    nama_destinasi = args.get('nama_destinasi')
+    nama_destinasi = f"%{args.get('nama_destinasi')}%"
     if os.environ.get('GAE_ENV') == 'standard':
         unix_socket = '/cloudsql/{}'.format(db_connection_name)
         cnx = pymysql.connect(user=db_user, password=db_password,
