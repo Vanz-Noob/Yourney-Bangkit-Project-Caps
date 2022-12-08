@@ -177,9 +177,8 @@ def register():
                 'message': 'email is not in valid format'
             }
         ), 400
-    print(email)
     # validate if email or username is used
-    with cnx.cursor as cursor:
+    with cnx.cursor() as cursor:
         cursor.execute('SELECT * FROM user WHERE LOWER(username) = LOWER(%s) OR LOWER(email) = LOWER(%s);',(username, email))
         result = cursor.fetchone()
     cnx.close()
