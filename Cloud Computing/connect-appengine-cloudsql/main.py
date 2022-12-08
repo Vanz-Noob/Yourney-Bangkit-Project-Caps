@@ -161,28 +161,6 @@ def register():
         cnx = pymysql.connect(user=db_user, password=db_password,
                               host=host, db=db_name)
     #validation
-    exist = False
-    # username
-    with cnx.cursor as cursor:
-        cursor.execute('SELECT * FROM user WHERE LOWER(username) = LOWER(%s);', (username))
-        result = cursor.fetchone()
-        if result:
-            exist = True
-    cnx.close()
-
-    # email
-    with cnx.cursor as cursor:
-        cursor.execute('SELECT * FROM user WHERE LOWER(email) = LOWER(%s);', (email))
-        result = cursor.fetchone()
-        if result:
-            exist = True
-    cnx.close()
-
-    if exist:
-        return jsonify({
-            "message": "user already exist"
-        })
-    
     # password
     if not re.fullmatch(r'[A-Za-z0-9@#$%^&+=]{8,}', password):
         return jsonify(
@@ -190,6 +168,34 @@ def register():
                 'message': 'password character must be atleast 8 character with capital case and number charachter'
             }
         )
+
+    # email
+    emailformat = re.compile(r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+')
+    if not re.fullmatch(emailformat, email):
+        return jsonify(
+            {
+                'message': 'email is not in valid format'
+            }
+        )
+
+    exist = False
+    with cnx.cursor as cursor:
+        cursor.execute('SELECT id_user FROM user WHERE LOWER(email)=LOWER(%s);',(email))
+        result = cursor.fetchone()
+    cnx.close()
+    if result: exist = True
+
+    # username
+    with cnx.cursor as cursor:
+        cursor.execute('SELECT id_user FROM user WHERE LOWER(username)=LOWER(%s);',(username))
+        result = cursor.fetchone()
+    cnx.close()
+    if result: exist = True
+
+    if exist:
+        return jsonify({
+            "message": "user already exist"
+        })
 
     #querying sql
     with cnx.cursor() as cursor:
