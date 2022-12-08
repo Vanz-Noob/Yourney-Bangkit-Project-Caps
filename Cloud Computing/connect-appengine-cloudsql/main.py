@@ -178,10 +178,17 @@ def register():
             }
         ), 400
     # validate if email or username is used
-    with cnx.cursor() as cursor:
-        cursor.execute('SELECT * FROM user WHERE LOWER(username) = LOWER(%s) OR LOWER(email) = LOWER(%s);',(username, email))
-        result = cursor.fetchone()
-    cnx.close()
+    try:
+        with cnx.cursor() as cursor:
+            cursor.execute('SELECT id_user FROM user WHERE LOWER(username) = LOWER(%s) OR LOWER(email) = LOWER(%s);',(username, email))
+            result = cursor.fetchone()
+        cnx.close()
+    except Exception as e:
+        return jsonify(
+            {
+                'message': str(e)
+            }, 500
+        )
     if result > 0:
         return jsonify(
             {
