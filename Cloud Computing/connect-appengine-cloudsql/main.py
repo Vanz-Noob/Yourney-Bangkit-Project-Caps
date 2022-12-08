@@ -182,7 +182,7 @@ def register():
     exist = False
 
     with cnx.cursor as cursor:
-        cursor.execute('SELECT * FROM Customers WHERE LOWER(username) = LOWER(%s) OR LOWER(email) = LOWER(%s);',(username, email))
+        cursor.execute('SELECT * FROM user WHERE LOWER(username) = LOWER(%s) OR LOWER(email) = LOWER(%s);',(username, email))
         result = cursor.fetchone()
     cnx.close()
     if result: exist = True
