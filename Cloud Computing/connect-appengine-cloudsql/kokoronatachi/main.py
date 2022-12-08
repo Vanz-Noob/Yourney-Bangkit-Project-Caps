@@ -1,12 +1,13 @@
 from crypt import methods
 from lib2to3.pgen2 import token
+import re
 import os
 import uuid
 import pymysql
 # from passlib.hash import sha256_crypt
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask import Flask, jsonify, request, make_response
-from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy, func
 from functools import wraps
 import jwt
 import datetime
@@ -31,6 +32,10 @@ class user(db.Model):
     id_public = db.column(db.String(100))
     username = db.column(db.String(100))
     password = db.column(db.String(100))
+
+def username_exist(username):
+    user = user.query.filter(func.lower(user.username) == func.lower(username)).first()
+    return user
 
 def token_required(f):
     @wraps(f)
@@ -116,6 +121,14 @@ def create_user(current_user):
         return jsonify({'message' : 'Cannot perform that function!'})
 
     data = request.get_json()
+
+    exist = username_exist(data['name'])
+    
+    if not re.fullmatch(r'[A-Za-z0-9@#$%^&+=]{8,}', data['password']):
+        return jsonify({'message': 'password character must be atleast 8 character with capital case and number charachter'})
+    
+    if exist:
+        return jsonify({'message': 'user already exist with this username'})
 
     hashed_password = generate_password_hash(data['password'], method='sha256')
 
