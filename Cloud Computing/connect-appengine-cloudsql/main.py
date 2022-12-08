@@ -177,15 +177,13 @@ def register():
                 'message': 'email is not in valid format'
             }
         ), 400
-        
+    print(email)
     # validate if email or username is used
-    exist = False
-
     with cnx.cursor as cursor:
         cursor.execute('SELECT * FROM user WHERE LOWER(username) = LOWER(%s) OR LOWER(email) = LOWER(%s);',(username, email))
         result = cursor.fetchone()
     cnx.close()
-    if result == 0:
+    if result > 0:
         return jsonify(
             {
                 'message': 'user already exist'
