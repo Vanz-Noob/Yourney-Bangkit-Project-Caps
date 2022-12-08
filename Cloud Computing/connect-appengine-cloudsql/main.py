@@ -202,20 +202,26 @@ def register():
         result = cursor.fetchone()
     cnx.close()
     
-    if result:
-        js = {
+    # if result:
+    #     js = {
+    #         "username": username,
+    #         "password": Hpassword,
+    #         "jenis_kelamin" : jenis_kelamin,
+    #         "tempat_lahir" : tempat_lahir,
+    #         "code": "sukses",
+    #     }
+    # else:
+    #     js = {
+    #         "code": "gagal",
+    #         "result": str(result)
+    #     },400
+    return jsonify({
             "username": username,
             "password": Hpassword,
             "jenis_kelamin" : jenis_kelamin,
             "tempat_lahir" : tempat_lahir,
             "code": "sukses",
-        }
-    else:
-        js = {
-            "code": "gagal",
-            "result": str(result)
-        },400
-    return jsonify(js)
+        })
 
 # # update category to user
 # @app.route("/UpdateKateUser",methods=["POST", "GET"])
