@@ -213,6 +213,7 @@ def register():
     else:
         js = {
             "code": "gagal",
+            "result": str(result)
         },400
     return jsonify(js)
 
