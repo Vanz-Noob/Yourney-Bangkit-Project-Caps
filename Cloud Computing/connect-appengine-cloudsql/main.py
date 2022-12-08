@@ -145,6 +145,7 @@ def login():
 def register():
     request_data = request.get_json()
     username = request_data['username']
+    email = request_data['email']
     password = request_data['password']
     jenis_kelamin = request_data['jenis_kelamin']
     tempat_lahir = request_data['tempat_lahir']
@@ -159,9 +160,40 @@ def register():
         host = '127.0.0.1'
         cnx = pymysql.connect(user=db_user, password=db_password,
                               host=host, db=db_name)
+    #validation
+    exist = False
+    # username
+    with cnx.cursor as cursor:
+        cursor.execute('SELECT * FROM user WHERE LOWER(username) = LOWER(%s);', (username))
+        result = cursor.fetchone()
+        if result:
+            exist = True
+    cnx.close()
+
+    # email
+    with cnx.cursor as cursor:
+        cursor.execute('SELECT * FROM user WHERE LOWER(email) = LOWER(%s);', (email))
+        result = cursor.fetchone()
+        if result:
+            exist = True
+    cnx.close()
+
+    if exist:
+        return jsonify({
+            "message": "user already exist"
+        })
+    
+    # password
+    if not re.fullmatch(r'[A-Za-z0-9@#$%^&+=]{8,}', password):
+        return jsonify(
+            {
+                'message': 'password character must be atleast 8 character with capital case and number charachter'
+            }
+        )
+
     #querying sql
     with cnx.cursor() as cursor:
-        cursor.execute('INSERT INTO user (username, password, jenis_kelamin, tempat_lahir) VALUES (%s, %s, %s, %s);', (username, Hpassword, jenis_kelamin, tempat_lahir))
+        cursor.execute('INSERT INTO user (username, email, password, jenis_kelamin, tempat_lahir) VALUES (%s, %s, %s, %s, %s);', (username, email, Hpassword, jenis_kelamin, tempat_lahir))
         cnx.commit()
         cursor.execute('SELECT id_user FROM user WHERE username=%s;',(username))
         id_user = cursor.fetchone()
@@ -453,32 +485,45 @@ def GetDesc():
     return jsonify(js)      
 
 #search destinasi
-@app.route('/search',methods=["POST", "GET"])
+@app.route('/search',methods=["GET"])
 def search():
-    request_data = request.get_json()
-    nama_destinasi = request_data['nama_destinasi']
+    # request_data = request.get_json()
+    # nama_destinasi = request_data['nama_destinasi']
     search = []
-    if request.method == 'POST':
-        if os.environ.get('GAE_ENV') == 'standard':
-            # If deployed, use the local socket interface for accessing Cloud SQL
-            unix_socket = '/cloudsql/{}'.format(db_connection_name)
-            cnx = pymysql.connect(user=db_user, password=db_password,
-                                unix_socket=unix_socket, db=db_name)
+    # if request.method == 'POST':
+    #     if os.environ.get('GAE_ENV') == 'standard':
+    #         # If deployed, use the local socket interface for accessing Cloud SQL
+    #         unix_socket = '/cloudsql/{}'.format(db_connection_name)
+    #         cnx = pymysql.connect(user=db_user, password=db_password,
+    #                             unix_socket=unix_socket, db=db_name)
+    # #     with cnx.cursor() as cursor:
+    # #         cursor.execute('SELECT * FROM destinasi WHERE nama_destinasi LIKE %s ORDER BY nama_destinasi;', (nama_destinasi))
+    # #         result = cursor.fetchall()
+    # #     cnx.close()
+    # #     return jsonify(result)
+    # # else:
+    # #     return 'invalid request'
     #     with cnx.cursor() as cursor:
-    #         cursor.execute('SELECT * FROM destinasi WHERE nama_destinasi LIKE %s ORDER BY nama_destinasi;', (nama_destinasi))
-    #         result = cursor.fetchall()
-    #     cnx.close()
-    #     return jsonify(result)
+    #         cursor.execute('SELECT * FROM destinasi WHERE LOWER(nama_destinasi) LIKE LOWER(%s) ORDER BY nama_destinasi;', (nama_destinasi))
+    #         for row in cursor:
+    #             search.append({'id_destinasi': row[0], 'id_kategori_destinasi': row[1], 'nama_desinasi': row[2], 'deskripsi': row[3], 'pic_destinasi': row[4], 'url_destinasi': row[5]})
+    #         cnx.close()
+    #     return jsonify(search)
     # else:
-    #     return 'invalid request'
-        with cnx.cursor() as cursor:
-            cursor.execute('SELECT * FROM destinasi WHERE nama_destinasi LIKE %s ORDER BY nama_destinasi;', (nama_destinasi))
-            for row in cursor:
-                search.append({'id_destinasi': row[0], 'id_kategori_destinasi': row[1], 'nama_desinasi': row[2], 'deskripsi': row[3], 'pic_destinasi': row[4], 'url_destinasi': row[5]})
-            cnx.close()
-        return jsonify(search)
-    else:
-        return 'Invalid request'
+    #     return 'Invalid request'
+    args = request.args
+    nama_destinasi = args.get('nama_destinasi')
+    if os.environ.get('GAE_ENV') == 'standard':
+        unix_socket = '/cloudsql/{}'.format(db_connection_name)
+        cnx = pymysql.connect(user=db_user, password=db_password,
+                            unix_socket=unix_socket, db=db_name)
+    with cnx.cursor() as cursor:
+        cursor.execute('SELECT * FROM destinasi WHERE LOWER(nama_destinasi) LIKE LOWER(%s) ORDER BY nama_destinasi;', (nama_destinasi))
+        for row in cursor:
+            search.append({'id_destinasi': row[0], 'id_kategori_destinasi': row[1], 'nama_desinasi': row[2], 'deskripsi': row[3], 'pic_destinasi': row[4], 'url_destinasi': row[5]})
+        cnx.close()
+    return jsonify(search)
+
 
     
         
