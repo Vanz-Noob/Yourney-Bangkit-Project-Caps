@@ -167,7 +167,7 @@ def register():
             {
                 'message': 'password character must be atleast 8 character with capital case and number charachter'
             }
-        )
+        ), 400
 
     # email
     emailformat = re.compile(r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+')
@@ -176,7 +176,7 @@ def register():
             {
                 'message': 'email is not in valid format'
             }
-        )
+        ), 400
         
     # validate if email or username is used
     exist = False
@@ -185,12 +185,12 @@ def register():
         cursor.execute('SELECT * FROM user WHERE LOWER(username) = LOWER(%s) OR LOWER(email) = LOWER(%s);',(username, email))
         result = cursor.fetchone()
     cnx.close()
-    if result: exist = True
-
-    if exist:
-        return jsonify({
-            "message": "user already exist"
-        })
+    if result == 0:
+        return jsonify(
+            {
+                'message': 'user already exist'
+            }
+        ), 400
 
     #querying sql
     with cnx.cursor() as cursor:
