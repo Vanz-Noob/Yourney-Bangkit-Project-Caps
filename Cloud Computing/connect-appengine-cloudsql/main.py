@@ -21,6 +21,7 @@ import pymysql
 from passlib.hash import sha256_crypt
 import re
 from datetime import datetime
+from services.user import UserService
 
 db_user = os.environ.get('CLOUD_SQL_USERNAME')
 db_password = os.environ.get('CLOUD_SQL_PASSWORD')
@@ -28,6 +29,7 @@ db_name = os.environ.get('CLOUD_SQL_DATABASE_NAME')
 db_connection_name = os.environ.get('CLOUD_SQL_CONNECTION_NAME')
 
 app = Flask(__name__)
+user_service = UserService(db_user,db_password,db_name,db_connection_name)
 
 @app.route("/", methods=["GET"])
 def hello():
@@ -178,12 +180,9 @@ def register():
             }
         ), 400
     # validate if email or username is used
-    with cnx.cursor() as cursor:
-        cursor.execute('SELECT id_user FROM user WHERE LOWER(username) = LOWER(%s) OR LOWER(email) = LOWER(%s);',(username, email))
-        result = cursor.fetchone()
-    cnx.close()
+    exist = user_service.check_existing_user(username, email)
 
-    if result:
+    if exist:
         return jsonify(
             {
                 'message': 'user already exist'
