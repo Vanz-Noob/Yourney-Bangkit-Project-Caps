@@ -145,82 +145,85 @@ def login():
  #register user + initialiazing kategori
 @app.route("/register",methods=["POST", "GET"])
 def register():
-    request_data = request.get_json()
-    username = request_data['username']
-    email = request_data['email']
-    password = request_data['password']
-    jenis_kelamin = request_data['jenis_kelamin']
-    tempat_lahir = request_data['tempat_lahir']
-    Hpassword = sha256_crypt.encrypt(password)   
-    
-    #connect database
-    if os.environ.get('GAE_ENV') == 'standard':
-        unix_socket = '/cloudsql/{}'.format(db_connection_name)
-        cnx = pymysql.connect(user=db_user, password=db_password,
-                              unix_socket=unix_socket, db=db_name)
-    else:
-        host = '127.0.0.1'
-        cnx = pymysql.connect(user=db_user, password=db_password,
-                              host=host, db=db_name)
-    #validation
-    # password
-    if not re.fullmatch(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$', password):
-        return jsonify(
-            {
-                'message': 'password character must be atleast 8 character with capital case and number charachter'
-            }
-        ), 400
+    try:
+        request_data = request.get_json()
+        username = request_data['username']
+        email = request_data['email']
+        password = request_data['password']
+        jenis_kelamin = request_data['jenis_kelamin']
+        tempat_lahir = request_data['tempat_lahir']
+        Hpassword = sha256_crypt.encrypt(password)   
+        
+        #connect database
+        if os.environ.get('GAE_ENV') == 'standard':
+            unix_socket = '/cloudsql/{}'.format(db_connection_name)
+            cnx = pymysql.connect(user=db_user, password=db_password,
+                                unix_socket=unix_socket, db=db_name)
+        else:
+            host = '127.0.0.1'
+            cnx = pymysql.connect(user=db_user, password=db_password,
+                                host=host, db=db_name)
+        #validation
+        # password
+        if not re.fullmatch(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$', password):
+            return jsonify(
+                {
+                    'message': 'password character must be atleast 8 character with capital case and number charachter'
+                }
+            ), 400
 
-    # email
-    emailformat = re.compile(r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+')
-    if not re.fullmatch(emailformat, email):
-        return jsonify(
-            {
-                'message': 'email is not in valid format'
-            }
-        ), 400
-    # validate if email or username is used
-    exist = user_service.check_existing_user(username, email)
+        # email
+        emailformat = re.compile(r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+')
+        if not re.fullmatch(emailformat, email):
+            return jsonify(
+                {
+                    'message': 'email is not in valid format'
+                }
+            ), 400
+        # validate if email or username is used
+        exist = user_service.check_existing_user(username, email)
 
-    if exist:
-        return jsonify(
-            {
-                'message': 'user already exist'
-            }
-        ), 400
+        if exist:
+            return jsonify(
+                {
+                    'message': 'user already exist'
+                }
+            ), 400
 
-    #querying sql
-    with cnx.cursor() as cursor:
-        cursor.execute('INSERT INTO user (username, email, password, jenis_kelamin, tempat_lahir) VALUES (%s, %s, %s, %s, %s);', (username, email, Hpassword, jenis_kelamin, tempat_lahir))
-        cnx.commit()
-        cursor.execute('SELECT id_user FROM user WHERE username=%s;',(username))
-        id_user = cursor.fetchone()
-        cursor.execute('INSERT INTO kategori(id_kategori_user) VALUES(%s);', (id_user))
-        cnx.commit()
-        cursor.execute('UPDATE user SET id_kategori1=%s WHERE id_user=%s;', (id_user, id_user))
-        cnx.commit()
-        result = cursor.fetchone()
-    cnx.close()
-    
-    # if result:
-    #     js = {
-    #         "username": username,
-    #         "password": Hpassword,
-    #         "jenis_kelamin" : jenis_kelamin,
-    #         "tempat_lahir" : tempat_lahir,
-    #         "code": "sukses",
-    #     }
-    # else:
-    #     js = {
-    #         "code": "gagal",
-    #         "result": str(result)
-    #     },400
-    return jsonify({
-            "username": username,
-            "password": Hpassword,
-            "jenis_kelamin" : jenis_kelamin,
-            "tempat_lahir" : tempat_lahir,
-            "code": "sukses",
+        #querying sql
+        with cnx.cursor() as cursor:
+            cursor.execute('INSERT INTO user (username, email, password, jenis_kelamin, tempat_lahir) VALUES (%s, %s, %s, %s, %s);', (username, email, Hpassword, jenis_kelamin, tempat_lahir))
+            cnx.commit()
+            cursor.execute('SELECT id_user FROM user WHERE username=%s;',(username))
+            id_user = cursor.fetchone()
+            cursor.execute('INSERT INTO kategori(id_kategori_user) VALUES(%s);', (id_user))
+            cnx.commit()
+            cursor.execute('UPDATE user SET id_kategori1=%s WHERE id_user=%s;', (id_user, id_user))
+            cnx.commit()
+            result = cursor.fetchone()
+        cnx.close()
+        
+        # if result:
+        #     js = {
+        #         "username": username,
+        #         "password": Hpassword,
+        #         "jenis_kelamin" : jenis_kelamin,
+        #         "tempat_lahir" : tempat_lahir,
+        #         "code": "sukses",
+        #     }
+        # else:
+        #     js = {
+        #         "code": "gagal",
+        #     },400
+        return jsonify({
+                "username": username,
+                "jenis_kelamin" : jenis_kelamin,
+                "tempat_lahir" : tempat_lahir,
+                "code": "sukses",
+            })
+    except Exception as e:
+        return jsonify({
+            "message": str(e)
         })
 
 # # update category to user
