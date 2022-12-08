@@ -162,7 +162,7 @@ def register():
                               host=host, db=db_name)
     #validation
     # password
-    if not re.fullmatch(r'[A-Za-z0-9@#$%^&+=]{8,}', password):
+    if not re.fullmatch(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$', password):
         return jsonify(
             {
                 'message': 'password character must be atleast 8 character with capital case and number charachter'
@@ -177,17 +177,12 @@ def register():
                 'message': 'email is not in valid format'
             }
         )
-
+        
+    # validate if email or username is used
     exist = False
-    with cnx.cursor as cursor:
-        cursor.execute('SELECT id_user FROM user WHERE LOWER(email)=LOWER(%s);',(email))
-        result = cursor.fetchone()
-    cnx.close()
-    if result: exist = True
 
-    # username
     with cnx.cursor as cursor:
-        cursor.execute('SELECT id_user FROM user WHERE LOWER(username)=LOWER(%s);',(username))
+        cursor.execute('SELECT * FROM Customers WHERE LOWER(username) = LOWER(%s) OR LOWER(email) = LOWER(%s);',(username, email))
         result = cursor.fetchone()
     cnx.close()
     if result: exist = True
