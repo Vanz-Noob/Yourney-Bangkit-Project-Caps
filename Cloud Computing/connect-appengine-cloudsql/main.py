@@ -17,7 +17,7 @@
 from crypt import methods
 import os
 from flask import Flask, request, jsonify
-from flask_jwt_extended import JWTManager, create_access_token, create_refresh_token, jwt_required,get_jwt_identity
+from flask_jwt_extended import *
 import pymysql
 from passlib.hash import sha256_crypt
 import re
