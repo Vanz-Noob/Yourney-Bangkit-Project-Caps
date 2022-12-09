@@ -1,4 +1,6 @@
 import pymysql
+from flask import jsonify
+from flask_jwt_extended import jwt_refresh_token_required, get_jwt_identity, create_access_token
 import os
 
 
@@ -24,3 +26,15 @@ class UserService:
         cnx.close()
 
         return result
+    
+    @jwt_refresh_token_required
+    def refresh():
+        try:
+            user = get_jwt_identity()
+            new_token = create_access_token(identity=user, fresh=False)
+            return jsonify({
+                "access": new_token
+             }, ""),201
+
+        except Exception as e:
+            print(e)
