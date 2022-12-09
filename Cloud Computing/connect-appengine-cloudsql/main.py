@@ -21,7 +21,7 @@ from flask_jwt_extended import *
 import pymysql
 from passlib.hash import sha256_crypt
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 from services.user import UserService
 
 db_user = os.environ.get('CLOUD_SQL_USERNAME')
@@ -140,15 +140,15 @@ def login():
         if not user:
             return jsonify({'status': 'failed', 'message': 'no active user found'}),401
 
-        if not sha256_crypt.verify(password, user[5]):
+        if not sha256_crypt.verify(password, user[3]):
             return jsonify({'status': 'failed', 'message': 'either username or password is invalid'}),401
         
         # generate new token
-        expires = datetime.timedelta(days=1)
-        expires_refresh = datetime.timedelta(days=3)
+        expires = timedelta(days=1)
+        expires_refresh = timedelta(days=3)
         identity = {
             'user_id': user[0],
-            'username': user[4]
+            'username': user[3]
         }
         access_token = create_access_token(identity=identity, fresh=True, expires_delta=expires)
         refresh_token = create_refresh_token(identity=identity, expires_delta=expires_refresh)
@@ -165,7 +165,7 @@ def login():
             {
                 "message": str(e)
             }
-        )
+        ),500
 
 @app.route("/refresh", methods=["POST"])
 def refresh():
