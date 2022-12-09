@@ -167,6 +167,11 @@ def login():
 def refresh():
     return user_service.refresh()
 
+@app.route("/logout", methods=["POST"])
+def logout():
+    response = jsonify({"msg": "logout successful"})
+    unset_jwt_cookies(response)
+    return response
 # endpoint to verify jwt token works properly
 # Protect a route with jwt_required, which will kick out requests
 # without a valid JWT present.

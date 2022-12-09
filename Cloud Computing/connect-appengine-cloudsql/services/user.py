@@ -1,6 +1,6 @@
 import pymysql
 from flask import jsonify
-from flask_jwt_extended import jwt_refresh_token_required, get_jwt_identity, create_access_token
+from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token
 import os
 
 
@@ -27,7 +27,7 @@ class UserService:
 
         return result
     
-    @jwt_refresh_token_required
+    @jwt_required(refresh=True)
     def refresh():
         try:
             user = get_jwt_identity()
