@@ -161,7 +161,11 @@ def login():
             }
         ),201
     except Exception as e:
-        print(e)
+        return jsonify(
+            {
+                "message": str(e)
+            }
+        )
 
 @app.route("/refresh", methods=["POST"])
 def refresh():
