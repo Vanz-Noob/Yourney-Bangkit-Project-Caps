@@ -17,6 +17,7 @@
 from crypt import methods
 import os
 from flask import Flask, request, jsonify
+from flask_jwt_extended import JWTManager, create_access_token, create_refresh_token, jwt_required,get_jwt_identity
 import pymysql
 from passlib.hash import sha256_crypt
 import re
@@ -29,6 +30,8 @@ db_name = os.environ.get('CLOUD_SQL_DATABASE_NAME')
 db_connection_name = os.environ.get('CLOUD_SQL_CONNECTION_NAME')
 
 app = Flask(__name__)
+jwt = JWTManager(app)
+JWT_SECRET_KEY = str(os.environ.get("JWT_SECRET"))
 user_service = UserService(db_user,db_password,db_name,db_connection_name)
 
 @app.route("/", methods=["GET"])
@@ -118,28 +121,61 @@ def dataset():
 #login
 @app.route("/login",methods=["POST", "GET"])
 def login():
-    request_data = request.get_json()
-    username = request_data['username']
-    password = request_data['password']
-    Hpassword = sha256_crypt.encrypt(password)
-    #connect database
-    if os.environ.get('GAE_ENV') == 'standard':
-        unix_socket = '/cloudsql/{}'.format(db_connection_name)
-        cnx = pymysql.connect(user=db_user, password=db_password,
-                              unix_socket=unix_socket, db=db_name)
+    try:
+        request_data = request.get_json()
+        username = request_data['username']
+        password = request_data['password']
+        #connect database
+        if os.environ.get('GAE_ENV') == 'standard':
+            unix_socket = '/cloudsql/{}'.format(db_connection_name)
+            cnx = pymysql.connect(user=db_user, password=db_password,
+                                unix_socket=unix_socket, db=db_name)
 
-    #querying sql
-    with cnx.cursor() as cursor:
-        cursor.execute('SELECT * FROM user WHERE username = %s', (username, ))
-        user = cursor.fetchone()
-    cnx.close()
-    if len(user) > 0:
-        if sha256_crypt.verify(password, user[4]):
-            return jsonify({'status': 'success', 'idUser': user[0], 'username': user[3]})
-        else:
-            return jsonify({'status': 'failed', 'message': 'Wrong password'})
-    else:
-        return jsonify({'status': 'failed', 'message': 'Wrong username'})
+        #querying sql
+        with cnx.cursor() as cursor:
+            cursor.execute('SELECT * FROM user WHERE username = %s', (username, ))
+            user = cursor.fetchone()
+        cnx.close()
+
+        if not user:
+            return jsonify({'status': 'failed', 'message': 'no active user found'}),401
+
+        if not sha256_crypt.verify(password, user[5]):
+            return jsonify({'status': 'failed', 'message': 'either username or password is invalid'}),401
+        
+        # generate new token
+        expires = datetime.timedelta(days=1)
+        expires_refresh = datetime.timedelta(days=3)
+        identity = {
+            'user_id': user[0],
+            'username': user[4]
+        }
+        access_token = create_access_token(identity=identity, fresh=True, expires_delta=expires)
+        refresh_token = create_refresh_token(identity=identity, expires_delta=expires_refresh)
+
+        return jsonify(
+            {
+                'status': 'success',
+                'access': access_token,
+                'refresh': refresh_token
+            }
+        ),201
+    except Exception as e:
+        print(e)
+
+@app.route("/refresh", methods=["POST"])
+def refresh():
+    return user_service.refresh()
+
+# endpoint to verify jwt token works properly
+# Protect a route with jwt_required, which will kick out requests
+# without a valid JWT present.
+@app.route("/protected", methods=["GET"])
+@jwt_required()
+def protected():
+    # Access the identity of the current user with get_jwt_identity
+    current_user = get_jwt_identity()
+    return jsonify(logged_in_as=current_user['username']), 200
     
     
  #register user + initialiazing kategori
@@ -217,7 +253,7 @@ def register():
         #     },400
         return jsonify({
                 "username": username,
-                "jenis_kelamin" : jenis_kelamin,
+                    "jenis_kelamin" : jenis_kelamin,
                 "tempat_lahir" : tempat_lahir,
                 "code": "sukses",
             })
