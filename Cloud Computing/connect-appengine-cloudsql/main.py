@@ -21,7 +21,7 @@ from flask_jwt_extended import *
 import pymysql
 from passlib.hash import sha256_crypt
 import re
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from services.user import UserService
 
 db_user = os.environ.get('CLOUD_SQL_USERNAME')
@@ -31,7 +31,26 @@ db_connection_name = os.environ.get('CLOUD_SQL_CONNECTION_NAME')
 
 app = Flask(__name__)
 app.config["JWT_SECRET_KEY"] =  str(os.environ.get("JWT_SECRET"))
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = ACCESS_EXPIRES
 jwt = JWTManager(app)
+
+# Callback function to check if a JWT exists in the database blocklist
+@jwt.token_in_blocklist_loader
+def check_if_token_revoked(jwt_header, jwt_payload: dict) -> bool:
+    jti = jwt_payload["jti"]
+    #connect database
+    if os.environ.get('GAE_ENV') == 'standard':
+        unix_socket = '/cloudsql/{}'.format(db_connection_name)
+        cnx = pymysql.connect(user=db_user, password=db_password,
+                            unix_socket=unix_socket, db=db_name)
+
+        #querying sql
+    with cnx.cursor() as cursor:
+        cursor.execute('SELECT * FROM session WHERE jti = %s', (jti, ))
+        token = cursor.fetchone()
+    cnx.close()
+
+    return token is not None
 
 user_service = UserService(db_user,db_password,db_name,db_connection_name)
 
@@ -141,7 +160,7 @@ def login():
         if not user:
             return jsonify({'status': 'failed', 'message': 'no active user found'}),401
 
-        if not sha256_crypt.verify(password, user[4]):
+        if not sha256_crypt.verify(password, user[5]):
             return jsonify({'status': 'failed', 'message': 'either username or password is invalid'}),401
         
         # generate new token
@@ -149,7 +168,7 @@ def login():
         expires_refresh = timedelta(days=3)
         identity = {
             'user_id': user[0],
-            'username': user[3]
+            'username': user[4]
         }
         access_token = create_access_token(identity=identity, fresh=True, expires_delta=expires)
         refresh_token = create_refresh_token(identity=identity, expires_delta=expires_refresh)
@@ -161,6 +180,7 @@ def login():
                 'refresh': refresh_token
             }
         ),201
+
     except Exception as e:
         return jsonify(
             {
@@ -172,11 +192,24 @@ def login():
 def refresh():
     return user_service.refresh()
 
-@app.route("/logout", methods=["POST"])
+@app.route("/logout", methods=["DELETE"])
+@jwt_required(verify_type=False)
 def logout():
-    response = jsonify({"msg": "logout successful"})
-    unset_jwt_cookies(response)
-    return response
+    token = get_jwt()
+    jti = token["jti"]
+    ttype = token["type"]
+    now = datetime.now(timezone.utc)
+
+    if os.environ.get('GAE_ENV') == 'standard':
+        unix_socket = '/cloudsql/{}'.format(db_connection_name)
+        cnx = pymysql.connect(user=db_user, password=db_password,
+                            unix_socket=unix_socket, db=db_name)
+    with cnx.cursor() as cursor:
+        cursor.execute('INSERT INTO session (jti,type,create_time) VALUES (%s, %s, %s);', (jti, ttype, now))
+        cnx.commit()
+    cnx.close()
+    return jsonify({"msg": "logout successful"})
+
 # endpoint to verify jwt token works properly
 # Protect a route with jwt_required, which will kick out requests
 # without a valid JWT present.
