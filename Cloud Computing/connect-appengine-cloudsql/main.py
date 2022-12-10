@@ -30,8 +30,9 @@ db_name = os.environ.get('CLOUD_SQL_DATABASE_NAME')
 db_connection_name = os.environ.get('CLOUD_SQL_CONNECTION_NAME')
 
 app = Flask(__name__)
+app.config["JWT_SECRET_KEY"] =  str(os.environ.get("JWT_SECRET"))
 jwt = JWTManager(app)
-JWT_SECRET_KEY = str(os.environ.get("JWT_SECRET"))
+
 user_service = UserService(db_user,db_password,db_name,db_connection_name)
 
 @app.route("/", methods=["GET"])
@@ -140,7 +141,7 @@ def login():
         if not user:
             return jsonify({'status': 'failed', 'message': 'no active user found'}),401
 
-        if not sha256_crypt.verify(password, user[3]):
+        if not sha256_crypt.verify(password, user[4]):
             return jsonify({'status': 'failed', 'message': 'either username or password is invalid'}),401
         
         # generate new token
