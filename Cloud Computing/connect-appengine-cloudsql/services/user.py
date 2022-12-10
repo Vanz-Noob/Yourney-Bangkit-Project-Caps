@@ -28,7 +28,7 @@ class UserService:
         return result
     
     @jwt_required(refresh=True)
-    def refresh():
+    def refresh(self):
         try:
             user = get_jwt_identity()
             new_token = create_access_token(identity=user, fresh=False)
