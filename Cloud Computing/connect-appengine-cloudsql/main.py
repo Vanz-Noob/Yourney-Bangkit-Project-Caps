@@ -76,6 +76,7 @@ def hello():
 
 #GET ALL DESTINASI
 @app.route('/destinasi')
+@jwt_required(refresh=False)
 def destinasi():
     destinasi = []
     if request.method == 'GET':
@@ -95,6 +96,7 @@ def destinasi():
     
 #cek kategori
 @app.route('/kategori')
+@jwt_required(refresh=False)
 def kategori():
     kategori = []
     if request.method == 'GET':
