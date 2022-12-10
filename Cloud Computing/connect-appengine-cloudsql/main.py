@@ -206,7 +206,7 @@ def logout():
         cnx = pymysql.connect(user=db_user, password=db_password,
                             unix_socket=unix_socket, db=db_name)
     with cnx.cursor() as cursor:
-        cursor.execute('INSERT INTO TokenBlocklist(jti,type,created_time) VALUES (%s, %s, %s);', (jti, ttype, now))
+        cursor.execute('INSERT INTO TokenBlocklist(jti,type,created_at) VALUES (%s, %s, %s);', (jti, ttype, now))
         cnx.commit()
     cnx.close()
     return jsonify({"msg": "logout successful"})
