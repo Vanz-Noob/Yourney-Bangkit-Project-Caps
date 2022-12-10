@@ -47,7 +47,7 @@ def check_if_token_revoked(jwt_header, jwt_payload: dict) -> bool:
 
         #querying sql
     with cnx.cursor() as cursor:
-        cursor.execute('SELECT * FROM TokenBlockList WHERE jti = %s', (jti, ))
+        cursor.execute('SELECT * FROM TokenBlocklist WHERE jti = %s', (jti, ))
         token = cursor.fetchone()
     cnx.close()
 
@@ -206,7 +206,7 @@ def logout():
         cnx = pymysql.connect(user=db_user, password=db_password,
                             unix_socket=unix_socket, db=db_name)
     with cnx.cursor() as cursor:
-        cursor.execute('INSERT INTO TokenBlockList (jti,type,create_time) VALUES (%s, %s, %s);', (jti, ttype, now))
+        cursor.execute('INSERT INTO TokenBlocklist (jti,type,create_time) VALUES (%s, %s, %s);', (jti, ttype, now))
         cnx.commit()
     cnx.close()
     return jsonify({"msg": "logout successful"})
