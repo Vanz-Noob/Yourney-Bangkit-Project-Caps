@@ -10,27 +10,11 @@
     "tags": [
      {
       "name": "destinasi",
-      "description": "Everything about your Pets"
+      "description": "Everything about your destinasi"
      },
-     {
-      "name": "kategori",
-      "description": "Access to Petstore orders"
-     },
-     {
-      "name": "login",
-      "description": "Operations about user"
-     },
-     {
-        "name": "register",
-        "description": "Operations about user"
-    },
-    {
-        "name": "logout",
-        "description": "Operations about user"
-    },
      {
         "name": "dataset",
-        "description": "Get all related dataseet"
+        "description": "Get all related dataset"
      }
     ],
     "schemes": [
@@ -378,145 +362,162 @@
       "in": "header"
      }
     },
-    "dataset": {
-        "type": "object",
-        "properties": {
-         "id": {
-          "type": "integer",
-          "format": "int64"
-         },
-         "id_kategori_dataset": {
-          "type": "integer",
-          "format": "int64"
-         },
-         "cleaned_tweet": {
-            "type": "string"
-           }
-        },
-        "xml": {
-         "name": "dataset"
-        }
-       },
-    "destinasi": {
-        "type": "object",
-        "properties": {
-         "id": {
-          "type": "integer",
-          "format": "int64"
-         },
-         "id_kategori_destinasi": {
-          "type": "integer",
-          "format": "int64"
-         },
-         "pic_destinasi": {
-            "type": "string",
-            "format":"url"
-         },
-         "nama_destinasi": {
-          "type": "string"
-         },
-         "url_destinasi": {
-            "type": "string",
-            "format":"url"
-           }
-        },
-        "xml": {
-         "name": "destinasi"
-        }
-       },
-     "kategori": {
-      "type": "object",
-      "properties": {
-       "id": {
-        "type": "integer",
-        "format": "int64"
-       },
-       "id_dataset": {
-        "type": "integer",
-        "format": "int64"
-       },
-       "id_destinasi": {
-        "type": "integer",
-        "format": "int64"
-       },
-       "name": {
-        "type": "string"
-       }
-      },
-      "xml": {
-       "name": "katergori"
-      }
-     },
-     "login": {
-        "type": "object",
-        "properties": {
-         "username": {
-            "type": "string"
-         },
-         "password": {
-          "type": "string"
+    "definitions": {
+        "ApiResponse": {
+         "type": "object",
+         "properties": {
+          "code": {
+           "type": "integer",
+           "format": "int32"
+          },
+          "type": {
+           "type": "string"
+          },
+          "message": {
+           "type": "string"
+          }
          }
         },
-        "xml": {
-         "name": "login"
-        }
-    },
-     "User": {
-      "type": "object",
-      "properties": {
-       "username": {
-        "type": "string"
-       },
-       "email": {
-        "type": "string"
-       },
-       "password": {
-        "type": "string"
-       },
-       "jenis_kelamin": {
-        "type": "string"
-       },
-       "tempat_lahir":{
-        "type": "string"
-       }
-      },
-      "xml": {
-       "name": "User"
-      }
-     },
-     "userStatus": {
-      "type": "object",
-      "properties": {
-        "id_user": {
-            "type": "integer",
-            "format": "int64"
-        },
-        "status": {
-            "type": "string"
-       }
-      },
-      "xml": {
-       "name": "userStatus"
-      }
-     },
-     "userCategory": {
-        "type": "object",
-        "properties": {
-          "id_kategori_user": {
+        "dataset": {
+            "type": "object",
+            "properties": {
+             "id": {
               "type": "integer",
               "format": "int64"
-          },
-          "id_kategori": {
+             },
+             "id_kategori_dataset": {
+              "type": "integer",
+              "format": "int64"
+             },
+             "cleaned_tweet": {
+                "type": "string"
+               }
+            },
+            "xml": {
+             "name": "dataset"
+            }
+           },
+        "destinasi": {
+            "type": "object",
+            "properties": {
+             "id": {
+              "type": "integer",
+              "format": "int64"
+             },
+             "id_kategori_destinasi": {
+              "type": "integer",
+              "format": "int64"
+             },
+             "pic_destinasi": {
+                "type": "string",
+                "format":"url"
+             },
+             "nama_destinasi": {
+              "type": "string"
+             },
+             "url_destinasi": {
+                "type": "string",
+                "format":"url"
+               }
+            },
+            "xml": {
+             "name": "destinasi"
+            }
+           },
+         "kategori": {
+          "type": "object",
+          "properties": {
+           "id": {
             "type": "integer",
             "format": "int64"
-        },
-          "nama_kategori": {
+           },
+           "id_dataset": {
+            "type": "integer",
+            "format": "int64"
+           },
+           "id_destinasi": {
+            "type": "integer",
+            "format": "int64"
+           },
+           "name": {
+            "type": "string"
+           }
+          },
+          "xml": {
+           "name": "katergori"
+          }
+         },
+         "login": {
+            "type": "object",
+            "properties": {
+             "username": {
+                "type": "string"
+             },
+             "password": {
               "type": "string"
-         }
+             }
+            },
+            "xml": {
+             "name": "login"
+            }
         },
-        "xml": {
-         "name": "userStatus"
-        }
+         "User": {
+          "type": "object",
+          "properties": {
+           "username": {
+            "type": "string"
+           },
+           "email": {
+            "type": "string"
+           },
+           "password": {
+            "type": "string"
+           },
+           "jenis_kelamin": {
+            "type": "string"
+           },
+           "tempat_lahir":{
+            "type": "string"
+           }
+          },
+          "xml": {
+           "name": "User"
+          }
+         },
+         "userStatus": {
+          "type": "object",
+          "properties": {
+            "id_user": {
+                "type": "integer",
+                "format": "int64"
+            },
+            "status": {
+                "type": "string"
+           }
+          },
+          "xml": {
+           "name": "userStatus"
+          }
+         },
+         "userCategory": {
+            "type": "object",
+            "properties": {
+              "id_kategori_user": {
+                  "type": "integer",
+                  "format": "int64"
+              },
+              "id_kategori": {
+                "type": "integer",
+                "format": "int64"
+            },
+              "nama_kategori": {
+                  "type": "string"
+             }
+            },
+            "xml": {
+             "name": "userCategory"
+            }
+           }
        }
     }
    
