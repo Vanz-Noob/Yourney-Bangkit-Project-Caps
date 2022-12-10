@@ -31,7 +31,7 @@ db_name = os.environ.get('CLOUD_SQL_DATABASE_NAME')
 db_connection_name = os.environ.get('CLOUD_SQL_CONNECTION_NAME')
 ACCESS_EXPIRES = timedelta(hours=1)
 SWAGGER_URL = '/api/docs'  # URL for exposing Swagger UI (without trailing '/')
-API_URL = os. getcwd() + '/static/swagger.json'  # Our API url (can of course be a local resource)
+API_URL = os.getcwd() + '/static/swagger.json'  # Our API url (can of course be a local resource)
 
 
 app = Flask(__name__)
