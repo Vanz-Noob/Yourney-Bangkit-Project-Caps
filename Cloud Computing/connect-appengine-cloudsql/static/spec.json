@@ -169,20 +169,14 @@
             "application/json",
             "application/xml"
           ],
-          "parameters": [
+         "parameters": [
             {
               "in": "body",
               "name": "body",
-              "description": "List of user object",
+              "description": "Create user object",
               "required": true,
               "schema": {
-                "in": "body",
-                "name": "body",
-                "description": "Create user object",
-                "required": true,
-                "schema": {
-                  "$ref": "#/definitions/userCategory"
-                }
+                "$ref": "#/definitions/UserDestination"
               }
             }
           ],
@@ -212,16 +206,10 @@
             {
               "in": "body",
               "name": "body",
-              "description": "Relation address of user and category",
+              "description": "Create user object",
               "required": true,
               "schema": {
-                "in": "body",
-                "name": "body",
-                "description": "Create user object",
-                "required": true,
-                "schema": {
-                  "$ref": "#/definitions/userCategory"
-                }
+                "$ref": "#/definitions/UserCategory"
               }
             }
           ],
@@ -523,7 +511,7 @@
           "name": "userStatus"
         }
       },
-      "userCategory": {
+      "UserCategory": {
         "type": "object",
         "properties": {
           "id_kategori_user": {
@@ -539,7 +527,32 @@
           }
         },
         "xml": {
-          "name": "userCategory"
+          "name": "UserCategory"
+        }
+      },
+      "UserDestination": {
+        "type": "object",
+        "properties": {
+          "id_destinasi": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "id_kategori_destinasi": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "nama_desinasi": {
+            "type": "string"
+          },
+          "pic_destinasi": {
+            "type": "string"
+          },
+          "url_destinasi": {
+            "type": "string"
+          }
+        },
+        "xml": {
+          "name": "UserCategory"
         }
       }
     },

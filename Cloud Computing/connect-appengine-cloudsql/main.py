@@ -115,6 +115,7 @@ def kategori():
 
 # cek db user
 @app.route('/db')
+@jwt_required(refresh=False)
 def db():
     #sudah okay
     users = []
@@ -135,6 +136,7 @@ def db():
     
 # cek dataset
 @app.route('/dataset')
+@jwt_required(refresh=False)
 def dataset():
     #sudah okay
     users = []
@@ -356,6 +358,7 @@ def register():
 
 # change status admin user
 @app.route("/UpStatUser",methods=["POST", "GET"])
+@jwt_required(refresh=False)
 def UpStatUser():
     request_data = request.get_json()
     id_user = request_data['id_user']
@@ -389,6 +392,7 @@ def UpStatUser():
 
 #adding destinasi sesuai kategori
 @app.route("/addDest",methods=["POST", "GET"])
+@jwt_required(refresh=False)
 def addDest():
     request_data = request.get_json()
     id_kategori_destinasi = request_data['id_kategori_destinasi']
@@ -430,6 +434,7 @@ def addDest():
 
 #adding kategori user
 @app.route("/addKate",methods=["POST", "GET"])
+@jwt_required(refresh=False)
 def addKate():
     request_data = request.get_json()
     id_kategori_user = request_data['id_kategori_user']
@@ -466,6 +471,7 @@ def addKate():
 
 #update id dataset tabel kategori
 @app.route("/updateKateSet",methods=["POST", "GET"])
+@jwt_required(refresh=False)
 def updateKateSet():
     request_data = request.get_json()
     id_kategori_user = request_data['id_kategori_user']
@@ -556,6 +562,7 @@ def updateKateSet():
 
 #dapatin deskripsi dari nama destinasi tertentu
 @app.route("/GetDesc",methods=["POST", "GET"])
+@jwt_required(refresh=False)
 def GetDesc():
     request_data = request.get_json()
     nama_destinasi = request_data['nama_destinasi']
@@ -589,6 +596,7 @@ def GetDesc():
 
 #search destinasi
 @app.route('/search',methods=["GET"])
+@jwt_required(refresh=False)
 def search():
     # request_data = request.get_json()
     # nama_destinasi = request_data['nama_destinasi']
