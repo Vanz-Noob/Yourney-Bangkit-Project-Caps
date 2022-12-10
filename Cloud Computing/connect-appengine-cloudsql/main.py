@@ -28,6 +28,7 @@ db_user = os.environ.get('CLOUD_SQL_USERNAME')
 db_password = os.environ.get('CLOUD_SQL_PASSWORD')
 db_name = os.environ.get('CLOUD_SQL_DATABASE_NAME')
 db_connection_name = os.environ.get('CLOUD_SQL_CONNECTION_NAME')
+ACCESS_EXPIRES = timedelta(hours=1)
 
 app = Flask(__name__)
 app.config["JWT_SECRET_KEY"] =  str(os.environ.get("JWT_SECRET"))
