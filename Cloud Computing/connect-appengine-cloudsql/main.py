@@ -48,6 +48,8 @@ swaggerui_blueprint = get_swaggerui_blueprint(
     },
 )
 
+app.register_blueprint(swaggerui_blueprint)
+
 # Callback function to check if a JWT exists in the database blocklist
 @jwt.token_in_blocklist_loader
 def check_if_token_revoked(jwt_header, jwt_payload: dict) -> bool:
