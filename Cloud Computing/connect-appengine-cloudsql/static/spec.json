@@ -1,523 +1,550 @@
 {
     "swagger": "2.0",
     "info": {
-     "description": "This is a sample server Documentation For Yourney Api.",
-     "version": "1.0.0",
-     "title": "Yourney Api Documentation"
+      "description": "This is a sample server Yourney server.",
+      "version": "1.0.6",
+      "title": "Swagger Yourney",
+      "termsOfService": "http://swagger.io/terms/",
+      "contact": {
+        "email": "none@none.none"
+      },
+      "license": {
+        "name": "Apache 2.0",
+        "url": "notlicene"
+      }
     },
-    "host": "yourney-app-353202.et.r.appspot.com",
+    "host": "https://yourney-app-353202.et.r.appspot.com",
     "basePath": "/",
     "tags": [
-     {
-      "name": "destinasi",
-      "description": "Everything about your destinasi"
-     },
-     {
+      {
+        "name": "destinasi",
+        "description": "Everything about your destinasi"
+      },
+      {
         "name": "dataset",
         "description": "Get all related dataset"
-     }
+      }
     ],
     "schemes": [
-     "https",
-     "http"
+      "https",
+      "http"
     ],
     "paths": {
-     "/kategori": {
+      "/kategori": {
         "get": {
-         "tags": [
-          "dataset"
-         ],
-         "summary": "list of dataset",
-         "description": "list of avalible dataset",
-         "operationId": "getListOfDataset",
-         "produces": [
-          "application/json",
-          "application/xml"
-         ],
-         "parameters": [
-         ],
-         "responses": {
-          "200": {
-           "description": "successful operation",
-           "schema": {
-              "type":"array",
-              "items":{
+          "tags": [
+            "dataset"
+          ],
+          "summary": "list of dataset",
+          "description": "list of avalible dataset",
+          "operationId": "getListOfDataset",
+          "produces": [
+            "application/json",
+            "application/xml"
+          ],
+          "parameters": [
+  
+          ],
+          "responses": {
+            "200": {
+              "description": "successful operation",
+              "schema": {
+                "type": "array",
+                "items": {
                   "$ref": "#/definitions/kategori"
+                }
               }
-           }
+            }
           }
-         }
         }
-       },
-     "/destinasi": {
+      },
+      "/destinasi": {
         "get": {
-         "tags": [
-          "dataset"
-         ],
-         "summary": "list of destinasi",
-         "description": "list of avalible destinasi",
-         "operationId": "getListOfDestinasi",
-         "produces": [
-          "application/json",
-          "application/xml"
-         ],
-         "parameters": [
-         ],
-         "responses": {
-          "200": {
-           "description": "successful operation",
-           "schema": {
-              "type":"array",
-              "items":{
+          "tags": [
+            "dataset"
+          ],
+          "summary": "list of destinasi",
+          "description": "list of avalible destinasi",
+          "operationId": "getListOfDestinasi",
+          "produces": [
+            "application/json",
+            "application/xml"
+          ],
+          "parameters": [
+  
+          ],
+          "responses": {
+            "200": {
+              "description": "successful operation",
+              "schema": {
+                "type": "array",
+                "items": {
                   "$ref": "#/definitions/destinasi"
+                }
               }
-           }
+            }
           }
-         }
         }
-       },
-     "/dataset": {
-      "get": {
-       "tags": [
-        "dataset"
-       ],
-       "summary": "list of dataset",
-       "description": "list of avalible dataset",
-       "operationId": "getListOfDataset",
-       "produces": [
-        "application/json",
-        "application/xml"
-       ],
-       "parameters": [
-       ],
-       "responses": {
-        "200": {
-         "description": "successful operation",
-         "schema": {
-            "type":"array",
-            "items":{
-                "$ref": "#/definitions/dataset"
+      },
+      "/dataset": {
+        "get": {
+          "tags": [
+            "dataset"
+          ],
+          "summary": "list of dataset",
+          "description": "list of avalible dataset",
+          "operationId": "getListOfDataset",
+          "produces": [
+            "application/json",
+            "application/xml"
+          ],
+          "parameters": [
+  
+          ],
+          "responses": {
+            "200": {
+              "description": "successful operation",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/dataset"
+                }
+              }
             }
-         }
-        }
-       }
-      }
-     },
-     "/search": {
-      "get": {
-       "tags": [
-        "destinasi"
-       ],
-       "summary": "Returns destinasi related to user input",
-       "description": "return object of destinasi",
-       "operationId": "getSearchDestinasi",
-       "produces": [
-        "application/json"
-       ],
-       "parameters": [
-        {
-            "name": "nama_destinasi",
-            "in": "path",
-            "description": "name of destination",
-            "type": "string"
-        }
-       ],
-       "responses": {
-        "200": {
-         "description": "successful operation",
-         "schema": {
-          "type": "object",
-          "additionalProperties": {
-           "type": "integer",
-           "format": "int32"
           }
-         }
         }
-       },
-       "security": [
-        {
-         "jwt": []
-        }
-       ]
-      }
-     },
-     "/addDest": {
-      "post": {
-       "tags": [
-        "user"
-       ],
-       "summary": "add destination to user",
-       "description": "",
-       "operationId": "createUserNewDestination",
-       "consumes": [
-        "application/json"
-       ],
-       "produces": [
-        "application/json",
-        "application/xml"
-       ],
-       "parameters": [
-        {
-         "in": "body",
-         "name": "body",
-         "description": "List of user object",
-         "required": true,
-         "schema":  {
-            "in": "body",
-            "name": "body",
-            "description": "Create user object",
-            "required": true,
-            "schema": {
-             "$ref": "#/definitions/userCategory"
+      },
+      "/search": {
+        "get": {
+          "tags": [
+            "destinasi"
+          ],
+          "summary": "Returns destinasi related to user input",
+          "description": "return object of destinasi",
+          "operationId": "getSearchDestinasi",
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "nama_destinasi",
+              "in": "path",
+              "description": "name of destination",
+              "type": "string"
             }
-        }
-        }
-       ],
-       "responses": {
-        "default": {
-         "description": "successful operation"
-        }
-       }
-      }
-     },
-     "/addKate": {
-      "post": {
-       "tags": [
-        "user"
-       ],
-       "summary": "Creates new category for user",
-       "description": "",
-       "operationId": "createCategoryForUser",
-       "consumes": [
-        "application/json"
-       ],
-       "produces": [
-        "application/json",
-        "application/xml"
-       ],
-       "parameters": [
-        {
-         "in": "body",
-         "name": "body",
-         "description": "Relation address of user and category",
-         "required": true,
-         "schema": {
-            "in": "body",
-            "name": "body",
-            "description": "Create user object",
-            "required": true,
-            "schema": {
-             "$ref": "#/definitions/userCategory"
+          ],
+          "responses": {
+            "200": {
+              "description": "successful operation",
+              "schema": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
             }
-        }
-        }
-       ],
-       "responses": {
-        "default": {
-         "description": "successful operation"
-        }
-       }
-      }
-     },
-     "/UpStatUser": {
-      "post": {
-       "tags": [
-        "user"
-       ],
-       "summary": "Change user Status",
-       "description": "",
-       "operationId": "updateUserStatus",
-       "produces": [
-        "application/json",
-        "application/xml"
-       ],
-       "parameters": [
-        {
-            "in": "body",
-            "name": "body",
-            "description": "Create user object",
-            "required": true,
-            "schema": {
-             "$ref": "#/definitions/userStatus"
+          },
+          "security": [
+            {
+              "jwt": [
+  
+              ]
             }
+          ]
         }
-       ],
-       "responses": {
-        "200": {
-         "description": "successful operation",
-         "schema": {
-          "$ref": "#/definitions/User"
-         }
-        },
-        "400": {
-         "description": "Invalid username supplied"
-        },
-        "404": {
-         "description": "User not found"
-        }
-       }
-      }
-     },
-     "/login": {
-      "post": {
-       "tags": [
-        "user"
-       ],
-       "summary": "Logs user into the system",
-       "description": "",
-       "operationId": "loginUser",
-       "produces": [
-        "application/json",
-        "application/xml"
-       ],
-       "parameters": [
-        {
-         "in": "body",
-         "name": "body",
-         "description": "Create user object",
-         "required": true,
-         "schema": {
-          "$ref": "#/definitions/login"
-         }
-        }
-       ],
-       "responses": {
-        "201": {
-         "description": "successful operation",
-         "headers": {
-          "X-Expires-After": {
-           "type": "string",
-           "format": "date-time",
-           "description": "date in UTC when token expires"
+      },
+      "/addDest": {
+        "post": {
+          "tags": [
+            "user"
+          ],
+          "summary": "add destination to user",
+          "description": "",
+          "operationId": "createUserNewDestination",
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json",
+            "application/xml"
+          ],
+          "parameters": [
+            {
+              "in": "body",
+              "name": "body",
+              "description": "List of user object",
+              "required": true,
+              "schema": {
+                "in": "body",
+                "name": "body",
+                "description": "Create user object",
+                "required": true,
+                "schema": {
+                  "$ref": "#/definitions/userCategory"
+                }
+              }
+            }
+          ],
+          "responses": {
+            "default": {
+              "description": "successful operation"
+            }
           }
-         },
-         "schema": {
-          "type": "string"
-         }
-        },
-        "400": {
-         "description": "Invalid username/password supplied"
         }
-       }
+      },
+      "/addKate": {
+        "post": {
+          "tags": [
+            "user"
+          ],
+          "summary": "Creates new category for user",
+          "description": "",
+          "operationId": "createCategoryForUser",
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json",
+            "application/xml"
+          ],
+          "parameters": [
+            {
+              "in": "body",
+              "name": "body",
+              "description": "Relation address of user and category",
+              "required": true,
+              "schema": {
+                "in": "body",
+                "name": "body",
+                "description": "Create user object",
+                "required": true,
+                "schema": {
+                  "$ref": "#/definitions/userCategory"
+                }
+              }
+            }
+          ],
+          "responses": {
+            "default": {
+              "description": "successful operation"
+            }
+          }
+        }
+      },
+      "/UpStatUser": {
+        "post": {
+          "tags": [
+            "user"
+          ],
+          "summary": "Change user Status",
+          "description": "",
+          "operationId": "updateUserStatus",
+          "produces": [
+            "application/json",
+            "application/xml"
+          ],
+          "parameters": [
+            {
+              "in": "body",
+              "name": "body",
+              "description": "Create user object",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/userStatus"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "successful operation",
+              "schema": {
+                "$ref": "#/definitions/User"
+              }
+            },
+            "400": {
+              "description": "Invalid username supplied"
+            },
+            "404": {
+              "description": "User not found"
+            }
+          }
+        }
+      },
+      "/login": {
+        "post": {
+          "tags": [
+            "user"
+          ],
+          "summary": "Logs user into the system",
+          "description": "",
+          "operationId": "loginUser",
+          "produces": [
+            "application/json",
+            "application/xml"
+          ],
+          "parameters": [
+            {
+              "in": "body",
+              "name": "body",
+              "description": "Create user object",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/login"
+              }
+            }
+          ],
+          "responses": {
+            "201": {
+              "description": "successful operation",
+              "headers": {
+                "X-Expires-After": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "date in UTC when token expires"
+                }
+              },
+              "schema": {
+                "type": "string"
+              }
+            },
+            "400": {
+              "description": "Invalid username/password supplied"
+            }
+          }
+        }
+      },
+      "/logout": {
+        "delete": {
+          "tags": [
+            "user"
+          ],
+          "summary": "Logs out current logged in user session",
+          "description": "",
+          "operationId": "logoutUser",
+          "produces": [
+            "application/json",
+            "application/xml"
+          ],
+          "parameters": [
+  
+          ],
+          "responses": {
+            "default": {
+              "description": "successful operation"
+            }
+          }
+        }
+      },
+      "/register": {
+        "post": {
+          "tags": [
+            "user"
+          ],
+          "summary": "Create user",
+          "description": "This can only be done by the logged in user.",
+          "operationId": "createUser",
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json",
+            "application/xml"
+          ],
+          "parameters": [
+            {
+              "in": "body",
+              "name": "body",
+              "description": "Created user object",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/User"
+              }
+            }
+          ],
+          "responses": {
+            "default": {
+              "description": "successful operation"
+            }
+          }
+        }
       }
-     },
-     "/logout": {
-      "delete": {
-       "tags": [
-        "user"
-       ],
-       "summary": "Logs out current logged in user session",
-       "description": "",
-       "operationId": "logoutUser",
-       "produces": [
-        "application/json",
-        "application/xml"
-       ],
-       "parameters": [],
-       "responses": {
-        "default": {
-         "description": "successful operation"
-        }
-       }
-      }
-     },
-     "/register": {
-      "post": {
-       "tags": [
-        "user"
-       ],
-       "summary": "Create user",
-       "description": "This can only be done by the logged in user.",
-       "operationId": "createUser",
-       "consumes": [
-        "application/json"
-       ],
-       "produces": [
-        "application/json",
-        "application/xml"
-       ],
-       "parameters": [
-        {
-         "in": "body",
-         "name": "body",
-         "description": "Created user object",
-         "required": true,
-         "schema": {
-          "$ref": "#/definitions/User"
-         }
-        }
-       ],
-       "responses": {
-        "default": {
-         "description": "successful operation"
-        }
-       }
-      }
-     }
     },
     "securityDefinitions": {
-     "jwt": {
-      "type": "jwt",
-      "name": "authorization",
-      "in": "header"
-     }
+      "api_key": {
+        "type": "apiKey",
+        "name": "api_key",
+        "in": "header"
+      },
+      "petstore_auth": {
+        "type": "oauth2",
+        "authorizationUrl": "https://petstore.swagger.io/oauth/authorize",
+        "flow": "implicit",
+        "scopes": {
+          "read:pets": "read your pets",
+          "write:pets": "modify pets in your account"
+        }
+      }
     },
     "definitions": {
-        "ApiResponse": {
-         "type": "object",
-         "properties": {
+      "ApiResponse": {
+        "type": "object",
+        "properties": {
           "code": {
-           "type": "integer",
-           "format": "int32"
+            "type": "integer",
+            "format": "int32"
           },
           "type": {
-           "type": "string"
+            "type": "string"
           },
           "message": {
-           "type": "string"
+            "type": "string"
           }
-         }
+        }
+      },
+      "dataset": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "id_kategori_dataset": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "cleaned_tweet": {
+            "type": "string"
+          }
         },
-        "dataset": {
-            "type": "object",
-            "properties": {
-             "id": {
-              "type": "integer",
-              "format": "int64"
-             },
-             "id_kategori_dataset": {
-              "type": "integer",
-              "format": "int64"
-             },
-             "cleaned_tweet": {
-                "type": "string"
-               }
-            },
-            "xml": {
-             "name": "dataset"
-            }
-           },
-        "destinasi": {
-            "type": "object",
-            "properties": {
-             "id": {
-              "type": "integer",
-              "format": "int64"
-             },
-             "id_kategori_destinasi": {
-              "type": "integer",
-              "format": "int64"
-             },
-             "pic_destinasi": {
-                "type": "string",
-                "format":"url"
-             },
-             "nama_destinasi": {
-              "type": "string"
-             },
-             "url_destinasi": {
-                "type": "string",
-                "format":"url"
-               }
-            },
-            "xml": {
-             "name": "destinasi"
-            }
-           },
-         "kategori": {
-          "type": "object",
-          "properties": {
-           "id": {
+        "xml": {
+          "name": "dataset"
+        }
+      },
+      "destinasi": {
+        "type": "object",
+        "properties": {
+          "id": {
             "type": "integer",
             "format": "int64"
-           },
-           "id_dataset": {
-            "type": "integer",
-            "format": "int64"
-           },
-           "id_destinasi": {
-            "type": "integer",
-            "format": "int64"
-           },
-           "name": {
-            "type": "string"
-           }
           },
-          "xml": {
-           "name": "katergori"
+          "id_kategori_destinasi": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "pic_destinasi": {
+            "type": "string",
+            "format": "url"
+          },
+          "nama_destinasi": {
+            "type": "string"
+          },
+          "url_destinasi": {
+            "type": "string",
+            "format": "url"
           }
-         },
-         "login": {
-            "type": "object",
-            "properties": {
-             "username": {
-                "type": "string"
-             },
-             "password": {
-              "type": "string"
-             }
-            },
-            "xml": {
-             "name": "login"
-            }
         },
-         "User": {
-          "type": "object",
-          "properties": {
-           "username": {
-            "type": "string"
-           },
-           "email": {
-            "type": "string"
-           },
-           "password": {
-            "type": "string"
-           },
-           "jenis_kelamin": {
-            "type": "string"
-           },
-           "tempat_lahir":{
-            "type": "string"
-           }
+        "xml": {
+          "name": "destinasi"
+        }
+      },
+      "kategori": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
           },
-          "xml": {
-           "name": "User"
-          }
-         },
-         "userStatus": {
-          "type": "object",
-          "properties": {
-            "id_user": {
-                "type": "integer",
-                "format": "int64"
-            },
-            "status": {
-                "type": "string"
-           }
+          "id_dataset": {
+            "type": "integer",
+            "format": "int64"
           },
-          "xml": {
-           "name": "userStatus"
+          "id_destinasi": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
           }
-         },
-         "userCategory": {
-            "type": "object",
-            "properties": {
-              "id_kategori_user": {
-                  "type": "integer",
-                  "format": "int64"
-              },
-              "id_kategori": {
-                "type": "integer",
-                "format": "int64"
-            },
-              "nama_kategori": {
-                  "type": "string"
-             }
-            },
-            "xml": {
-             "name": "userCategory"
-            }
-           }
-       }
+        },
+        "xml": {
+          "name": "katergori"
+        }
+      },
+      "login": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        },
+        "xml": {
+          "name": "login"
+        }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "jenis_kelamin": {
+            "type": "string"
+          },
+          "tempat_lahir": {
+            "type": "string"
+          }
+        },
+        "xml": {
+          "name": "User"
+        }
+      },
+      "userStatus": {
+        "type": "object",
+        "properties": {
+          "id_user": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "xml": {
+          "name": "userStatus"
+        }
+      },
+      "userCategory": {
+        "type": "object",
+        "properties": {
+          "id_kategori_user": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "id_kategori": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "nama_kategori": {
+            "type": "string"
+          }
+        },
+        "xml": {
+          "name": "userCategory"
+        }
+      }
+    },
+    "externalDocs": {
+      "description": "Find out more about Swagger",
+      "url": "http://swagger.io"
     }
-   
+  }
