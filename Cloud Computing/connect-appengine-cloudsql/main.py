@@ -14,13 +14,14 @@
 
 # [START gae_python38_cloudsql_mysql]
 # [START gae_python3_cloudsql_mysql]
-from crypt import methods
 import os
+import re
+import pymysql
+from crypt import methods
 from flask import Flask, request, jsonify
 from flask_jwt_extended import *
-import pymysql
 from passlib.hash import sha256_crypt
-import re
+from flask_swagger_ui import get_swaggerui_blueprint
 from datetime import datetime, timedelta, timezone
 from services.user import UserService
 
@@ -29,11 +30,23 @@ db_password = os.environ.get('CLOUD_SQL_PASSWORD')
 db_name = os.environ.get('CLOUD_SQL_DATABASE_NAME')
 db_connection_name = os.environ.get('CLOUD_SQL_CONNECTION_NAME')
 ACCESS_EXPIRES = timedelta(hours=1)
+SWAGGER_URL = '/api/docs'  # URL for exposing Swagger UI (without trailing '/')
+API_URL = 'http://petstore.swagger.io/v2/swagger.json'  # Our API url (can of course be a local resource)
+
 
 app = Flask(__name__)
 app.config["JWT_SECRET_KEY"] =  str(os.environ.get("JWT_SECRET"))
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = ACCESS_EXPIRES
 jwt = JWTManager(app)
+
+# Call factory function to create our blueprint
+swaggerui_blueprint = get_swaggerui_blueprint(
+    SWAGGER_URL,  # Swagger UI static files will be mapped to '{SWAGGER_URL}/dist/'
+    API_URL,
+    config={  # Swagger UI config overrides
+        'app_name': "Test application"
+    },
+)
 
 # Callback function to check if a JWT exists in the database blocklist
 @jwt.token_in_blocklist_loader
