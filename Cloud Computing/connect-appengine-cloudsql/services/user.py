@@ -34,7 +34,7 @@ class UserService:
             new_token = create_access_token(identity=user, fresh=False)
             return jsonify({
                 "access": new_token
-             }, ""),201
+             }),201
 
         except Exception as e:
             print(e)
