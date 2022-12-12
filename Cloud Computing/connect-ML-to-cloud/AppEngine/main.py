@@ -50,11 +50,18 @@ def GetNull():
         with cnx.cursor() as cursor:
             cursor.execute('SELECT kategori.id_kategori_user, kategori.id_kategori, user.username, user.id_user FROM kategori LEFT JOIN user ON kategori.id_kategori_user = user.id_user WHERE id_kategori is NULL;')
             for row in cursor:
-                null.append({'id_kategori_user': row[0], 'id_kategori': row[1]})
+                null.append(
+                    {
+                        'id_kategori_user': row[0],
+                        'id_kategori': row[1],
+                        'username':row[2],
+                        'user_id':row[3]
+                    }
+                )
             cnx.commit()
         cnx.close()
 
-        
+
         return jsonify(null)
     else:
         return 'Invalid request'
