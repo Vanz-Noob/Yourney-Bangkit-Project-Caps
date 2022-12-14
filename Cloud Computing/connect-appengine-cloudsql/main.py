@@ -260,7 +260,7 @@ def logout():
 # get user profile
 @app.route("/user/profile", methods=["PUT","GET"])
 def user():
-    if request.method is "GET":
+    if request.method == "GET":
         current_user = get_jwt_identity()
         id_user = current_user['id_user']
         #connect database
@@ -291,7 +291,7 @@ def user():
             }
         ),200
 
-    elif request.method is "PUT":
+    elif request.method == "PUT":
         current_user = get_jwt_identity()
         data = request.get_data()
         id_user = current_user['id_user']
