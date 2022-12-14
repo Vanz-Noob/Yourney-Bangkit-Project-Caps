@@ -268,14 +268,14 @@ def logout():
 @app.route("/user/profile", methods=["PUT","GET"])
 @jwt_required(refresh=False)
 def user():
+        #connect database
+    if os.environ.get('GAE_ENV') == 'standard':
+        unix_socket = '/cloudsql/{}'.format(db_connection_name)
+        cnx = pymysql.connect(user=db_user, password=db_password,
+                            unix_socket=unix_socket, db=db_name)
     if request.method == "GET":
         current_user = get_jwt_identity()
         id_user = current_user['id_user']
-        #connect database
-        if os.environ.get('GAE_ENV') == 'standard':
-            unix_socket = '/cloudsql/{}'.format(db_connection_name)
-            cnx = pymysql.connect(user=db_user, password=db_password,
-                                unix_socket=unix_socket, db=db_name)
 
         #querying sql
         user_service.get_user_by_id(id_user)
@@ -301,10 +301,6 @@ def user():
         data = request.get_json()
         id_user = current_user['id_user']
 
-        if os.environ.get('GAE_ENV') == 'standard':
-            unix_socket = '/cloudsql/{}'.format(db_connection_name)
-            cnx = pymysql.connect(user=db_user, password=db_password,
-                                unix_socket=unix_socket, db=db_name)
         if not data:
             return jsonify({
                 'message':'empty required field'
