@@ -195,7 +195,7 @@ def login():
         expires = timedelta(days=1)
         expires_refresh = timedelta(days=3)
         identity = {
-            'user_id': user[0],
+            'id_user': user[0],
             'username': user[4]
         }
 
@@ -211,7 +211,9 @@ def login():
                     'username': user[4],
                     'jenis_kelamin': user[6],
                     'tempat_lahir': user[7],
-                    'email':user[9]
+                    'email':user[9],
+                    'avatar': user[10],
+                    'username_twitter': user[11]
                 }
             }
         ),201
@@ -260,7 +262,7 @@ def logout():
 def user():
     if request.method is "GET":
         current_user = get_jwt_identity()
-        username = current_user['username']
+        id_user = current_user['id_user']
         #connect database
         if os.environ.get('GAE_ENV') == 'standard':
             unix_socket = '/cloudsql/{}'.format(db_connection_name)
@@ -269,7 +271,7 @@ def user():
 
         #querying sql
         with cnx.cursor() as cursor:
-            cursor.execute('SELECT * FROM user WHERE username = %s', (username, ))
+            cursor.execute('SELECT * FROM user WHERE id_user = %s', (id_user))
             user = cursor.fetchone()
         cnx.close()
 
@@ -278,17 +280,21 @@ def user():
             {
                 'status': 'success',
                 'user':{
+                    'id': user[0],
                     'username': user[4],
                     'jenis_kelamin': user[6],
                     'tempat_lahir': user[7],
-                    'email':user[9]
+                    'email':user[9],
+                    'avatar': user[10],
+                    'username_twitter': user[11]
                 }
             }
         ),200
+
     elif request.method is "PUT":
         current_user = get_jwt_identity()
         data = request.get_data()
-        user_id = current_user['user_id']
+        id_user = current_user['id_user']
         if not data:
             return jsonify({
                 'message':'empty required field'
@@ -311,9 +317,17 @@ def user():
         if data['email']:
             sql += 'email = %s '
             payload.append(data['email'])
-        
-        sql += 'WHERE user_id = %s'
-        payload.append(user_id)
+
+        if data['avatar']:
+            sql += 'avatar = %s '
+            payload.append(data['avatar'])
+
+        if data['username_twitter']:
+            sql += 'username_twitter = %s '
+            payload.append(data['username_twitter'])
+
+        sql += 'WHERE id_user = %s;'
+        payload.append(id_user)
     
         #connect database
         if os.environ.get('GAE_ENV') == 'standard':
@@ -324,7 +338,7 @@ def user():
         #querying sql
         with cnx.cursor() as cursor:
             cursor.execute(sql, payload)
-            cursor.execute('SELECT id_user, username, tempat_lahir, email, jenis_kelamin FROM user WHERE user_id=%s;',(user_id))
+            cursor.execute('SELECT id_user, username, tempat_lahir, email, jenis_kelamin, avatar, username_twitter FROM user WHERE user_id=%s;',(id_user))
             user = cursor.fetchone()
         cnx.close()
 
@@ -334,7 +348,9 @@ def user():
                 'username': user[1],
                 'jenis_kelamin': user[4],
                 'tempat_lahir': user[2],
-                'email': user[3]
+                'email': user[3],
+                'avatar': user[5],
+                'username_twitter': user[6],
             }
         ), 200
     else:
