@@ -311,30 +311,30 @@ def user():
 
         sql = 'UPDATE user SET '
         sqlupdated = []
-        if data['username']:
+        if 'username' in data:
             sqlupdated.append('username = %s ')
             payload.append(data['username'])
         
-        if data['jenis_kelamin']:
+        if 'jenis_kelamin' in data:
             sqlupdated.append('jenis_kelamin = %s ')
             payload.append(data['jenis_kelamin'])
         
-        if data['tempat_lahir']:
+        if 'tempat_lahir' in data:
             sqlupdated.append('tempat_lahir = %s ')
             payload.append(data['tempat_lahir'])
 
-        if data['avatar']:
+        if 'avatar' in data:
             sqlupdated.append('avatar = %s ')
             payload.append(data['avatar'])
         
-        for i in range(sqlupdated):
+        if 'username_twitter' in data:
+            sqlupdated.append('username_twitter = %s ')
+            payload.append(data['username_twitter'])
+        
+        for i in range(len(sqlupdated)):
             if i != 0:
                 sql += ','
             sql+= sqlupdated[i]
-
-        if data['username_twitter']:
-            sql += 'username_twitter = %s '
-            payload.append(data['username_twitter'])
 
         sql += 'WHERE id_user = %s;'
         payload.append(id_user)
