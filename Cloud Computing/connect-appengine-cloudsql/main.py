@@ -202,9 +202,9 @@ def login():
                 'refresh': refresh_token,
                 'user':{
                     'username': user[4],
-                    'jenis_kelamin': user[5],
-                    'tempat_lahir': user[6],
-                    'email':user[7]
+                    'jenis_kelamin': user[6],
+                    'tempat_lahir': user[7],
+                    'email':user[9]
                 }
             }
         ),201
