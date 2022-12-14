@@ -300,6 +300,11 @@ def user():
         current_user = get_jwt_identity()
         data = request.get_json()
         id_user = current_user['id_user']
+
+        if os.environ.get('GAE_ENV') == 'standard':
+            unix_socket = '/cloudsql/{}'.format(db_connection_name)
+            cnx = pymysql.connect(user=db_user, password=db_password,
+                                unix_socket=unix_socket, db=db_name)
         if not data:
             return jsonify({
                 'message':'empty required field'
