@@ -91,9 +91,9 @@ def destinasi():
         if query.get('category'):
             idd = '0'
             text =  query.get('category')
-            if text.lower() == 'pantai':
+            if text.lower() == 'kuliner':
                 idd = '1'
-            elif text.lower() == 'kuliner':
+            elif text.lower() == 'pantai':
                 idd = '2'
 
             sql += 'WHERE id_kategori_destinasi = %s'
@@ -219,7 +219,7 @@ def login():
                     'jenis_kelamin': user[6],
                     'tempat_lahir': user[7],
                     'email':user[9],
-                    'avatar': user[10],
+                    'user_pic': user[10],
                     'username_twitter': user[11]
                 }
             }
@@ -293,7 +293,7 @@ def user():
                     'jenis_kelamin': user[6],
                     'tempat_lahir': user[7],
                     'email':user[9],
-                    'avatar': user[10],
+                    'user_pic': user[10],
                     'username_twitter': user[11]
                 }
             }
@@ -323,9 +323,9 @@ def user():
             sqlupdated.append('tempat_lahir = %s ')
             payload.append(data['tempat_lahir'])
 
-        if 'avatar' in data:
-            sqlupdated.append('avatar = %s ')
-            payload.append(data['avatar'])
+        if 'user_pic' in data:
+            sqlupdated.append('user_pic = %s ')
+            payload.append(data['user_pic'])
         
         if 'username_twitter' in data:
             sqlupdated.append('username_twitter = %s ')
@@ -349,7 +349,7 @@ def user():
         #querying sql
         with cnx.cursor() as cursor:
             cursor.execute(sql, payload)
-            cursor.execute('SELECT id_user, username, tempat_lahir, email, jenis_kelamin, avatar, username_twitter FROM user WHERE user_id=%s;',(id_user))
+            cursor.execute('SELECT id_user, username, tempat_lahir, email, jenis_kelamin, user_pic, username_twitter FROM user WHERE user_id=%s;',(id_user))
             user = cursor.fetchone()
         cnx.close()
 
@@ -360,7 +360,7 @@ def user():
                 'jenis_kelamin': user[4],
                 'tempat_lahir': user[2],
                 'email': user[3],
-                'avatar': user[5],
+                'user_pic': user[5],
                 'username_twitter': user[6],
             }
         ), 200
