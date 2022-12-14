@@ -278,10 +278,7 @@ def user():
                                 unix_socket=unix_socket, db=db_name)
 
         #querying sql
-        with cnx.cursor() as cursor:
-            cursor.execute('SELECT * FROM user WHERE id_user = %s', (id_user))
-            user = cursor.fetchone()
-        cnx.close()
+        user_service.get_user_by_id(id_user)
 
 
         return jsonify(

@@ -38,3 +38,17 @@ class UserService:
 
         except Exception as e:
             print(e)
+    
+    def get_user_by_id(self, id_user):
+        if os.environ.get('GAE_ENV') == 'standard':
+            unix_socket = '/cloudsql/{}'.format(self.db_connection_name)
+            cnx = pymysql.connect(user=self.db_user, password=self.db_password,
+                                unix_socket=unix_socket, db=self.db_name)
+        else:
+            host = '127.0.0.1'
+            cnx = pymysql.connect(user=self.db_user, password=self.db_password,
+                                host=host, db=self.db_name)
+        with cnx.cursor() as cursor:
+            cursor.execute('SELECT * FROM user WHERE id_user = %s;',(id_user))
+            result = cursor.fetchone()
+        cnx.close()
