@@ -294,7 +294,7 @@ def user():
 
     elif request.method == "PUT":
         current_user = get_jwt_identity()
-        data = request.get_data()
+        data = request.get_json()
         id_user = current_user['id_user']
         if not data:
             return jsonify({
@@ -314,10 +314,6 @@ def user():
         if data['tempat_lahir']:
             sql += 'tempat_lahir = %s '
             payload.append(data['tempat_lahir'])
-
-        if data['email']:
-            sql += 'email = %s '
-            payload.append(data['email'])
 
         if data['avatar']:
             sql += 'avatar = %s '
