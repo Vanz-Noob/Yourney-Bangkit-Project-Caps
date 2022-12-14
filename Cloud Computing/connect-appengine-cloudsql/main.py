@@ -259,6 +259,7 @@ def logout():
 
 # get user profile
 @app.route("/user/profile", methods=["PUT","GET"])
+@jwt_required(refresh=False)
 def user():
     if request.method == "GET":
         current_user = get_jwt_identity()
