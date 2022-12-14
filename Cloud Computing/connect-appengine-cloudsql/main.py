@@ -87,10 +87,18 @@ def destinasi():
                                 unix_socket=unix_socket, db=db_name)
 
         sql = 'SELECT * FROM destinasi '
-        payload = ()
+        payload = []
         if query.get('category'):
+            idd = '0'
+            text =  query.get('category')
+            if text.lower() == 'pantai':
+                idd = '1'
+            elif text.lower() == 'kuliner':
+                idd = '2'
+
             sql += 'WHERE id_kategori_destinasi = %s'
-            payload.append()
+            payload.append(idd)
+            payload = tuple(payload)
         sql += ';'
 
         with cnx.cursor() as cursor:
@@ -201,7 +209,6 @@ def login():
 
         access_token = create_access_token(identity=identity, fresh=True, expires_delta=expires)
         refresh_token = create_refresh_token(identity=identity, expires_delta=expires_refresh)
-        print(user)
         return jsonify(
             {
                 'status': 'success',
@@ -303,24 +310,30 @@ def user():
         payload = []
 
         sql = 'UPDATE user SET '
+        sqlupdated = []
         if data['username']:
-            sql += ',username = %s '
+            sqlupdated.append('username = %s ')
             payload.append(data['username'])
         
         if data['jenis_kelamin']:
-            sql += ',jenis_kelamin = %s '
+            sqlupdated.append('jenis_kelamin = %s ')
             payload.append(data['jenis_kelamin'])
         
         if data['tempat_lahir']:
-            sql += ',tempat_lahir = %s '
+            sqlupdated.append('tempat_lahir = %s ')
             payload.append(data['tempat_lahir'])
 
         if data['avatar']:
-            sql += ',avatar = %s '
+            sqlupdated.append('avatar = %s ')
             payload.append(data['avatar'])
+        
+        for i in range(sqlupdated):
+            if i != 0:
+                sql += ','
+            sql+= sqlupdated[i]
 
         if data['username_twitter']:
-            sql += ',username_twitter = %s '
+            sql += 'username_twitter = %s '
             payload.append(data['username_twitter'])
 
         sql += 'WHERE id_user = %s;'
