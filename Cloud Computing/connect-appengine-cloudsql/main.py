@@ -190,6 +190,8 @@ def login():
             'user_id': user[0],
             'username': user[4]
         }
+
+        print(user)
         access_token = create_access_token(identity=identity, fresh=True, expires_delta=expires)
         refresh_token = create_refresh_token(identity=identity, expires_delta=expires_refresh)
 
@@ -197,7 +199,13 @@ def login():
             {
                 'status': 'success',
                 'access': access_token,
-                'refresh': refresh_token
+                'refresh': refresh_token,
+                'user':{
+                    'username': user[4],
+                    'jenis_kelamin': user[5],
+                    'tempat_lahir': user[6],
+                    'email':user[7]
+                }
             }
         ),201
 
