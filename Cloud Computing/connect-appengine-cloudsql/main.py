@@ -17,7 +17,6 @@
 import os
 import re
 import pymysql
-from crypt import methods
 from flask import Flask, request, jsonify
 from flask_jwt_extended import *
 from passlib.hash import sha256_crypt
@@ -78,15 +77,24 @@ def hello():
 @app.route('/destinasi')
 @jwt_required(refresh=False)
 def destinasi():
-    destinasi = []
     if request.method == 'GET':
+        query = request.args
+        destinasi = []
         if os.environ.get('GAE_ENV') == 'standard':
             # If deployed, use the local socket interface for accessing Cloud SQL
             unix_socket = '/cloudsql/{}'.format(db_connection_name)
             cnx = pymysql.connect(user=db_user, password=db_password,
                                 unix_socket=unix_socket, db=db_name)
+
+        sql = 'SELECT * FROM destinasi '
+        payload = ()
+        if query.get('category'):
+            sql += 'WHERE id_kategori_destinasi = %s'
+            payload.append()
+        sql += ';'
+
         with cnx.cursor() as cursor:
-            cursor.execute('SELECT * FROM destinasi;')
+            cursor.execute(sql, payload)
             for row in cursor:
                 destinasi.append({'id_destinasi': row[0], 'id_kategori_destinasi': row[1], 'nama_desinasi': row[2], 'deskripsi': row[3], 'pic_destinasi': row[4], 'url_destinasi': row[5]})
             cnx.close()
@@ -191,10 +199,9 @@ def login():
             'username': user[4]
         }
 
-        print(user)
         access_token = create_access_token(identity=identity, fresh=True, expires_delta=expires)
         refresh_token = create_refresh_token(identity=identity, expires_delta=expires_refresh)
-
+        print(user)
         return jsonify(
             {
                 'status': 'success',
@@ -241,13 +248,102 @@ def logout():
 # endpoint to verify jwt token works properly
 # Protect a route with jwt_required, which will kick out requests
 # without a valid JWT present.
-@app.route("/protected", methods=["GET"])
-@jwt_required(refresh=False)
-def protected():
-    # Access the identity of the current user with get_jwt_identity
-    current_user = get_jwt_identity()
-    return jsonify(logged_in_as=current_user['username']), 200
+# @app.route("/protected", methods=["GET"])
+# @jwt_required(refresh=False)
+# def protected():
+#     # Access the identity of the current user with get_jwt_identity
+#     current_user = get_jwt_identity()
+#     return jsonify(logged_in_as=current_user['username']), 200
+
+# get user profile
+@app.route("/user/profile", methods=["PUT","GET"])
+def user():
+    if request.method is "GET":
+        current_user = get_jwt_identity()
+        username = current_user['username']
+        #connect database
+        if os.environ.get('GAE_ENV') == 'standard':
+            unix_socket = '/cloudsql/{}'.format(db_connection_name)
+            cnx = pymysql.connect(user=db_user, password=db_password,
+                                unix_socket=unix_socket, db=db_name)
+
+        #querying sql
+        with cnx.cursor() as cursor:
+            cursor.execute('SELECT * FROM user WHERE username = %s', (username, ))
+            user = cursor.fetchone()
+        cnx.close()
+
+
+        return jsonify(
+            {
+                'status': 'success',
+                'user':{
+                    'username': user[4],
+                    'jenis_kelamin': user[6],
+                    'tempat_lahir': user[7],
+                    'email':user[9]
+                }
+            }
+        ),200
+    elif request.method is "PUT":
+        current_user = get_jwt_identity()
+        data = request.get_data()
+        user_id = current_user['user_id']
+        if not data:
+            return jsonify({
+                'message':'empty required field'
+            }), 400
+        payload = ()
+
+        sql = 'UPDATE user SET '
+        if data['username']:
+            sql += 'username = %s '
+            payload.append(data['username'])
+        
+        if data['jenis_kelamin']:
+            sql += 'jenis_kelamin = %s '
+            payload.append(data['jenis_kelamin'])
+        
+        if data['tempat_lahir']:
+            sql += 'tempat_lahir = %s '
+            payload.append(data['tempat_lahir'])
+
+        if data['email']:
+            sql += 'email = %s '
+            payload.append(data['email'])
+        
+        sql += 'WHERE user_id = %s'
+        payload.append(user_id)
     
+        #connect database
+        if os.environ.get('GAE_ENV') == 'standard':
+            unix_socket = '/cloudsql/{}'.format(db_connection_name)
+            cnx = pymysql.connect(user=db_user, password=db_password,
+                                unix_socket=unix_socket, db=db_name)
+
+        #querying sql
+        with cnx.cursor() as cursor:
+            cursor.execute(sql, payload)
+            cursor.execute('SELECT id_user, username, tempat_lahir, email, jenis_kelamin FROM user WHERE user_id=%s;',(user_id))
+            user = cursor.fetchone()
+        cnx.close()
+
+        return jsonify(
+            {
+                'id': user[0],
+                'username': user[1],
+                'jenis_kelamin': user[4],
+                'tempat_lahir': user[2],
+                'email': user[3]
+            }
+        ), 200
+    else:
+        return jsonify({
+            'message': 'invalid method'
+        }), 400
+
+
+
     
  #register user + initialiazing kategori
 @app.route("/register",methods=["POST", "GET"])
@@ -324,7 +420,7 @@ def register():
         #     },400
         return jsonify({
                 "username": username,
-                    "jenis_kelamin" : jenis_kelamin,
+                "jenis_kelamin" : jenis_kelamin,
                 "tempat_lahir" : tempat_lahir,
                 "code": "sukses",
             })
