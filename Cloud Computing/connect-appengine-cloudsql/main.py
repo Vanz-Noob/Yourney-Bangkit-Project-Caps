@@ -300,7 +300,7 @@ def user():
             return jsonify({
                 'message':'empty required field'
             }), 400
-        payload = ()
+        payload = []
 
         sql = 'UPDATE user SET '
         if data['username']:
@@ -325,6 +325,7 @@ def user():
 
         sql += 'WHERE id_user = %s;'
         payload.append(id_user)
+        payload = tuple(payload)
     
         #connect database
         if os.environ.get('GAE_ENV') == 'standard':
