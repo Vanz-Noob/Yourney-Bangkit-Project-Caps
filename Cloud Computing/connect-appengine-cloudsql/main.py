@@ -304,23 +304,23 @@ def user():
 
         sql = 'UPDATE user SET '
         if data['username']:
-            sql += 'username = %s '
+            sql += ',username = %s '
             payload.append(data['username'])
         
         if data['jenis_kelamin']:
-            sql += 'jenis_kelamin = %s '
+            sql += ',jenis_kelamin = %s '
             payload.append(data['jenis_kelamin'])
         
         if data['tempat_lahir']:
-            sql += 'tempat_lahir = %s '
+            sql += ',tempat_lahir = %s '
             payload.append(data['tempat_lahir'])
 
         if data['avatar']:
-            sql += 'avatar = %s '
+            sql += ',avatar = %s '
             payload.append(data['avatar'])
 
         if data['username_twitter']:
-            sql += 'username_twitter = %s '
+            sql += ',username_twitter = %s '
             payload.append(data['username_twitter'])
 
         sql += 'WHERE id_user = %s;'
