@@ -52,3 +52,4 @@ class UserService:
             cursor.execute('SELECT * FROM user WHERE id_user = %s;',(id_user))
             result = cursor.fetchone()
         cnx.close()
+        return result
