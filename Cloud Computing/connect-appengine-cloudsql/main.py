@@ -74,6 +74,26 @@ user_service = UserService(db_user,db_password,db_name,db_connection_name)
 def hello():
     return "Hello, World This Is Yourney!"
 
+@app.route("/user/likes", methods=["GET"])
+@jwt_required(refresh=False)
+def get_likes():
+    if request.method == 'GET':
+        current_user = get_jwt_identity()
+        id_user = current_user['id_user']
+        if os.environ.get('GAE_ENV') == 'standard':
+            # If deployed, use the local socket interface for accessing Cloud SQL
+            unix_socket = '/cloudsql/{}'.format(db_connection_name)
+            cnx = pymysql.connect(user=db_user, password=db_password,
+                                unix_socket=unix_socket, db=db_name)
+        
+        destinasi = []
+        with cnx.cursor() as cursor:
+            cursor.execute('SELECT destinasi.* FROM user_liked LEFT JOIN destinasi ON user_liked.id_destination_like = destinasi.id_destinasi WHERE user_liked.id_user_liked=%s', (id_user))
+            for row in cursor:
+                destinasi.append({'id_destinasi': row[0], 'id_kategori_destinasi': row[1], 'nama_desinasi': row[2], 'deskripsi': row[3], 'pic_destinasi': row[4], 'url_destinasi': row[5]})
+            cnx.close()
+        return jsonify(destinasi)
+
 #GET ALL DESTINASI
 @app.route('/destinasi')
 @jwt_required(refresh=False)
