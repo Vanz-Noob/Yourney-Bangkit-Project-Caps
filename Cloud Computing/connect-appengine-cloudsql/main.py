@@ -151,12 +151,12 @@ def destinasi_likes(destinasi_id):
         cnx = pymysql.connect(user=db_user, password=db_password,
                             unix_socket=unix_socket, db=db_name)
     current_user = get_jwt_identity()
-    id_user = current_user['id_user']
+    user = current_user['id_user']
 
     if request.method == 'GET':
 
         sql = 'SELECT * FROM user_liked WHERE id_destination_like = %s AND id_user_liked = %s;'
-        payload = (destinasi_id, id_user)
+        payload = (destinasi_id, user)
 
         with cnx.cursor() as cursor:
             cursor.execute(sql, payload)
@@ -173,9 +173,9 @@ def destinasi_likes(destinasi_id):
     elif request.method == 'POST':
 
         with cnx.cursor() as cursor:
-            cursor.execute('INSERT INTO user_liked values(id_user_liked, id_destination_like) VALUES (%s, %s);', (id_user, destinasi_id))
+            cursor.execute('INSERT INTO user_liked values(id_user_liked, id_destination_like) VALUES (%s, %s);', (user, destinasi_id))
             cnx.commit()
-            cursor.execute('SELECT * FROM user_liked WHERE id_user_liked=%s AND id_destination_like=%s;',(id_user,destinasi_id))
+            cursor.execute('SELECT * FROM user_liked WHERE id_user_liked=%s AND id_destination_like=%s;',(user,destinasi_id))
             id_like = cursor.fetchone()
         cnx.close()
 
@@ -188,11 +188,9 @@ def destinasi_likes(destinasi_id):
                 'message':'destination like failed'
             }),400
     elif request.method == 'DELETE':
-        current_user = get_jwt_identity
-        id_user = current_user['id_user']
 
         with cnx.cursor() as cursor:
-            cursor.execute('DELETE FROM user_liked WHERE id_user_liked=%s AND id_destination_like=%s;',(id_user,destinasi_id))
+            cursor.execute('DELETE FROM user_liked WHERE id_user_liked=%s AND id_destination_like=%s;',(user,destinasi_id))
             cnx.commit()
         cnx.close()
 
