@@ -376,7 +376,7 @@ def user():
         id_user = current_user['id_user']
 
         #querying sql
-        user_service.get_user_by_id(id_user)
+        user = user_service.get_user_by_id(id_user)
 
 
         return jsonify(
