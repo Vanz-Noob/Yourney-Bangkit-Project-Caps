@@ -155,11 +155,8 @@ def destinasi_likes(destinasi_id):
 
     if request.method == 'GET':
 
-        sql = 'SELECT * FROM user_liked WHERE id_destination_like = %s AND id_user_liked = %s;'
-        payload = (destinasi_id, user)
-
         with cnx.cursor() as cursor:
-            cursor.execute(sql, payload)
+            cursor.execute('SELECT * FROM user_liked WHERE id_user_liked=%s AND id_destination_like=%s;',(user,destinasi_id))
             liked = cursor.fetchone()
         cnx.close()
         if liked:
@@ -176,10 +173,10 @@ def destinasi_likes(destinasi_id):
             cursor.execute('INSERT INTO user_liked(id_user_liked,id_destination_like) VALUES (%s, %s);', (user, destinasi_id))
             cnx.commit()
             cursor.execute('SELECT * FROM user_liked WHERE id_user_liked=%s AND id_destination_like=%s;',(user,destinasi_id))
-            id_like = cursor.fetchone()
+            liked = cursor.fetchone()
         cnx.close()
 
-        if id_like:
+        if liked:
             return jsonify({
                 'message':'destination like success'
             }),200
@@ -188,20 +185,21 @@ def destinasi_likes(destinasi_id):
                 'message':'destination like failed'
             }),400
     elif request.method == 'DELETE':
+        try:
 
-        with cnx.cursor() as cursor:
-            cursor.execute('DELETE FROM user_liked WHERE id_user_liked=%s AND id_destination_like=%s;',(user,destinasi_id))
-            cnx.commit()
-        cnx.close()
+            with cnx.cursor() as cursor:
+                cursor.execute('DELETE FROM user_liked WHERE id_user_liked=%s AND id_destination_like=%s;',(user,destinasi_id))
+                cnx.commit()
+            cnx.close()
 
-        if id_like:
             return jsonify({
                 'message':'destination delete success'
             }),200
-        else:
+        except Exception as e:
             return jsonify({
-                'message':'destination delete failed'
+                'message': str(e)
             }),400
+
     else:
         return 'Invalid request'
 
