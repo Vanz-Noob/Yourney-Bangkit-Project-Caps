@@ -171,9 +171,9 @@ def destinasi_likes(destinasi_id):
 
         with cnx.cursor() as cursor:
             cursor.execute('INSERT INTO user_liked(id_user_liked,id_destination_like) VALUES (%s, %s);', (user, destinasi_id))
+            cnx.commit()
             cursor.execute('SELECT * FROM user_liked WHERE id_user_liked=%s AND id_destination_like=%s;',(user,destinasi_id))
             liked = cursor.fetchone()
-            cnx.commit()
         cnx.close()
 
         if liked:
@@ -440,8 +440,8 @@ def user():
         #querying sql
         with cnx.cursor() as cursor:
             cursor.execute(sql, payload)
-            cnx.commit()
             cursor.execute('SELECT id_user, username, tempat_lahir, email, jenis_kelamin, user_pic, username_twitter FROM user WHERE id_user=%s;',(id_user))
+            cnx.commit()
             user = cursor.fetchone()
         cnx.close()
 
