@@ -18,6 +18,8 @@ import os
 import re
 import pymysql
 import base64
+import io
+from PIL import Image
 from flask import Flask, request, jsonify
 from flask_jwt_extended import *
 from passlib.hash import sha256_crypt
@@ -906,6 +908,10 @@ def upload():
         #         search.append({'id_destinasi': row[0], 'id_kategori_destinasi': row[1], 'nama_desinasi': row[2], 'deskripsi': row[3], 'pic_destinasi': row[4], 'url_destinasi': row[5]})
         #     cnx.close()
         # return jsonify(search)
+    elif request.method == 'GET':
+        binary_data = base64.b64decode(image)
+        image = Image.open(io.BytesIO(binary_data))
+        return image.show()
 
     
         
