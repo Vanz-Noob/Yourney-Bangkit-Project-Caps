@@ -108,8 +108,106 @@ def destinasi():
             cnx.close()
         return jsonify(destinasi)
     else:
-        return 'Invalid request'  
-    
+        return 'Invalid request'
+
+@app.route('/destinasi/<int: destinasi_id>')
+@jwt_required(refresh=False)
+def destinasi_detail(destinasi_id):
+    if request.method == 'GET':
+        if os.environ.get('GAE_ENV') == 'standard':
+            # If deployed, use the local socket interface for accessing Cloud SQL
+            unix_socket = '/cloudsql/{}'.format(db_connection_name)
+            cnx = pymysql.connect(user=db_user, password=db_password,
+                                unix_socket=unix_socket, db=db_name)
+
+        sql = 'SELECT * FROM destinasi WHERE id_destinasi = %s'
+
+        with cnx.cursor() as cursor:
+            cursor.execute(sql, (destinasi_id, ))
+            data = cursor.fetchone()
+        cnx.close()
+
+        if data:
+            return jsonify({
+                'id_destinasi': data[0],
+                'id_kategori_destinasi': data[1],
+                'nama_desinasi': data[2],
+                'deskripsi': data[3],
+                'pic_destinasi': data[4],
+                'url_destinasi': data[5]
+            })
+
+    else:
+        return 'Invalid request'
+
+
+#DESTINASI LIKES api
+@app.route('/destinasi/<int: destinasi_id>/likes', methods=['GET','POST','DELETE'])
+@jwt_required(refresh=False)
+def destinasi_likes(destinasi_id):
+    if os.environ.get('GAE_ENV') == 'standard':
+        # If deployed, use the local socket interface for accessing Cloud SQL
+        unix_socket = '/cloudsql/{}'.format(db_connection_name)
+        cnx = pymysql.connect(user=db_user, password=db_password,
+                            unix_socket=unix_socket, db=db_name)
+    if request.method == 'GET':
+        current_user = get_jwt_identity()
+        id_user = current_user['id_user']
+
+        sql = 'SELECT * FROM user_liked WHERE id_destination_like = %s AND id_user_liked = %s;'
+        payload = (destinasi_id, id_user)
+
+        with cnx.cursor() as cursor:
+            cursor.execute(sql, payload)
+            liked = cursor.fetchone()
+        cnx.close()
+        if liked:
+            return jsonify({
+                'liked' : True
+            }),200
+        else:
+            return jsonify({
+                'message': 'data not found'
+            }),404
+    elif request.method == 'POST':
+        current_user = get_jwt_identity
+        id_user = current_user['id_user']
+
+        with cnx.cursor() as cursor:
+            cursor.execute('INSERT INTO user_liked values(id_user_liked, id_destination_like) VALUES (%s, %s);', (id_user, destinasi_id))
+            cnx.commit()
+            cursor.execute('SELECT * FROM user_liked WHERE id_user_liked=%s AND id_destination_like=%s;',(id_user,destinasi_id))
+            id_like = cursor.fetchone()
+        cnx.close()
+
+        if id_like:
+            return jsonify({
+                'message':'destination like success'
+            }),200
+        else:
+            return jsonify({
+                'message':'destination like failed'
+            }),400
+    elif request.method == 'DELETE':
+        current_user = get_jwt_identity
+        id_user = current_user['id_user']
+
+        with cnx.cursor() as cursor:
+            cursor.execute('DELETE FROM user_liked WHERE id_user_liked=%s AND id_destination_like=%s;',(id_user,destinasi_id))
+            cnx.commit()
+        cnx.close()
+
+        if id_like:
+            return jsonify({
+                'message':'destination delete success'
+            }),200
+        else:
+            return jsonify({
+                'message':'destination delete failed'
+            }),400
+    else:
+        return 'Invalid request'
+
 #cek kategori
 @app.route('/kategori')
 @jwt_required(refresh=False)
