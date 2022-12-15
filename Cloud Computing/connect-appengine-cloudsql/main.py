@@ -440,7 +440,7 @@ def user():
         #querying sql
         with cnx.cursor() as cursor:
             cursor.execute(sql, payload)
-            cursor.commit()
+            cnx.commit()
             cursor.execute('SELECT id_user, username, tempat_lahir, email, jenis_kelamin, user_pic, username_twitter FROM user WHERE id_user=%s;',(id_user))
             user = cursor.fetchone()
         cnx.close()
