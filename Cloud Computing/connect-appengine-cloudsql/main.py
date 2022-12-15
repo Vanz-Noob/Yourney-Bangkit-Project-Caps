@@ -17,6 +17,7 @@
 import os
 import re
 import pymysql
+import base64
 from flask import Flask, request, jsonify
 from flask_jwt_extended import *
 from passlib.hash import sha256_crypt
@@ -860,6 +861,31 @@ def search():
         cnx.close()
     return jsonify(search)
 
+#search destinasi
+@app.route('/upload/image',methods=["POST", "GET"])
+@jwt_required(refresh=False)
+def upload():
+    if request.method == 'POST':
+
+        img = request.files
+        if 'image' not in img:
+            return jsonify({
+                'message': 'image field must not empty'
+            }), 400
+        
+        encoded = base64.b64encode(img['image'])
+        
+
+        # if os.environ.get('GAE_ENV') == 'standard':
+        #     unix_socket = '/cloudsql/{}'.format(db_connection_name)
+        #     cnx = pymysql.connect(user=db_user, password=db_password,
+        #                         unix_socket=unix_socket, db=db_name)
+        # with cnx.cursor() as cursor:
+        #     cursor.execute('SELECT * FROM destinasi WHERE LOWER(nama_destinasi) LIKE LOWER(%s) ORDER BY nama_destinasi;', (nama_destinasi))
+        #     for row in cursor:
+        #         search.append({'id_destinasi': row[0], 'id_kategori_destinasi': row[1], 'nama_desinasi': row[2], 'deskripsi': row[3], 'pic_destinasi': row[4], 'url_destinasi': row[5]})
+        #     cnx.close()
+        # return jsonify(search)
 
     
         
