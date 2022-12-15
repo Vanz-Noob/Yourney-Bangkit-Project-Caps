@@ -150,9 +150,10 @@ def destinasi_likes(destinasi_id):
         unix_socket = '/cloudsql/{}'.format(db_connection_name)
         cnx = pymysql.connect(user=db_user, password=db_password,
                             unix_socket=unix_socket, db=db_name)
+    current_user = get_jwt_identity()
+    id_user = current_user['id_user']
+
     if request.method == 'GET':
-        current_user = get_jwt_identity()
-        id_user = current_user['id_user']
 
         sql = 'SELECT * FROM user_liked WHERE id_destination_like = %s AND id_user_liked = %s;'
         payload = (destinasi_id, id_user)
@@ -170,8 +171,6 @@ def destinasi_likes(destinasi_id):
                 'message': 'data not found'
             }),404
     elif request.method == 'POST':
-        current_user = get_jwt_identity
-        id_user = current_user['id_user']
 
         with cnx.cursor() as cursor:
             cursor.execute('INSERT INTO user_liked values(id_user_liked, id_destination_like) VALUES (%s, %s);', (id_user, destinasi_id))
