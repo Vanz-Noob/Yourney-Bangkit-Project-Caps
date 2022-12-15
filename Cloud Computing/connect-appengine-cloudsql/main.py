@@ -110,7 +110,7 @@ def destinasi():
     else:
         return 'Invalid request'
 
-@app.route('/destinasi/<int: destinasi_id>')
+@app.route('/destinasi/<int:destinasi_id>')
 @jwt_required(refresh=False)
 def destinasi_detail(destinasi_id):
     if request.method == 'GET':
@@ -142,7 +142,7 @@ def destinasi_detail(destinasi_id):
 
 
 #DESTINASI LIKES api
-@app.route('/destinasi/<int: destinasi_id>/likes', methods=['GET','POST','DELETE'])
+@app.route('/destinasi/<int:destinasi_id>/likes', methods=['GET','POST','DELETE'])
 @jwt_required(refresh=False)
 def destinasi_likes(destinasi_id):
     if os.environ.get('GAE_ENV') == 'standard':
