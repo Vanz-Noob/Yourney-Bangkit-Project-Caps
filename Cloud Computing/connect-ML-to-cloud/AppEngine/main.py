@@ -17,10 +17,9 @@
 from crypt import methods
 import os
 from flask import Flask, request, jsonify
+from helper.twitter import average_data
+from helper.user import UserService
 import pymysql
-from passlib.hash import sha256_crypt
-import re
-from datetime import datetime
 
 db_user = os.environ.get('CLOUD_SQL_USERNAME')
 db_password = os.environ.get('CLOUD_SQL_PASSWORD')
@@ -28,6 +27,7 @@ db_name = os.environ.get('CLOUD_SQL_DATABASE_NAME')
 db_connection_name = os.environ.get('CLOUD_SQL_CONNECTION_NAME')
 
 app = Flask(__name__)
+user_service = UserService(db_user,db_password,db_name,db_connection_name)
 
 @app.route("/", methods=["GET"])
 def hello():
@@ -60,6 +60,11 @@ def GetNull():
                 )
             cnx.commit()
         cnx.close()
+
+        for user in null:
+            id_kategori = average_data(user['username'])
+            user_update_kategori(id_kategori)
+            user['id_kategori'] = id_kategori
 
 
         return jsonify(null)
