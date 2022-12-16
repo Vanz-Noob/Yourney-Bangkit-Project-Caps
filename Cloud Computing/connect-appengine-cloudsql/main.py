@@ -900,8 +900,8 @@ def upload():
                 'message': 'image field must not empty'
             }), 400
         title = ''
-        if img and allowed_file(img.filename):  
-            title = secure_filename(img.filename)
+        if img['image'] and allowed_file(img['image'].filename):  
+            title = secure_filename(img['image'].filename)
         else:
             return  jsonify({
                 'message': 'invalid type format, allowed format (png, jpg, jpeg, gif)'
