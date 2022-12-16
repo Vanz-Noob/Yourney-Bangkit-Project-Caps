@@ -18,7 +18,7 @@ import os
 import re
 import pymysql
 import base64
-import uuid
+import io
 from flask import Flask, request, jsonify, send_file
 from werkzeug.utils import secure_filename
 from flask_jwt_extended import *
@@ -889,7 +889,7 @@ def search():
     return jsonify(search)
 
 #search destinasi
-@app.route('/upload/image',methods=["POST", "GET"])
+@app.route('/images',methods=["POST", "GET"])
 @jwt_required(refresh=False)
 def upload():
     if request.method == 'POST':
@@ -920,14 +920,14 @@ def upload():
             cnx.close()
             return jsonify({
                 'status':  'success',
-                'url': request.base_url+'/uploaded/images/' + title
+                'url': request.base_url+ title
             })
         except Exception as e:
             return jsonify({
                 'message': str(e)
             })
 
-@app.route('/images/<string:title>',methods=["POST", "GET"])
+@app.route('/images/<string:title>',methods=["GET"])
 @jwt_required(refresh=False)
 def get_image(title):
     if request.method == 'GET':
@@ -951,7 +951,7 @@ def get_image(title):
             }),400
 
         binary_data = base64.b64decode(image[0])
-        return send_file(binary_data, as_attachment=True, download_name=image[1])
+        return send_file(io.BytesIO(binary_data), as_attachment=True, download_name=image[1])
         
         
 
