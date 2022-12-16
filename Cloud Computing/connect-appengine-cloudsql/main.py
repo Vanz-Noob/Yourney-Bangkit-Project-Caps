@@ -897,7 +897,7 @@ def upload():
             }), 400
         
         encoded = base64.b64encode(img['image'])
-        title = uuid.uuid4()
+        title = str(uuid.uuid4())
         
 
         if os.environ.get('GAE_ENV') == 'standard':
