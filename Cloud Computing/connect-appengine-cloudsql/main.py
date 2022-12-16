@@ -20,6 +20,7 @@ import pymysql
 import base64
 import uuid
 from flask import Flask, request, jsonify, send_file
+from werkzeug.utils import secure_filename
 from flask_jwt_extended import *
 from passlib.hash import sha256_crypt
 from flask_swagger_ui import get_swaggerui_blueprint
@@ -30,6 +31,7 @@ db_user = os.environ.get('CLOUD_SQL_USERNAME')
 db_password = os.environ.get('CLOUD_SQL_PASSWORD')
 db_name = os.environ.get('CLOUD_SQL_DATABASE_NAME')
 db_connection_name = os.environ.get('CLOUD_SQL_CONNECTION_NAME')
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 ACCESS_EXPIRES = timedelta(hours=1)
 SWAGGER_URL = '/api/docs'  # URL for exposing Swagger UI (without trailing '/')
 API_URL = '/static/spec.json'  # Our API url (can of course be a local resource)
@@ -50,6 +52,10 @@ swaggerui_blueprint = get_swaggerui_blueprint(
 )
 
 app.register_blueprint(swaggerui_blueprint)
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 # Callback function to check if a JWT exists in the database blocklist
 @jwt.token_in_blocklist_loader
@@ -892,9 +898,15 @@ def upload():
         if 'image' not in img:
             return jsonify({
                 'message': 'image field must not empty'
-            }), 400        
+            }), 400
+        title = ''
+        if img and allowed_file(img.filename):  
+            title = secure_filename(img.filename)
+        else:
+            return  jsonify({
+                'message': 'invalid type format, allowed format (png, jpg, jpeg, gif)'
+            }), 400
         encoded = base64.b64encode(img['image'].read())
-        title = str(uuid.uuid4())
         
 
         if os.environ.get('GAE_ENV') == 'standard':
@@ -930,7 +942,7 @@ def get_image(title):
                                 unix_socket=unix_socket, db=db_name)
         try:
             with cnx.cursor() as cursor:
-                cursor.execute('SELECT pic FROM  pictures WHERE title=%s;', (title))
+                cursor.execute('SELECT pic, title FROM  pictures WHERE title=%s;', (title))
                 image = cursor.fetchone()
             cnx.close()
         except Exception as e:
@@ -939,7 +951,7 @@ def get_image(title):
             }),400
 
         binary_data = base64.b64decode(image[0])
-        return send_file(binary_data, as_attachment=True)
+        return send_file(binary_data, as_attachment=True, download_name=image[1])
         
         
 
