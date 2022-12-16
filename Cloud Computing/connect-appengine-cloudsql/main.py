@@ -910,7 +910,7 @@ def upload():
             cnx.close()
             return jsonify({
                 'status':  'success',
-                'url': '/uploaded/images/' + title
+                'url': request.base_url+'/uploaded/images/' + title
             })
         except Exception as e:
             return jsonify({
@@ -932,7 +932,7 @@ def get_image(title):
                                 unix_socket=unix_socket, db=db_name)
         try:
             with cnx.cursor() as cursor:
-                cursor.execute('SELECT * FROM  picture WHERE title=%s;', (title))
+                cursor.execute('SELECT * FROM  pictures WHERE title=%s;', (title))
                 image = cursor.fetchone()
             cnx.close()
         except Exception as e:
