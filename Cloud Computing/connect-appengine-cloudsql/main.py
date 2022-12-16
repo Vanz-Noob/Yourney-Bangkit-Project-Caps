@@ -921,7 +921,7 @@ def upload():
             cnx.close()
             return jsonify({
                 'status':  'success',
-                'url': request.base_url+ title
+                'url': request.base_url+'/'+title
             })
         except Exception as e:
             return jsonify({
