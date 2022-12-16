@@ -19,6 +19,7 @@ import re
 import pymysql
 import base64
 import io
+import uuid
 from PIL import Image
 from flask import Flask, request, jsonify
 from flask_jwt_extended import *
@@ -896,24 +897,53 @@ def upload():
             }), 400
         
         encoded = base64.b64encode(img['image'])
+        title = uuid.uuid4()
         
 
-        # if os.environ.get('GAE_ENV') == 'standard':
-        #     unix_socket = '/cloudsql/{}'.format(db_connection_name)
-        #     cnx = pymysql.connect(user=db_user, password=db_password,
-        #                         unix_socket=unix_socket, db=db_name)
-        # with cnx.cursor() as cursor:
-        #     cursor.execute('SELECT * FROM destinasi WHERE LOWER(nama_destinasi) LIKE LOWER(%s) ORDER BY nama_destinasi;', (nama_destinasi))
-        #     for row in cursor:
-        #         search.append({'id_destinasi': row[0], 'id_kategori_destinasi': row[1], 'nama_desinasi': row[2], 'deskripsi': row[3], 'pic_destinasi': row[4], 'url_destinasi': row[5]})
-        #     cnx.close()
-        # return jsonify(search)
-    elif request.method == 'GET':
-        binary_data = base64.b64decode(image)
+        if os.environ.get('GAE_ENV') == 'standard':
+            unix_socket = '/cloudsql/{}'.format(db_connection_name)
+            cnx = pymysql.connect(user=db_user, password=db_password,
+                                unix_socket=unix_socket, db=db_name)
+        try:
+            with cnx.cursor() as cursor:
+                cursor.execute('INSERT INTO pictures(pic,title) VALUES (%s, %s);', (encoded, title))
+                cnx.commit()
+            cnx.close()
+            return jsonify({
+                'status':  'success',
+                'url': '/uploaded/images/' + title
+            })
+        except Exception as e:
+            return jsonify({
+                'message': str(e)
+            })
+
+@app.route('/images/<string:title>',methods=["POST", "GET"])
+@jwt_required(refresh=False)
+def upload(title):
+    if request.method == 'GET':
+        if title == None:
+            return({
+                "message": "title need to be specified"
+            }), 400
+
+        if os.environ.get('GAE_ENV') == 'standard':
+            unix_socket = '/cloudsql/{}'.format(db_connection_name)
+            cnx = pymysql.connect(user=db_user, password=db_password,
+                                unix_socket=unix_socket, db=db_name)
+        try:
+            with cnx.cursor() as cursor:
+                cursor.execute('SELECT * FROM  picture WHERE title=%s;', (title))
+                image = cursor.fetchone()
+            cnx.close()
+        except Exception as e:
+            return jsonify({
+                'message': str(e)
+            }),400
+
+        binary_data = base64.b64decode(image[2])
         image = Image.open(io.BytesIO(binary_data))
         return image.show()
-
-    
         
 
     
