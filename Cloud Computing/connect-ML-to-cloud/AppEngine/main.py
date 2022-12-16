@@ -63,7 +63,7 @@ def GetNull():
 
         for user in null:
             id_kategori = average_data(user['username'])
-            user_update_kategori(id_kategori)
+            user_service.user_update_kategori(id_kategori)
             user['id_kategori'] = id_kategori
 
 
