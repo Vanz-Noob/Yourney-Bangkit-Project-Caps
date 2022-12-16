@@ -895,8 +895,9 @@ def upload():
             return jsonify({
                 'message': 'image field must not empty'
             }), 400
+        print(io.StringIO(img['image']))
         
-        encoded = base64.b64encode(img['image'])
+        encoded = base64.b64encode(io.StringIO(img['image']))
         title = str(uuid.uuid4())
         
 
@@ -920,7 +921,7 @@ def upload():
 
 @app.route('/images/<string:title>',methods=["POST", "GET"])
 @jwt_required(refresh=False)
-def upload(title):
+def get_image(title):
     if request.method == 'GET':
         if title == None:
             return({
