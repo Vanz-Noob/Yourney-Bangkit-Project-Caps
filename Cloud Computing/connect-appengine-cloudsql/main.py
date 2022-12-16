@@ -39,6 +39,7 @@ API_URL = '/static/spec.json'  # Our API url (can of course be a local resource)
 
 
 app = Flask(__name__)
+app.config['MAX_CONTENT_LENGTH'] = 10 * 1000 * 1000
 app.config["JWT_SECRET_KEY"] =  str(os.environ.get("JWT_SECRET"))
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = ACCESS_EXPIRES
 jwt = JWTManager(app)
