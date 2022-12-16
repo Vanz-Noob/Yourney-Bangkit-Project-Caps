@@ -895,7 +895,7 @@ def upload():
             return jsonify({
                 'message': 'image field must not empty'
             }), 400        
-        encoded = base64.b64encode(io.StringIO(img['image'].read()))
+        encoded = base64.b64encode(img['image'].read())
         title = str(uuid.uuid4())
         
 
