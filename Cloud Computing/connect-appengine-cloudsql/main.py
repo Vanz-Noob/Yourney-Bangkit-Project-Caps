@@ -18,10 +18,8 @@ import os
 import re
 import pymysql
 import base64
-import io
 import uuid
-from PIL import Image
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file
 from flask_jwt_extended import *
 from passlib.hash import sha256_crypt
 from flask_swagger_ui import get_swaggerui_blueprint
@@ -932,7 +930,7 @@ def get_image(title):
                                 unix_socket=unix_socket, db=db_name)
         try:
             with cnx.cursor() as cursor:
-                cursor.execute('SELECT * FROM  pictures WHERE title=%s;', (title))
+                cursor.execute('SELECT pic FROM  pictures WHERE title=%s;', (title))
                 image = cursor.fetchone()
             cnx.close()
         except Exception as e:
@@ -940,9 +938,9 @@ def get_image(title):
                 'message': str(e)
             }),400
 
-        binary_data = base64.b64decode(image[2])
-        image = Image.open(io.BytesIO(binary_data))
-        return image.show()
+        binary_data = base64.b64decode(image[0])
+        return send_file(binary_data, as_attachment=True)
+        
         
 
     
