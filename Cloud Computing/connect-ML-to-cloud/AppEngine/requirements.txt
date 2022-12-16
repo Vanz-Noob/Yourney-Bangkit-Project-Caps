@@ -2,6 +2,9 @@ flask==2.1.0
 passlib==1.7.4
 PyMySQL==1.0.2
 psycopg2==2.8.4
+tweepy==4.12.1
+pandas==1.5.2
+numpy==1.23.5
 #psycopg2-binary==2.9.3 # you will need either the binary or the regular - for more info see http://initd.org/psycopg/docs/install.html
 SQLAlchemy==1.4.37
 gunicorn==20.1.0
