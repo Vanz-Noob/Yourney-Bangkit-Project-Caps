@@ -902,7 +902,7 @@ def upload():
             }), 400
         title = ''
         if img['image'] and allowed_file(img['image'].filename):  
-            title = uuid.uuid4() + secure_filename(img['image'].filename)
+            title = str(uuid.uuid4()) + secure_filename(img['image'].filename)
         else:
             return  jsonify({
                 'message': 'invalid type format, allowed format (png, jpg, jpeg, gif)'
