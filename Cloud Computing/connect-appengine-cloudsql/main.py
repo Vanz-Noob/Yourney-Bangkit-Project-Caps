@@ -18,6 +18,7 @@ import os
 import re
 import pymysql
 import base64
+import uuid
 import io
 from flask import Flask, request, jsonify, send_file
 from werkzeug.utils import secure_filename
@@ -901,7 +902,7 @@ def upload():
             }), 400
         title = ''
         if img['image'] and allowed_file(img['image'].filename):  
-            title = secure_filename(img['image'].filename)
+            title = uuid.uuid4() + secure_filename(img['image'].filename)
         else:
             return  jsonify({
                 'message': 'invalid type format, allowed format (png, jpg, jpeg, gif)'
