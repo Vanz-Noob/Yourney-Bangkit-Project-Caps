@@ -930,7 +930,6 @@ def upload():
             })
 
 @app.route('/images/<string:title>',methods=["GET"])
-@jwt_required(refresh=False)
 def get_image(title):
     if request.method == 'GET':
         if title == None:
