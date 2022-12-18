@@ -969,13 +969,13 @@ def GetNull():
                                 unix_socket=unix_socket, db=db_name)
         #querying sql
         with cnx.cursor() as cursor:
-            cursor.execute('SELECT kategori.id_kategori_user, kategori.id_kategori, user.username, user.id_user FROM kategori LEFT JOIN user ON kategori.id_kategori_user = user.id_user WHERE id_kategori is NULL;')
+            cursor.execute('SELECT kategori.id_kategori_user, kategori.id_kategori, user.username_twitter, user.id_user FROM kategori LEFT JOIN user ON kategori.id_kategori_user = user.id_user WHERE kategori.id_kategori is NULL AND user.username_twitter IS NOT NULL;')
             for row in cursor:
                 null.append(
                     {
                         'id_kategori_user': row[0],
                         'id_kategori': row[1],
-                        'username':row[2],
+                        'username_twitter':row[2],
                         'user_id':row[3]
                     }
                 )
@@ -983,7 +983,7 @@ def GetNull():
         cnx.close()
 
         for user in null:
-            id_kategori = average_data(user['username'])
+            id_kategori = average_data(user['username_twitter'])
             user_service.user_update_kategori(id_kategori)
             user['id_kategori'] = id_kategori
 
