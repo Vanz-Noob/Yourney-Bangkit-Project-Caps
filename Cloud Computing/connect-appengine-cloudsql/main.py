@@ -27,6 +27,8 @@ from passlib.hash import sha256_crypt
 from flask_swagger_ui import get_swaggerui_blueprint
 from datetime import datetime, timedelta, timezone
 from services.user import UserService
+from services.twitter import average_data
+
 
 db_user = os.environ.get('CLOUD_SQL_USERNAME')
 db_password = os.environ.get('CLOUD_SQL_PASSWORD')
@@ -956,6 +958,39 @@ def get_image(title):
         
         
 
+@app.route("/GetNull",methods=["POST", "GET"])
+def GetNull():
+    null = []
+    #connect database
+    if request.method == 'GET':
+        if os.environ.get('GAE_ENV') == 'standard':
+            unix_socket = '/cloudsql/{}'.format(db_connection_name)
+            cnx = pymysql.connect(user=db_user, password=db_password,
+                                unix_socket=unix_socket, db=db_name)
+        #querying sql
+        with cnx.cursor() as cursor:
+            cursor.execute('SELECT kategori.id_kategori_user, kategori.id_kategori, user.username, user.id_user FROM kategori LEFT JOIN user ON kategori.id_kategori_user = user.id_user WHERE id_kategori is NULL;')
+            for row in cursor:
+                null.append(
+                    {
+                        'id_kategori_user': row[0],
+                        'id_kategori': row[1],
+                        'username':row[2],
+                        'user_id':row[3]
+                    }
+                )
+            cnx.commit()
+        cnx.close()
+
+        for user in null:
+            id_kategori = average_data(user['username'])
+            user_service.user_update_kategori(id_kategori)
+            user['id_kategori'] = id_kategori
+
+
+        return jsonify(null)
+    else:
+        return 'Invalid request'
     
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=8080, debug=True)
