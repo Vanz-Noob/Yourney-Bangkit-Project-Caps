@@ -24,10 +24,11 @@ import pymysql
 db_user = os.environ.get('CLOUD_SQL_USERNAME')
 db_password = os.environ.get('CLOUD_SQL_PASSWORD')
 db_name = os.environ.get('CLOUD_SQL_DATABASE_NAME')
-db_connection_name = os.environ.get('CLOUD_SQL_CONNECTION_NAME')
+# db_connection_name = os.environ.get('CLOUD_SQL_CONNECTION_NAME')
+db_host = os.environ.get('CLOUD_SQL_HOST')
 
 app = Flask(__name__)
-user_service = UserService(db_user,db_password,db_name,db_connection_name)
+user_service = UserService(db_user,db_password,db_name,db_host)
 
 @app.route("/", methods=["GET"])
 def hello():
@@ -38,14 +39,8 @@ def GetNull():
     null = []
     #connect database
     if request.method == 'GET':
-        if os.environ.get('GAE_ENV') == 'standard':
-            unix_socket = '/cloudsql/{}'.format(db_connection_name)
-            cnx = pymysql.connect(user=db_user, password=db_password,
-                                unix_socket=unix_socket, db=db_name)
-        else:
-            host = '127.0.0.1'
-            cnx = pymysql.connect(user=db_user, password=db_password,
-                                host=host, db=db_name)
+        cnx = pymysql.connect(user=db_user, password=db_password,
+                                host=db_host, db=db_name)
         #querying sql
         with cnx.cursor() as cursor:
             cursor.execute('SELECT kategori.id_kategori_user, kategori.id_kategori, user.username, user.id_user FROM kategori LEFT JOIN user ON kategori.id_kategori_user = user.id_user WHERE id_kategori is NULL;')
