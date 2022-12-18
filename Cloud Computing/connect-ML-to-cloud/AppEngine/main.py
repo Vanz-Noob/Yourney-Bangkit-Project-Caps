@@ -39,9 +39,13 @@ def GetNull():
     #connect database
     if request.method == 'GET':
         if os.environ.get('GAE_ENV') == 'standard':
-            unix_socket = '/cloudsql/{}'.format(db_connection_name)
-            cnx = pymysql.connect(user=db_user, password=db_password,
-                                unix_socket=unix_socket, db=db_name)
+            unix_socket = '/cloudsql/{}'.format(self.db_connection_name)
+            cnx = pymysql.connect(user=self.db_user, password=self.db_password,
+                                unix_socket=unix_socket, db=self.db_name)
+        else:
+            host = '127.0.0.1'
+            cnx = pymysql.connect(user=self.db_user, password=self.db_password,
+                                host=host, db=self.db_name)
         #querying sql
         with cnx.cursor() as cursor:
             cursor.execute('SELECT kategori.id_kategori_user, kategori.id_kategori, user.username, user.id_user FROM kategori LEFT JOIN user ON kategori.id_kategori_user = user.id_user WHERE id_kategori is NULL;')
