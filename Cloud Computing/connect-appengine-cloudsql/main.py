@@ -989,7 +989,7 @@ def GetNull():
                 user['id_kategori'] = id_kategori
                 user['status'] = 'success'
             except Exception as e:
-                user['status'] = 'failed with error::' = str(e)
+                user['status'] = 'failed with error::' + str(e)
                 continue
 
         return jsonify(null)
