@@ -983,12 +983,13 @@ def GetNull():
         cnx.close()
 
         for user in null:
-            print(user)
             try:
                 id_kategori = average_data(user['username_twitter'])
                 user_service.user_update_kategori(id_kategori)
                 user['id_kategori'] = id_kategori
-            except:
+                user['status'] = 'success'
+            except Exception as e:
+                user['status'] = 'failed with error::' = str(e)
                 continue
 
         return jsonify(null)
