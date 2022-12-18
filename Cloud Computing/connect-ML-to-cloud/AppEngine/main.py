@@ -21,11 +21,11 @@ from helper.twitter import average_data
 from helper.user import UserService
 import pymysql
 
-db_user = os.environ.get('CLOUD_SQL_USERNAME')
-db_password = os.environ.get('CLOUD_SQL_PASSWORD')
-db_name = os.environ.get('CLOUD_SQL_DATABASE_NAME')
-db_connection_name = os.environ.get('CLOUD_SQL_CONNECTION_NAME')
-db_host = os.environ.get('CLOUD_SQL_HOST')
+db_host = os.environ["INSTANCE_HOST"]  # e.g. '127.0.0.1' ('172.17.0.1' if deployed to GAE Flex)
+db_user = os.environ["DB_USER"]  # e.g. 'my-db-user'
+db_pass = os.environ["DB_PASS"]  # e.g. 'my-db-password'
+db_name = os.environ["DB_NAME"]  # e.g. 'my-database'
+db_port = os.environ["DB_PORT"]  # e.g. 3306
 
 
 app = Flask(__name__)
