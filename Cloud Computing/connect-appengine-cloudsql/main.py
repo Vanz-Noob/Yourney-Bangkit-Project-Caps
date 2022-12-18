@@ -983,10 +983,13 @@ def GetNull():
         cnx.close()
 
         for user in null:
-            id_kategori = average_data(user['username_twitter'])
-            user_service.user_update_kategori(id_kategori)
-            user['id_kategori'] = id_kategori
-
+            print(user)
+            try:
+                id_kategori = average_data(user['username_twitter'])
+                user_service.user_update_kategori(id_kategori)
+                user['id_kategori'] = id_kategori
+            except:
+                continue
 
         return jsonify(null)
     else:
