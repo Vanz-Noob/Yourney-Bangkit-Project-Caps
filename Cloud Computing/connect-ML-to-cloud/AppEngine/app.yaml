@@ -6,5 +6,5 @@ env_variables:
   DB_USER: root
   DB_PASS: 123
   DB_NAME: yourney
-  DB_PORT: yourney-app-353202:us-central1:bangkit-tez1
+  DB_PORT: 3306
 # [END gae_python37_cloudsql_config]
