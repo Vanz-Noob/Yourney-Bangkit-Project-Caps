@@ -53,3 +53,17 @@ class UserService:
             result = cursor.fetchone()
         cnx.close()
         return result
+    
+    def user_update_kategori(self,id_user ,id_kategori):
+        if os.environ.get('GAE_ENV') == 'standard':
+            unix_socket = '/cloudsql/{}'.format(self.db_connection_name)
+            cnx = pymysql.connect(user=self.db_user, password=self.db_password,
+                                unix_socket=unix_socket, db=self.db_name)
+        else:
+            host = self.db_host
+            cnx = pymysql.connect(user=self.db_user, password=self.db_password,
+                                host=host, db=self.db_name)
+        with cnx.cursor() as cursor:
+            cursor.execute('UPDATE user SET id_kategori1=%s WHERE id_user=%s;', (id_kategori, id_user))
+            cnx.commit()
+        cnx.close()
