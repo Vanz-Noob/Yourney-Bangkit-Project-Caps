@@ -126,21 +126,18 @@ def average_data(username):
         df_all = df_all.dropna()
 
         yTarget = df_all["category"]
-        Y = yTarget
+        encoder = LabelEncoder()
+        Y = encoder.fit_transform(yTarget)
 
         vectorizer = CountVectorizer(analyzer=splitter).fit(df_all["tweet"])
         xTarget = vectorizer.transform(df_all["tweet"])
         tfidf = TfidfTransformer()
         X = tfidf.fit_transform(xTarget)
 
-        X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.2, random_state=1)
+        X_train, X_test, y_train = train_test_split(X, Y, test_size=0.2, random_state=1)
         NaiveBayes = MultinomialNB().fit(X_train, np.ravel(y_train, order="C"))
 
-        prediction = NaiveBayes.predict(X_test)
-        accuracies = accuracy_score(y_test, prediction)
-
         # User Tweet Probability
-        X_dataset, y_dataset = X, Y
 
         header = ["created_at", "tweet"]
         df_user = pd.DataFrame(user_tweet_retriever(username), columns=header)
