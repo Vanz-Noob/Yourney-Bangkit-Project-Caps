@@ -411,12 +411,13 @@ def user():
                 'status': 'success',
                 'user':{
                     'id': user[0],
-                    'username': user[4],
-                    'jenis_kelamin': user[6],
-                    'tempat_lahir': user[7],
-                    'email':user[9],
-                    'user_pic': user[10],
-                    'username_twitter': user[11]
+                    'full_name': user[4]
+                    'username': user[5],
+                    'jenis_kelamin': user[7],
+                    'tempat_lahir': user[8],
+                    'email':user[10],
+                    'user_pic': user[11],
+                    'username_twitter': user[12]
                 }
             }
         ),200
@@ -434,6 +435,10 @@ def user():
 
         sql = 'UPDATE user SET '
         sqlupdated = []
+        if 'full_name' in data:
+            sqlupdated.append('full_name = %s')
+            payload.append(data['full_name'])
+            
         if 'username' in data:
             sqlupdated.append('username = %s ')
             payload.append(data['username'])
@@ -472,7 +477,7 @@ def user():
         #querying sql
         with cnx.cursor() as cursor:
             cursor.execute(sql, payload)
-            cursor.execute('SELECT id_user, username, tempat_lahir, email, jenis_kelamin, user_pic, username_twitter FROM user WHERE id_user=%s;',(id_user))
+            cursor.execute('SELECT id_user, full_name, username, tempat_lahir, email, jenis_kelamin, user_pic, username_twitter FROM user WHERE id_user=%s;',(id_user))
             cnx.commit()
             user = cursor.fetchone()
         cnx.close()
@@ -480,13 +485,14 @@ def user():
         return jsonify(
             {
                 'id': user[0],
-                'username': user[1],
-                'jenis_kelamin': user[4],
-                'tempat_lahir': user[2],
-                'email': user[3],
-                'user_pic': user[5],
-                'username_twitter': user[6],
-            }
+                'full_name': user[4]
+                'username': user[5],
+                'jenis_kelamin': user[7],
+                'tempat_lahir': user[8],
+                'email':user[10],
+                'user_pic': user[11],
+                'username_twitter': user[12]
+        }
         ), 200
     else:
         return jsonify({
