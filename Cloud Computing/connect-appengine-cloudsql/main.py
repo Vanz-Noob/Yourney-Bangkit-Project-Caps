@@ -280,7 +280,7 @@ def db():
         return 'Invalid request'
     
 # cek dataset
-@app.route('/dataset')
+@app.route('/dataset',methods=['GET','POST'])
 @jwt_required(refresh=False)
 def dataset():
     #sudah okay
