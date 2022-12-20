@@ -141,7 +141,6 @@ def average_data(username):
 
         # User Tweet Probability
         X_dataset, y_dataset = X, Y
-        username = "aliifnrhmn"
 
         header = ["created_at", "tweet"]
         df_user = pd.DataFrame(user_tweet_retriever(username), columns=header)
