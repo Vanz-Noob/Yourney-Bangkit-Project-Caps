@@ -495,13 +495,13 @@ def user():
         return jsonify(
             {
                 'id': user[0],
-                'full_name': user[4],
-                'username': user[5],
-                'jenis_kelamin': user[7],
-                'tempat_lahir': user[8],
-                'email':user[10],
-                'user_pic': user[11],
-                'username_twitter': user[12]
+                'full_name': user[1],
+                'username': user[2],
+                'jenis_kelamin': user[5],
+                'tempat_lahir': user[3],
+                'email':user[4],
+                'user_pic': user[6],
+                'username_twitter': user[7]
         }
         ), 200
     else:
