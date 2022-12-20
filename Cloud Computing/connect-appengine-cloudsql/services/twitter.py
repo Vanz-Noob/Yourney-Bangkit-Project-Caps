@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import os
 import tweepy
 import pandas as pd
 import numpy as np
@@ -12,6 +13,7 @@ from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.metrics import accuracy_score
 from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import accuracy_score, confusion_matrix
+from dataset import DatasetService
 # Functions
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -37,14 +39,11 @@ def category_tweet_retriever(query):
     for tweet in tweepy.Cursor(api.search_tweets, 
                                q=query, 
                                lang='id', 
-                               tweet_mode="extended").items(1000):
+                               tweet_mode="extended").items(1):
         tweets.append([tweet.created_at, tweet.author.screen_name, tweet.full_text])
-        
     return tweets
 
-def clean_tweet(tweet):    
-    import stopwordsiso as stopwords
-
+def clean_tweet(tweet):
     process = tweet.lower()
     process = process.split()
     process = [word for word in process if not process in stopwords_en]
@@ -179,3 +178,22 @@ def average_data(username,data):
 
     except Exception as e:
         return e
+
+if __name__ == '__main__':
+    newData = update_dataset()
+    db_user = os.environ.get('CLOUD_SQL_USERNAME')
+    db_password = os.environ.get('CLOUD_SQL_PASSWORD')
+    db_name = os.environ.get('CLOUD_SQL_DATABASE_NAME')
+    db_connection_name = os.environ.get('CLOUD_SQL_CONNECTION_NAME')
+    data_service = DatasetService(db_user,db_password,db_name,db_connection_name)
+    for data in newData:
+        if 'categori' not in data:
+            continue
+        if len(data['categori']) > 0 or len(data['author']) > 0 or len(data['created_at']) > 0 or len(data['tweet']) > 0 :
+            data_service.add_dataset(data['created_at'],data['author'], data['categori'], data['tweet'])
+        else:
+            continue
+    
+    current_data = data_service.get_dataset_by_kategori()
+    print(current_data)
+
