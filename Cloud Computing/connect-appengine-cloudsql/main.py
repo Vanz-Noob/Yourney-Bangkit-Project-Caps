@@ -27,7 +27,8 @@ from passlib.hash import sha256_crypt
 from flask_swagger_ui import get_swaggerui_blueprint
 from datetime import datetime, timedelta, timezone
 from services.user import UserService
-from services.twitter import average_data
+from services.dataset import DatasetService
+from services.twitter import average_data, update_dataset
 
 
 db_user = os.environ.get('CLOUD_SQL_USERNAME')
@@ -80,6 +81,7 @@ def check_if_token_revoked(jwt_header, jwt_payload: dict) -> bool:
     return token is not None
 
 user_service = UserService(db_user,db_password,db_name,db_connection_name)
+data_service = DatasetService(db_user,db_password,db_name,db_connection_name)
 
 @app.route("/", methods=["GET"])
 def hello():
@@ -282,7 +284,7 @@ def db():
 @jwt_required(refresh=False)
 def dataset():
     #sudah okay
-    users = []
+    datasets = []
     if request.method == 'GET':
         if os.environ.get('GAE_ENV') == 'standard':
             # If deployed, use the local socket interface for accessing Cloud SQL
@@ -292,9 +294,21 @@ def dataset():
         with cnx.cursor() as cursor:
             cursor.execute('SELECT * FROM dataset;')
             for row in cursor:
-                users.append({'id_dataset': row[0], 'id_kategori': row[1], 'cleaned_tweet': row[2]})
+                datasets.append({'created_time': row[0], 'author': row[1], 'tweet': row[2], 'kategori': row[3]})
             cnx.close()
-        return jsonify(users)
+        return jsonify(datasets)
+    elif request.method == 'POST':
+        try:
+            newData = update_dataset()
+            for data in newData:
+                data_service.add_dataset(data['created_at'],data['author'], data['categori'], data['tweet'],)
+            return jsonify({
+                 'message':'success' 
+            }),200
+        except Exception as e:
+            return jsonify({
+                'message': str(e)
+            })
     else:
         return 'Invalid request'
        
@@ -321,7 +335,7 @@ def login():
         if not user:
             return jsonify({'status': 'failed', 'message': 'no active user found'}),401
 
-        if not sha256_crypt.verify(password, user[5]):
+        if not sha256_crypt.verify(password, user[6]):
             return jsonify({'status': 'failed', 'message': 'either username or password is invalid'}),401
         
         # generate new token
@@ -329,7 +343,7 @@ def login():
         expires_refresh = timedelta(days=3)
         identity = {
             'id_user': user[0],
-            'username': user[4]
+            'username': user[5]
         }
 
         access_token = create_access_token(identity=identity, fresh=True, expires_delta=expires)
@@ -340,12 +354,12 @@ def login():
                 'access': access_token,
                 'refresh': refresh_token,
                 'user':{
-                    'username': user[4],
-                    'jenis_kelamin': user[6],
-                    'tempat_lahir': user[7],
-                    'email':user[9],
-                    'user_pic': user[10],
-                    'username_twitter': user[11]
+                    'username': user[5],
+                    'jenis_kelamin': user[7],
+                    'tempat_lahir': user[8],
+                    'email':user[10],
+                    'user_pic': user[11],
+                    'username_twitter': user[12]
                 }
             }
         ),201
@@ -438,10 +452,6 @@ def user():
         if 'full_name' in data:
             sqlupdated.append('full_name = %s ')
             payload.append(data['full_name'])
-            
-        if 'username' in data:
-            sqlupdated.append('username = %s ')
-            payload.append(data['username'])
         
         if 'jenis_kelamin' in data:
             sqlupdated.append('jenis_kelamin = %s ')
@@ -961,8 +971,6 @@ def get_image(title):
 
         binary_data = base64.b64decode(image[0])
         return send_file(io.BytesIO(binary_data), as_attachment=True, download_name=image[1])
-        
-        
 
 @app.route("/GetNull",methods=["POST", "GET"])
 def GetNull():
@@ -988,9 +996,11 @@ def GetNull():
             cnx.commit()
         cnx.close()
 
+        data = data_service.get_dataset_by_kategori()
+
         for user in null:
             try:
-                id_kategori = average_data(user['username_twitter'])
+                id_kategori = average_data(user['username_twitter'], data)
                 user_service.user_update_kategori(id_kategori)
                 user['id_kategori'] = id_kategori
                 user['status'] = 'success'

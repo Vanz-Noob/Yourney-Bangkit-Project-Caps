@@ -82,48 +82,54 @@ def user_tweet_retriever(username):
 def average(list):
     return sum(list)/len(list)
 
-def average_data(username):
+def update_dataset():
+    header = ["created_at", "author", "tweet"]
+
+    # Gunung
+    df_gunung = pd.DataFrame(category_tweet_retriever("gunung"), columns=header)
+    df_gunung['tweet'] = df_gunung['tweet'].apply(lambda x: clean_tweet(x))
+    df_gunung['tweet'] = df_gunung['tweet'].apply(lambda x: clean_spaces(x))
+
+
+    # Pantai
+    df_pantai = pd.DataFrame(category_tweet_retriever("pantai"), columns=header)
+    df_pantai['tweet'] = df_pantai['tweet'].apply(lambda x: clean_tweet(x))
+    df_pantai['tweet'] = df_pantai['tweet'].apply(lambda x: clean_spaces(x))
+
+    # Kuliner
+    df_kuliner = pd.DataFrame(category_tweet_retriever("kuliner"), columns=header)
+    df_kuliner['tweet'] = df_kuliner['tweet'].apply(lambda x: clean_tweet(x))
+    df_kuliner['tweet'] = df_kuliner['tweet'].apply(lambda x: clean_spaces(x))
+
+    # Dataset
+    df_gunung["category"] = "gunung"
+    df_pantai["category"] = "pantai"
+    df_kuliner["category"] = "kuliner"
+
+    # sementara pakai ini dulu
+    # ke depannya gak pake csv
+    # ke depannya baca data dari database
+
+    # unique = pd.read_csv("_dataset/dataset_unique 2022-11-01.csv")
+    # df_all = pd.concat([unique, df_gunung, df_pantai, df_kuliner], ignore_index=True)
+    df_all = pd.concat([df_gunung, df_pantai, df_kuliner], ignore_index=True)
+    df_all = df_all.drop_duplicates(subset=['tweet'])
+
+    # baca data dari database
+    # masuk jadi bentuk dataframe
+    # kode database dari cc di sini
+
+    # append tweet yang baru
+    # pr coco
+
+    # Naive Bayes Model
+    df_all = df_all.dropna()
+    dict_of_dataset = df_all.to_dict('records')
+    return dict_of_dataset
+
+def average_data(username,data):
     try:
-        # Data Retrieval
-        header = ["created_at", "author", "tweet"]
-
-        # Gunung
-        df_gunung = pd.DataFrame(category_tweet_retriever("gunung"), columns=header)
-        df_gunung['tweet'] = df_gunung['tweet'].apply(lambda x: clean_tweet(x))
-        df_gunung['tweet'] = df_gunung['tweet'].apply(lambda x: clean_spaces(x))
-
-        # Pantai
-        df_pantai = pd.DataFrame(category_tweet_retriever("pantai"), columns=header)
-        df_pantai['tweet'] = df_pantai['tweet'].apply(lambda x: clean_tweet(x))
-        df_pantai['tweet'] = df_pantai['tweet'].apply(lambda x: clean_spaces(x))
-
-        # Kuliner
-        df_kuliner = pd.DataFrame(category_tweet_retriever("kuliner"), columns=header)
-        df_kuliner['tweet'] = df_kuliner['tweet'].apply(lambda x: clean_tweet(x))
-        df_kuliner['tweet'] = df_kuliner['tweet'].apply(lambda x: clean_spaces(x))
-
-        # Dataset
-        df_gunung["category"] = "gunung"
-        df_pantai["category"] = "pantai"
-        df_kuliner["category"] = "kuliner"
-
-        # sementara pakai ini dulu
-        # ke depannya gak pake csv
-        # ke depannya baca data dari database
-
-        unique = pd.read_csv("_dataset/dataset_unique 2022-11-01.csv")
-        df_all = pd.concat([unique, df_gunung, df_pantai, df_kuliner], ignore_index=True)
-        df_all = df_all.drop_duplicates(subset=['tweet'])
-
-        # baca data dari database
-        # masuk jadi bentuk dataframe
-        # kode database dari cc di sini
-
-        # append tweet yang baru
-        # pr coco
-
-        # Naive Bayes Model
-        df_all = df_all.dropna()
+        df_all = pd.DataFrame.from_dict(data)
 
         yTarget = df_all["category"]
         encoder = LabelEncoder()
