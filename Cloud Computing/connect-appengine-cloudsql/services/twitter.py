@@ -14,6 +14,8 @@ from sklearn.metrics import accuracy_score
 from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import accuracy_score, confusion_matrix
 from dataset import DatasetService
+from user import UserService
+
 # Functions
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -186,6 +188,8 @@ if __name__ == '__main__':
     db_name = os.environ.get('CLOUD_SQL_DATABASE_NAME')
     db_connection_name = os.environ.get('CLOUD_SQL_CONNECTION_NAME')
     data_service = DatasetService(db_user,db_password,db_name,db_connection_name)
+    user_service = UserService(db_user,db_password,db_name,db_connection_name)
+
     for data in newData:
         if 'categori' not in data:
             continue
@@ -195,5 +199,16 @@ if __name__ == '__main__':
             continue
     
     current_data = data_service.get_dataset_by_kategori()
-    print(current_data)
+    
+    null = user_service.user_kategori_null()
+
+    for user in null:
+        try:
+            id_kategori = average_data(user['username_twitter'], current_data)
+            user_service.user_update_kategori(id_kategori)
+            user['id_kategori'] = id_kategori
+            user['status'] = 'success'
+        except Exception as e:
+            user['status'] = 'failed with error::' + str(e)
+            continue
 
