@@ -411,7 +411,7 @@ def user():
                 'status': 'success',
                 'user':{
                     'id': user[0],
-                    'full_name': user[4]
+                    'full_name': user[4],
                     'username': user[5],
                     'jenis_kelamin': user[7],
                     'tempat_lahir': user[8],
@@ -436,7 +436,7 @@ def user():
         sql = 'UPDATE user SET '
         sqlupdated = []
         if 'full_name' in data:
-            sqlupdated.append('full_name = %s')
+            sqlupdated.append('full_name = %s ')
             payload.append(data['full_name'])
             
         if 'username' in data:
@@ -485,7 +485,7 @@ def user():
         return jsonify(
             {
                 'id': user[0],
-                'full_name': user[4]
+                'full_name': user[4],
                 'username': user[5],
                 'jenis_kelamin': user[7],
                 'tempat_lahir': user[8],
