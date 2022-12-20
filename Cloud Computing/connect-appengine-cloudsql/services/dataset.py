@@ -1,6 +1,4 @@
 import pymysql
-from flask import jsonify
-from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token
 import os
 
 
@@ -27,7 +25,7 @@ class DatasetService:
 
         return result
 
-    def get_dataset_by_kategori(self, kategori):
+    def get_dataset_by_kategori(self):
         if os.environ.get('GAE_ENV') == 'standard':
             unix_socket = '/cloudsql/{}'.format(self.db_connection_name)
             cnx = pymysql.connect(user=self.db_user, password=self.db_password,
