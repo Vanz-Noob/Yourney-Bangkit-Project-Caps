@@ -15,6 +15,16 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import accuracy_score, confusion_matrix
 from dataset import DatasetService
 from user import UserService
+import sqlalchemy
+from sqlalchemy import Column
+from sqlalchemy import DateTime
+from sqlalchemy import Integer
+from sqlalchemy import String
+from sqlalchemy import Table
+
+
+from connect_connector import connect_with_connector
+from connect_tcp import connect_tcp_socket
 
 # Functions
 config = configparser.ConfigParser()
@@ -180,32 +190,109 @@ def average_data(username,data):
 
     except Exception as e:
         return e
+def add_dataset(db,created_at, author, kategori, tweet ):
+    stmt = sqlalchemy.text(
+        "INSERT INTO dataset(created_at,author,tweet,kategori) VALUES (:created_at,:author,:tweet,:kategori) ;"
+    )
+    try:
+        # Using a with statement ensures that the connection is always released
+        # back into the pool at the end of statement (even if an error occurs)
+        with db.connect() as conn:
+            conn.execute(stmt, created_at=created_at, author=author, tweet=tweet, kategori= kategori)
+    except Exception as e:
+        print(e)
+        return
+
+def update_user_category(db, kategori, user_id):
+    stmt = sqlalchemy.text(
+        "UPDATE user SET id_kategori1=:kategori WHERE id_user=:id_user;"
+    )
+    try:
+        # Using a with statement ensures that the connection is always released
+        # back into the pool at the end of statement (even if an error occurs)
+        with db.connect() as conn:
+            return conn.execute(stmt, kategori=kategori, id_user=user_id)
+    except Exception as e:
+        print(e)
+        return
+
+def get_dataset(db):
+    stmt = sqlalchemy.text(
+        "SELECT * FROM dataset;"
+    )
+    try:
+        # Using a with statement ensures that the connection is always released
+        # back into the pool at the end of statement (even if an error occurs)
+        with db.connect() as conn:
+            return conn.execute(stmt)
+    except Exception as e:
+        print(e)
+        return
+
+def get_user_null(db):
+    stmt = sqlalchemy.text(
+        "SELECT kategori.id_kategori_user, kategori.id_kategori, user.username_twitter, user.id_user FROM kategori LEFT JOIN user ON kategori.id_kategori_user = user.id_user WHERE kategori.id_kategori is NULL AND user.username_twitter IS NOT NULL;"
+    )
+    try:
+        # Using a with statement ensures that the connection is always released
+        # back into the pool at the end of statement (even if an error occurs)
+        users = []
+        with db.connect() as conn:
+            null = conn.execute(stmt)
+            for row in null:
+                users.append(
+                    {
+                        'id_kategori_user': row[0],
+                        'id_kategori': row[1],
+                        'username_twitter':row[2],
+                        'user_id':row[3]
+                    }
+                )
+        return users
+    except Exception as e:
+        print(e)
+        return
+
+def init_connection_pool() -> sqlalchemy.engine.base.Engine:
+    # use a TCP socket when INSTANCE_HOST (e.g. 127.0.0.1) is defined
+    if os.environ.get("INSTANCE_HOST"):
+        return connect_tcp_socket()
+
+    # use the connector when INSTANCE_CONNECTION_NAME (e.g. project:region:instance) is defined
+    if os.environ.get("CLOUD_SQL_CONNECTION_NAME"):
+        return connect_with_connector()
+
+    raise ValueError(
+        "Missing database connection type. Please define one of INSTANCE_HOST or INSTANCE_CONNECTION_NAME"
+    )
 
 if __name__ == '__main__':
+    db = init_connection_pool()
     newData = update_dataset()
-    db_user = os.environ.get('CLOUD_SQL_USERNAME')
-    db_password = os.environ.get('CLOUD_SQL_PASSWORD')
-    db_name = os.environ.get('CLOUD_SQL_DATABASE_NAME')
-    db_connection_name = os.environ.get('CLOUD_SQL_CONNECTION_NAME')
-    data_service = DatasetService(db_user,db_password,db_name,db_connection_name)
-    user_service = UserService(db_user,db_password,db_name,db_connection_name)
+    # db_user = os.environ.get('CLOUD_SQL_USERNAME')
+    # db_password = os.environ.get('CLOUD_SQL_PASSWORD')
+    # db_name = os.environ.get('CLOUD_SQL_DATABASE_NAME')
+    # db_connection_name = os.environ.get('CLOUD_SQL_CONNECTION_NAME')
+    # data_service = DatasetService(db_user,db_password,db_name,db_connection_name)
+    # user_service = UserService(db_user,db_password,db_name,db_connection_name)
 
     for data in newData:
         if 'categori' not in data:
             continue
         if len(data['categori']) > 0 or len(data['author']) > 0 or len(data['created_at']) > 0 or len(data['tweet']) > 0 :
-            data_service.add_dataset(data['created_at'],data['author'], data['categori'], data['tweet'])
+            add_dataset(db,data['created_at'],data['author'], data['categori'], data['tweet'])
         else:
             continue
     
-    current_data = data_service.get_dataset_by_kategori()
+    current_data = get_dataset(db)
+    print(current_data)
     
-    null = user_service.user_kategori_null()
+    null = get_user_null(db)
 
     for user in null:
         try:
             id_kategori = average_data(user['username_twitter'], current_data)
-            user_service.user_update_kategori(id_kategori)
+            update_user_category(db,id_kategori, user['username_twitter'])
             user['id_kategori'] = id_kategori
             user['status'] = 'success'
         except Exception as e:
