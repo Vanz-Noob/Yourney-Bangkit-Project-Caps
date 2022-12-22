@@ -249,9 +249,9 @@ def kategori():
             cnx = pymysql.connect(user=db_user, password=db_password,
                                 unix_socket=unix_socket, db=db_name)
         with cnx.cursor() as cursor:
-            cursor.execute('SELECT * FROM kategori;')
+            cursor.execute('SELECT id_kategori, nama_kategori FROM kategori;')
             for row in cursor:
-                kategori.append({'id_kategori': row[1], 'nama_kategori': row[4]})
+                kategori.append({'id_kategori': row[0], 'nama_kategori': row[1]})
             cnx.close()
         return jsonify(kategori)
     else:
