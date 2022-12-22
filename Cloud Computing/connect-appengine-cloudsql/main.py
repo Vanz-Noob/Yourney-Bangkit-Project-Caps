@@ -28,7 +28,7 @@ from flask_swagger_ui import get_swaggerui_blueprint
 from datetime import datetime, timedelta, timezone
 from services.user import UserService
 from services.dataset import DatasetService
-from services.twitter import average_data, update_dataset
+# from services.twitter import average_data, update_dataset
 
 
 db_user = os.environ.get('CLOUD_SQL_USERNAME')
@@ -297,18 +297,18 @@ def dataset():
                 datasets.append({'created_time': row[0], 'author': row[1], 'tweet': row[2], 'kategori': row[3]})
             cnx.close()
         return jsonify(datasets)
-    elif request.method == 'POST':
-        try:
-            newData = update_dataset()
-            for data in newData:
-                data_service.add_dataset(data['created_at'],data['author'], data['categori'], data['tweet'],)
-            return jsonify({
-                 'message':'success' 
-            }),200
-        except Exception as e:
-            return jsonify({
-                'message': str(e)
-            })
+    # elif request.method == 'POST':
+    #     try:
+    #         newData = update_dataset()
+    #         for data in newData:
+    #             data_service.add_dataset(data['created_at'],data['author'], data['categori'], data['tweet'],)
+    #         return jsonify({
+    #              'message':'success' 
+    #         }),200
+    #     except Exception as e:
+    #         return jsonify({
+    #             'message': str(e)
+    #         })
     else:
         return 'Invalid request'
        
@@ -972,45 +972,45 @@ def get_image(title):
         binary_data = base64.b64decode(image[0])
         return send_file(io.BytesIO(binary_data), as_attachment=True, download_name=image[1])
 
-@app.route("/GetNull",methods=["POST", "GET"])
-def GetNull():
-    null = []
-    #connect database
-    if request.method == 'GET':
-        if os.environ.get('GAE_ENV') == 'standard':
-            unix_socket = '/cloudsql/{}'.format(db_connection_name)
-            cnx = pymysql.connect(user=db_user, password=db_password,
-                                unix_socket=unix_socket, db=db_name)
-        #querying sql
-        with cnx.cursor() as cursor:
-            cursor.execute('SELECT kategori.id_kategori_user, kategori.id_kategori, user.username_twitter, user.id_user FROM kategori LEFT JOIN user ON kategori.id_kategori_user = user.id_user WHERE kategori.id_kategori is NULL AND user.username_twitter IS NOT NULL;')
-            for row in cursor:
-                null.append(
-                    {
-                        'id_kategori_user': row[0],
-                        'id_kategori': row[1],
-                        'username_twitter':row[2],
-                        'user_id':row[3]
-                    }
-                )
-            cnx.commit()
-        cnx.close()
+# @app.route("/GetNull",methods=["POST", "GET"])
+# def GetNull():
+#     null = []
+#     #connect database
+#     if request.method == 'GET':
+#         if os.environ.get('GAE_ENV') == 'standard':
+#             unix_socket = '/cloudsql/{}'.format(db_connection_name)
+#             cnx = pymysql.connect(user=db_user, password=db_password,
+#                                 unix_socket=unix_socket, db=db_name)
+#         #querying sql
+#         with cnx.cursor() as cursor:
+#             cursor.execute('SELECT kategori.id_kategori_user, kategori.id_kategori, user.username_twitter, user.id_user FROM kategori LEFT JOIN user ON kategori.id_kategori_user = user.id_user WHERE kategori.id_kategori is NULL AND user.username_twitter IS NOT NULL;')
+#             for row in cursor:
+#                 null.append(
+#                     {
+#                         'id_kategori_user': row[0],
+#                         'id_kategori': row[1],
+#                         'username_twitter':row[2],
+#                         'user_id':row[3]
+#                     }
+#                 )
+#             cnx.commit()
+#         cnx.close()
 
-        data = data_service.get_dataset_by_kategori()
+#         data = data_service.get_dataset_by_kategori()
 
-        for user in null:
-            try:
-                id_kategori = average_data(user['username_twitter'], data)
-                user_service.user_update_kategori(id_kategori)
-                user['id_kategori'] = id_kategori
-                user['status'] = 'success'
-            except Exception as e:
-                user['status'] = 'failed with error::' + str(e)
-                continue
+#         for user in null:
+#             try:
+#                 id_kategori = average_data(user['username_twitter'], data)
+#                 user_service.user_update_kategori(id_kategori)
+#                 user['id_kategori'] = id_kategori
+#                 user['status'] = 'success'
+#             except Exception as e:
+#                 user['status'] = 'failed with error::' + str(e)
+#                 continue
 
-        return jsonify(null)
-    else:
-        return 'Invalid request'
+#         return jsonify(null)
+#     else:
+#         return 'Invalid request'
     
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=8080, debug=True)
