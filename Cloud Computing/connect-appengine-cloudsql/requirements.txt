@@ -33,6 +33,7 @@ pyasn1-modules==0.2.8
 pycparser==2.21
 PyJWT==2.6.0
 PyMySQL==1.0.2
+pyOpenSSL==22.1.0
 python-dateutil==2.8.2
 python-tds==1.11.0
 pytz==2022.7
