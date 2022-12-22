@@ -28,7 +28,7 @@ def connect_tcp_socket() -> sqlalchemy.engine.base.Engine:
     # secure - consider a more secure solution such as
     # Cloud Secret Manager (https://cloud.google.com/secret-manager) to help
     # keep secrets safe.
-    db_host = os.environ["CLOUD_SQL_CONNECTION_NAME"]  # e.g. '127.0.0.1' ('172.17.0.1' if deployed to GAE Flex)
+    db_host = os.environ["CLOUD_SQL_HOST"]  # e.g. '127.0.0.1' ('172.17.0.1' if deployed to GAE Flex)
     db_user = os.environ["CLOUD_SQL_USERNAME"]  # e.g. 'my-db-user'
     db_pass = os.environ["CLOUD_SQL_PASSWORD"]  # e.g. 'my-db-password'
     db_name = os.environ["CLOUD_SQL_DATABASE_NAME"]  # e.g. 'my-database'
@@ -41,9 +41,9 @@ def connect_tcp_socket() -> sqlalchemy.engine.base.Engine:
     # For deployments that connect directly to a Cloud SQL instance without
     # using the Cloud SQL Proxy, configuring SSL certificates will ensure the
     # connection is encrypted.
-    if os.environ.get("DB_ROOT_CERT"):  # e.g. '/path/to/my/server-ca.pem'
+    if os.environ.get("CLOUD_SQL_CERT"):  # e.g. '/path/to/my/server-ca.pem'
         connect_args = {
-            "cafile" : os.environ["DB_ROOT_CERT"],
+            "cafile" : os.environ["CLOUD_SQL_CERT"],
             "validate_host": False,
         }
 

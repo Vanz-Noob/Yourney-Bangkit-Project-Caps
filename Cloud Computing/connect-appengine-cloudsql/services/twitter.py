@@ -255,7 +255,7 @@ def get_user_null(db):
 
 def init_connection_pool() -> sqlalchemy.engine.base.Engine:
     # use a TCP socket when INSTANCE_HOST (e.g. 127.0.0.1) is defined
-    if os.environ.get("INSTANCE_HOST"):
+    if os.environ.get("CLOUD_SQL_HOST"):
         return connect_tcp_socket()
 
     # use the connector when INSTANCE_CONNECTION_NAME (e.g. project:region:instance) is defined
