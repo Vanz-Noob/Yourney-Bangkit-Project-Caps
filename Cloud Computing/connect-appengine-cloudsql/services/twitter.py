@@ -16,11 +16,6 @@ from sklearn.metrics import accuracy_score, confusion_matrix
 from dataset import DatasetService
 from user import UserService
 import sqlalchemy
-from sqlalchemy import Column
-from sqlalchemy import DateTime
-from sqlalchemy import Integer
-from sqlalchemy import String
-from sqlalchemy import Table
 
 
 from connect_connector import connect_with_connector
