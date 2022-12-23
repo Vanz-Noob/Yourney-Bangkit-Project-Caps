@@ -305,7 +305,9 @@ def dataset():
         return jsonify(datasets)
     elif request.method == 'POST':
         try:
-            threading.Thread(target=twitter_dataset).start()
+            newData = update_dataset()
+            for data in newData:
+                data_service.add_dataset(data['created_at'],data['author'], data['categori'], data['tweet'],)
             return jsonify({
                  'message':'success' 
             }),200
