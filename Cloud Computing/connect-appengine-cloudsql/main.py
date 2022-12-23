@@ -28,7 +28,7 @@ from passlib.hash import sha256_crypt
 from flask_swagger_ui import get_swaggerui_blueprint
 from datetime import datetime, timedelta, timezone
 from services.user import UserService
-# from services.dataset import DatasetService
+from services.dataset import DatasetService
 from services.twitter import average_data, update_dataset
 
 
@@ -43,7 +43,7 @@ API_URL = '/static/spec.json'  # Our API url (can of course be a local resource)
 
 
 user_service = UserService(db_user,db_password,db_name,db_connection_name)
-# data_service = DatasetService(db_user,db_password,db_name,db_connection_name)
+data_service = DatasetService(db_user,db_password,db_name,db_connection_name)
 
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 10 * 1000 * 1000
@@ -290,7 +290,7 @@ def twitter_dataset():
         cnx = pymysql.connect(user=db_user, password=db_password,
                             unix_socket=unix_socket, db=db_name)
     with cnx.cursor() as cursor:
-        cursor.executemany('INSERT INTO dataset(created_at,author,tweet,kategori) VALUES (%s,%s,%s,%s) ;',values)
+        cursor.executemany('INSERT INTO dataset(create_time,author,tweet,kategori) VALUES (%s,%s,%s,%s) ;',values)
         cnx.commit()
     cnx.close()
     

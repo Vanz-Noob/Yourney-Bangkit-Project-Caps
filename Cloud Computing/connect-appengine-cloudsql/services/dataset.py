@@ -16,7 +16,7 @@ class DatasetService:
                 cnx = pymysql.connect(user=self.db_user, password=self.db_password,
                                     unix_socket=unix_socket, db=self.db_name)
             with cnx.cursor() as cursor:
-                cursor.executemany('INSERT INTO dataset(created_at,author,tweet,kategori) VALUES (%s,%s,%s,%s) ;',values)
+                cursor.executemany('INSERT INTO dataset(create_time,author,tweet,kategori) VALUES (%s,%s,%s,%s) ;',values)
                 cnx.commit()
             cnx.close()
 
