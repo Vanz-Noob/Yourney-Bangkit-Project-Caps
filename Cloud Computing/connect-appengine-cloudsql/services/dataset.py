@@ -20,7 +20,7 @@ class DatasetService:
                 cnx = pymysql.connect(user=self.db_user, password=self.db_password,
                                     host=host, db=self.db_name)
             with cnx.cursor() as cursor:
-                cursor.executemany('INSERT INTO dataset(created_at,author,kategori,tweet) VALUES (%s,%s,%s,%s) ;',values)
+                cursor.executemany('INSERT INTO dataset(created_at,author,tweet,kategori) VALUES (%s,%s,%s,%s) ;',values)
             cnx.close()
         except Exception as e:
             print(str(e))

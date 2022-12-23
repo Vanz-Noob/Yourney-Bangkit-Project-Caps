@@ -284,7 +284,7 @@ def twitter_dataset():
     newData = update_dataset()
     values = []
     for data in newData:
-        values.append([data['created_time'], data['author'], data['tweet'], data['category']])
+        values.append([data['created_at'], data['author'], data['tweet'], data['category']])
     data_service.add_dataset(values)
     
 # cek dataset
