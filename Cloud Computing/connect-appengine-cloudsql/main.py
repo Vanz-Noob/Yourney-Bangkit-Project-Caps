@@ -282,8 +282,10 @@ def db():
 
 def twitter_dataset():
     newData = update_dataset()
+    values = []
     for data in newData:
-        data_service.add_dataset(data['created_at'],data['author'], data['categori'], data['tweet'],)
+        values.append([data['created_time'], data['author'], data['category'], data['tweet']])
+    data_service.add_dataset(values)
     
 # cek dataset
 @app.route('/dataset',methods=['GET','POST'])
