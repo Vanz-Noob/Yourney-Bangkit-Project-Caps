@@ -15,13 +15,12 @@ class DatasetService:
                 unix_socket = '/cloudsql/{}'.format(self.db_connection_name)
                 cnx = pymysql.connect(user=self.db_user, password=self.db_password,
                                     unix_socket=unix_socket, db=self.db_name)
-            else:
-                host = '127.0.0.1'
-                cnx = pymysql.connect(user=self.db_user, password=self.db_password,
-                                    host=host, db=self.db_name)
             with cnx.cursor() as cursor:
                 cursor.executemany('INSERT INTO dataset(created_at,author,tweet,kategori) VALUES (%s,%s,%s,%s) ;',values)
+                cnx.commit()
             cnx.close()
+
+            return
         except Exception as e:
             print(str(e))
 
@@ -30,10 +29,6 @@ class DatasetService:
             unix_socket = '/cloudsql/{}'.format(self.db_connection_name)
             cnx = pymysql.connect(user=self.db_user, password=self.db_password,
                                 unix_socket=unix_socket, db=self.db_name)
-        else:
-            host = '127.0.0.1'
-            cnx = pymysql.connect(user=self.db_user, password=self.db_password,
-                                host=host, db=self.db_name)
         with cnx.cursor() as cursor:
             cursor.execute('SELECT * FROM dataset;')
             result = cursor.fetchone()

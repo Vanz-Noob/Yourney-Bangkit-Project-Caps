@@ -42,6 +42,9 @@ SWAGGER_URL = '/api/docs'  # URL for exposing Swagger UI (without trailing '/')
 API_URL = '/static/spec.json'  # Our API url (can of course be a local resource)
 
 
+user_service = UserService(db_user,db_password,db_name,db_connection_name)
+data_service = DatasetService(db_user,db_password,db_name,db_connection_name)
+
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 10 * 1000 * 1000
 app.config["JWT_SECRET_KEY"] =  str(os.environ.get("JWT_SECRET"))
@@ -80,9 +83,6 @@ def check_if_token_revoked(jwt_header, jwt_payload: dict) -> bool:
     cnx.close()
 
     return token is not None
-
-user_service = UserService(db_user,db_password,db_name,db_connection_name)
-data_service = DatasetService(db_user,db_password,db_name,db_connection_name)
 
 @app.route("/", methods=["GET"])
 def hello():
@@ -285,7 +285,14 @@ def twitter_dataset():
     values = []
     for data in newData:
         values.append([data['created_at'], data['author'], data['tweet'], data['category']])
-    data_service.add_dataset(values)
+    if os.environ.get('GAE_ENV') == 'standard':
+        unix_socket = '/cloudsql/{}'.format(db_connection_name)
+        cnx = pymysql.connect(user=db_user, password=db_password,
+                            unix_socket=unix_socket, db=db_name)
+    with cnx.cursor() as cursor:
+        cursor.executemany('INSERT INTO dataset(created_at,author,tweet,kategori) VALUES (%s,%s,%s,%s) ;',values)
+        cnx.commit()
+    cnx.close()
     
 # cek dataset
 @app.route('/dataset',methods=['GET','POST'])
