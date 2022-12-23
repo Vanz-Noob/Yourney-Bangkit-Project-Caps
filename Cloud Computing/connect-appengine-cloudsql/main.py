@@ -284,7 +284,8 @@ def twitter_dataset():
     newData = update_dataset()
     values = []
     for data in newData:
-        values.append([data['created_at'], data['author'], data['tweet'], data['category']])
+        sql = (data['created_at'], data['author'], data['tweet'], data['category'])
+        values.append(sql)
     if os.environ.get('GAE_ENV') == 'standard':
         unix_socket = '/cloudsql/{}'.format(db_connection_name)
         cnx = pymysql.connect(user=db_user, password=db_password,
