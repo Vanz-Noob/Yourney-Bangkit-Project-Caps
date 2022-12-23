@@ -16,7 +16,7 @@
 # [START gae_python3_cloudsql_mysql]
 import os
 import re
-# import threading
+import threading
 import pymysql
 import base64
 import uuid
@@ -29,7 +29,7 @@ from flask_swagger_ui import get_swaggerui_blueprint
 from datetime import datetime, timedelta, timezone
 from services.user import UserService
 from services.dataset import DatasetService
-# from services.twitter import average_data, update_dataset
+from services.twitter import average_data, update_dataset
 
 
 db_user = os.environ.get('CLOUD_SQL_USERNAME')
@@ -280,10 +280,10 @@ def db():
     else:
         return 'Invalid request'
 
-# def twitter_dataset():
-#     newData = update_dataset()
-#     for data in newData:
-#         data_service.add_dataset(data['created_at'],data['author'], data['categori'], data['tweet'],)
+def twitter_dataset():
+    newData = update_dataset()
+    for data in newData:
+        data_service.add_dataset(data['created_at'],data['author'], data['categori'], data['tweet'],)
     
 # cek dataset
 @app.route('/dataset',methods=['GET','POST'])
@@ -303,18 +303,17 @@ def dataset():
                 datasets.append({'created_time': row[0], 'author': row[1], 'tweet': row[2], 'kategori': row[3]})
             cnx.close()
         return jsonify(datasets)
-    # elif request.method == 'POST':
-    #     try:
-    #         newData = update_dataset()
-    #         for data in newData:
-    #             data_service.add_dataset(data['created_at'],data['author'], data['categori'], data['tweet'],)
-    #         return jsonify({
-    #              'message':'success' 
-    #         }),200
-    #     except Exception as e:
-    #         return jsonify({
-    #             'message': str(e)
-    #         })
+    elif request.method == 'POST':
+        try:
+            Thread = threading.Thread(target=twitter_dataset)
+            Thread.start()
+            return jsonify({
+                 'message':'success' 
+            }),200
+        except Exception as e:
+            return jsonify({
+                'message': str(e)
+            })
     else:
         return 'Invalid request'
        
