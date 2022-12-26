@@ -1022,6 +1022,7 @@ def GetNull():
     else:
         return 'Invalid request'
 
+@jwt_required(refresh=False)
 @app.route("/admin/update/user", methods=["PUT"])
 def update_user():
     if request.method == 'PUT':
