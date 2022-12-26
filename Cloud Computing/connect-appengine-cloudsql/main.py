@@ -16,7 +16,7 @@
 # [START gae_python3_cloudsql_mysql]
 import os
 import re
-import threading
+# import threading
 import pymysql
 import base64
 import uuid
@@ -29,7 +29,7 @@ from flask_swagger_ui import get_swaggerui_blueprint
 from datetime import datetime, timedelta, timezone
 from services.user import UserService
 from services.dataset import DatasetService
-from services.twitter import average_data, update_dataset
+# from services.twitter import average_data, update_dataset
 
 
 db_user = os.environ.get('CLOUD_SQL_USERNAME')
@@ -280,20 +280,20 @@ def db():
     else:
         return 'Invalid request'
 
-def twitter_dataset():
-    newData = update_dataset()
-    values = []
-    for data in newData:
-        sql = (data['created_at'], data['author'], data['tweet'], data['category'])
-        values.append(sql)
-    if os.environ.get('GAE_ENV') == 'standard':
-        unix_socket = '/cloudsql/{}'.format(db_connection_name)
-        cnx = pymysql.connect(user=db_user, password=db_password,
-                            unix_socket=unix_socket, db=db_name)
-    with cnx.cursor() as cursor:
-        cursor.executemany('INSERT INTO dataset(create_time,author,tweet,kategori) VALUES (%s,%s,%s,%s) ;',values)
-        cnx.commit()
-    cnx.close()
+# def twitter_dataset():
+#     newData = update_dataset()
+#     values = []
+#     for data in newData:
+#         sql = (data['created_at'], data['author'], data['tweet'], data['category'])
+#         values.append(sql)
+#     if os.environ.get('GAE_ENV') == 'standard':
+#         unix_socket = '/cloudsql/{}'.format(db_connection_name)
+#         cnx = pymysql.connect(user=db_user, password=db_password,
+#                             unix_socket=unix_socket, db=db_name)
+#     with cnx.cursor() as cursor:
+#         cursor.executemany('INSERT INTO dataset(create_time,author,tweet,kategori) VALUES (%s,%s,%s,%s) ;',values)
+#         cnx.commit()
+#     cnx.close()
     
 # cek dataset
 @app.route('/dataset',methods=['GET','POST'])
@@ -313,17 +313,17 @@ def dataset():
                 datasets.append({'created_time': row[0], 'author': row[1], 'tweet': row[2], 'kategori': row[3]})
             cnx.close()
         return jsonify(datasets)
-    elif request.method == 'POST':
-        try:
-            Thread = threading.Thread(target=twitter_dataset)
-            Thread.start()
-            return jsonify({
-                 'message':'success' 
-            }),200
-        except Exception as e:
-            return jsonify({
-                'message': str(e)
-            })
+    # elif request.method == 'POST':
+    #     try:
+    #         # Thread = threading.Thread(target=twitter_dataset)
+    #         # Thread.start()
+    #         return jsonify({
+    #              'message':'success' 
+    #         }),200
+    #     except Exception as e:
+    #         return jsonify({
+    #             'message': str(e)
+    #         })
     else:
         return 'Invalid request'
        
