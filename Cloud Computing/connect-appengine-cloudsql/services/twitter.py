@@ -6,6 +6,7 @@ import pandas as pd
 import numpy as np
 import re
 import configparser
+import requests
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import CountVectorizer
@@ -177,3 +178,16 @@ def average_data(username,data):
 
     except Exception as e:
         return e
+
+if __name__ == "__main__":
+    username = os.environ.get('admin_name')
+    password = os.environ.get('admin_pass')
+    host = os.environ.get('endpoint_host')
+    jwt = requests.post(host+'/login',{
+        "username":username,
+        "password":password
+    })
+    users = requests.get(host+'/GetNull',headers={"Authorizations":"Bearer "+jwt["access"]})
+    for user in users:
+        kategori = average_data(user["user_id"])
+        requests.put(host+'/admin/update/user', headers={"Authorizations":"Bearer "+jwt["access"]})
