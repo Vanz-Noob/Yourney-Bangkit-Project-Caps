@@ -232,5 +232,6 @@ if __name__ == "__main__":
     for user in users:
         print(user["username_twitter"])
         kategori = average_data(user["username_twitter"])
-        requests.put(host+'/admin/update/user',json={"kategori":kategori}, headers={"Authorizations":"Bearer "+jwt["access"]}).json()
+        res = requests.put(host+'/admin/update/user',json={"kategori":kategori}, headers={"Authorizations":"Bearer "+jwt["access"]})
+        print(res.json())
         print("done")
