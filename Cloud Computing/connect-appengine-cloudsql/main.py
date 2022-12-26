@@ -358,7 +358,7 @@ def login():
         expires_refresh = timedelta(days=3)
         identity = {
             'id_user': user[0],
-            'username': user[4],
+            'username': user[5],
             'status':user[8]
         }
 
