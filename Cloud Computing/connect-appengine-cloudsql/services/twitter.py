@@ -228,6 +228,13 @@ if __name__ == "__main__":
     jwt = res.json()
     users = requests.get(host+'/GetNull',headers={"Authorization":"Bearer "+jwt["access"]}).json()
     for user in users:
+        nama = ""
         kategori = average_data(user["username_twitter"])
-        res = requests.put(host+'/admin/update/user', headers={"Authorization":"Bearer "+jwt["access"]}, json={"kategori":kategori, "id_user":user["user_id"]},)
+        if kategori == 0:
+            nama = "Gunung"
+        elif kategori == 1:
+            nama = "Kuliner"
+        elif kategori == 2:
+            nama = "Pantai"
+        res = requests.put(host+'/admin/update/user', headers={"Authorization":"Bearer "+jwt["access"]}, json={"kategori":kategori,"nama_kategori": nama, "id_user":user["user_id"]},)
         print("done")
