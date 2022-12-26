@@ -358,7 +358,8 @@ def login():
         expires_refresh = timedelta(days=3)
         identity = {
             'id_user': user[0],
-            'username': user[5]
+            'username': user[4],
+            'status':user[8]
         }
 
         access_token = create_access_token(identity=identity, fresh=True, expires_delta=expires)
@@ -648,6 +649,12 @@ def register():
 @app.route("/UpStatUser",methods=["POST", "GET"])
 @jwt_required(refresh=False)
 def UpStatUser():
+    current_user = get_jwt_identity()
+    if current_user["status"] != "admin":
+        js = {
+            'status':'anda tidak memilki akses'
+        }
+        return jsonify(js),403
     request_data = request.get_json()
     id_user = request_data['id_user']
     status = request_data['status']
@@ -987,45 +994,57 @@ def get_image(title):
         binary_data = base64.b64decode(image[0])
         return send_file(io.BytesIO(binary_data), as_attachment=True, download_name=image[1])
 
-    # @app.route("/GetNull",methods=["POST", "GET"])
-    # def GetNull():
-    #     null = []
-    #     #connect database
-    #     if request.method == 'GET':
-    #         if os.environ.get('GAE_ENV') == 'standard':
-    #             unix_socket = '/cloudsql/{}'.format(db_connection_name)
-    #             cnx = pymysql.connect(user=db_user, password=db_password,
-    #                                 unix_socket=unix_socket, db=db_name)
-    #         #querying sql
-    #         with cnx.cursor() as cursor:
-    #             cursor.execute('SELECT kategori.id_kategori_user, kategori.id_kategori, user.username_twitter, user.id_user FROM kategori LEFT JOIN user ON kategori.id_kategori_user = user.id_user WHERE kategori.id_kategori is NULL AND user.username_twitter IS NOT NULL;')
-    #             for row in cursor:
-    #                 null.append(
-    #                     {
-    #                         'id_kategori_user': row[0],
-    #                         'id_kategori': row[1],
-    #                         'username_twitter':row[2],
-    #                         'user_id':row[3]
-    #                     }
-    #                 )
-    #             cnx.commit()
-    #         cnx.close()
+@app.route("/GetNull",methods=["POST", "GET"])
+def GetNull():
+    null = []
+    #connect database
+    if request.method == 'GET':
+        if os.environ.get('GAE_ENV') == 'standard':
+            unix_socket = '/cloudsql/{}'.format(db_connection_name)
+            cnx = pymysql.connect(user=db_user, password=db_password,
+                                unix_socket=unix_socket, db=db_name)
+        #querying sql
+        with cnx.cursor() as cursor:
+            cursor.execute('SELECT kategori.id_kategori_user, kategori.id_kategori, user.username_twitter, user.id_user FROM kategori LEFT JOIN user ON kategori.id_kategori_user = user.id_user WHERE kategori.id_kategori is NULL AND user.username_twitter IS NOT NULL;')
+            for row in cursor:
+                null.append(
+                    {
+                        'id_kategori_user': row[0],
+                        'id_kategori': row[1],
+                        'username_twitter':row[2],
+                        'user_id':row[3]
+                    }
+                )
+            cnx.commit()
+        cnx.close()
 
-    #         data = data_service.get_dataset_by_kategori()
+        return jsonify(null)
+    else:
+        return 'Invalid request'
 
-    #         for user in null:
-    #             try:
-    #                 id_kategori = average_data(user['username_twitter'], data)
-    #                 user_service.user_update_kategori(id_kategori)
-    #                 user['id_kategori'] = id_kategori
-    #                 user['status'] = 'success'
-    #             except Exception as e:
-    #                 user['status'] = 'failed with error::' + str(e)
-    #                 continue
+@app.route("/admin/update/user", method=["PUT"])
+def update_user():
+    if request.method == "PUT":
+        current_user = get_jwt_identity()
+        if current_user["status"] != "admin":
+            js = {
+                'status':'anda tidak memilki akses'
+            }
+            return jsonify(js),403
+        data = request.get_json()
+        if os.environ.get('GAE_ENV') == 'standard':
+            unix_socket = '/cloudsql/{}'.format(db_connection_name)
+            cnx = pymysql.connect(user=db_user, password=db_password,
+                                unix_socket=unix_socket, db=db_name)
+        with cnx.cursor() as cursor:
+            cursor.execute('UPDATE user SET id_kategori1=%s WHERE id_user=%s RETURNING id_user, id_kategori1;', (data["kategori"], current_user["id"]))
+            cnx.commit()
+            user = cursor.fetchone()
+        cnx.close()
 
-    #         return jsonify(null)
-    #     else:
-    #         return 'Invalid request'
+        return jsonify(user)
+        
+
     
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=8080, debug=True)
