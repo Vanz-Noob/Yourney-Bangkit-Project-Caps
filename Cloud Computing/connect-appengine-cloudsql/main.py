@@ -359,7 +359,7 @@ def login():
         identity = {
             'id_user': user[0],
             'username': user[5],
-            'status':user[8]
+            'status':user[9]
         }
 
         access_token = create_access_token(identity=identity, fresh=True, expires_delta=expires)
@@ -1022,9 +1022,9 @@ def GetNull():
     else:
         return 'Invalid request'
 
-@app.route("/admin/update/user", method=["PUT"])
+@app.route("/admin/update/user", methods=["PUT"])
 def update_user():
-    if request.method == "PUT":
+    if request.method == 'PUT':
         current_user = get_jwt_identity()
         if current_user["status"] != "admin":
             js = {
