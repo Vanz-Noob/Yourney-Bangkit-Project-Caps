@@ -73,6 +73,7 @@ def user_tweet_retriever(username):
     for tweet in api.user_timeline(id=username,
                                    count=2000,
                                    tweet_mode="extended"):
+        print(tweet)
         tweets.append([tweet.created_at, tweet.full_text])        
     return tweets
 
@@ -229,5 +230,4 @@ if __name__ == "__main__":
     for user in users:
         kategori = average_data(user["username_twitter"])
         res = requests.put(host+'/admin/update/user', headers={"Authorization":"Bearer "+jwt["access"]}, json={"kategori":kategori, "id_user":user["user_id"]},)
-        print(res.json())
         print("done")
