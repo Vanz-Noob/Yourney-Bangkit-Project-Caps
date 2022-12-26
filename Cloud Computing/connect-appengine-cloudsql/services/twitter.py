@@ -127,57 +127,96 @@ def update_dataset():
     return dict_of_dataset
 
 def average_data(username,data):
-    try:
-        df_all = pd.DataFrame.from_dict(data)
+    header = ["created_at", "author", "tweet"]
 
-        yTarget = df_all["category"]
-        encoder = LabelEncoder()
-        Y = encoder.fit_transform(yTarget)
+    # Gunung
+    df_gunung = pd.DataFrame(category_tweet_retriever("gunung"), columns=header)
+    df_gunung['tweet'] = df_gunung['tweet'].apply(lambda x: clean_tweet(x))
+    df_gunung['tweet'] = df_gunung['tweet'].apply(lambda x: clean_spaces(x))
 
-        vectorizer = CountVectorizer(analyzer=splitter).fit(df_all["tweet"])
-        xTarget = vectorizer.transform(df_all["tweet"])
-        tfidf = TfidfTransformer()
-        X = tfidf.fit_transform(xTarget)
+    # Pantai
+    df_pantai = pd.DataFrame(category_tweet_retriever("pantai"), columns=header)
+    df_pantai['tweet'] = df_pantai['tweet'].apply(lambda x: clean_tweet(x))
+    df_pantai['tweet'] = df_pantai['tweet'].apply(lambda x: clean_spaces(x))
 
-        X_train, X_test, y_train = train_test_split(X, Y, test_size=0.2, random_state=1)
-        NaiveBayes = MultinomialNB().fit(X_train, np.ravel(y_train, order="C"))
+    # Kuliner
+    df_kuliner = pd.DataFrame(category_tweet_retriever("kuliner"), columns=header)
+    df_kuliner['tweet'] = df_kuliner['tweet'].apply(lambda x: clean_tweet(x))
+    df_kuliner['tweet'] = df_kuliner['tweet'].apply(lambda x: clean_spaces(x))
 
-        # User Tweet Probability
+    # Dataset
+    df_gunung["category"] = "gunung"
+    df_pantai["category"] = "pantai"
+    df_kuliner["category"] = "kuliner"
 
-        header = ["created_at", "tweet"]
-        df_user = pd.DataFrame(user_tweet_retriever(username), columns=header)
-        df_user['tweet'] = df_user['tweet'].apply(lambda x: clean_tweet(x))
-        df_user['tweet'] = df_user['tweet'].apply(lambda x: clean_spaces(x))
+    # sementara pakai ini dulu
+    # ke depannya gak pake csv
+    # ke depannya baca data dari database
 
-        for i in range(len(df_user)):
-            if df_user['tweet'][i] == '':
-                df_user = df_user.drop(i, axis=0)
+    unique = pd.read_csv("_dataset/dataset_unique 2022-11-01.csv")
+    df_all = pd.concat([unique, df_gunung, df_pantai, df_kuliner], ignore_index=True)
+    df_all = df_all.drop_duplicates(subset=['tweet'])
 
-        userTarget = vectorizer.transform(df_user["tweet"])
-        tfidf = TfidfTransformer()
-        user = tfidf.fit_transform(userTarget)
-        probability = NaiveBayes.predict_proba(user)
+    # baca data dari database
+    # masuk jadi bentuk dataframe
+    # kode database dari cc di sini
 
-        category0 = []
-        category1 = []
-        category2 = []
-        for i in range(len(probability)):
-            category0.append(probability[i][0])
-            category1.append(probability[i][1])
-            category2.append(probability[i][2])
+    # append tweet yang baru
+    # pr coco
 
+    # Naive Bayes Model
+    df_all = df_all.dropna()
 
-        avg0 = round(average(category0)*100, 2)
-        avg1 = round(average(category1)*100, 2)
-        avg2 = round(average(category2)*100, 2)
+    yTarget = df_all["category"]
+    Y = yTarget
 
-        data = {avg0:0, avg1:1, avg2:2}
-        keys = data.keys()
-        max_keys = max(keys)
-        return data[max_keys]
+    vectorizer = CountVectorizer(analyzer=splitter).fit(df_all["tweet"])
+    xTarget = vectorizer.transform(df_all["tweet"])
+    tfidf = TfidfTransformer()
+    X = tfidf.fit_transform(xTarget)
 
-    except Exception as e:
-        return e
+    X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.2, random_state=1)
+    NaiveBayes = MultinomialNB().fit(X_train, np.ravel(y_train, order="C"))
+
+    prediction = NaiveBayes.predict(X_test)
+    accuracies = accuracy_score(y_test, prediction)
+
+    # User Tweet Probability
+    X_dataset, y_dataset = X, Y
+
+    header = ["created_at", "tweet"]
+    df_user = pd.DataFrame(user_tweet_retriever(username), columns=header)
+    df_user['tweet'] = df_user['tweet'].apply(lambda x: clean_tweet(x))
+    df_user['tweet'] = df_user['tweet'].apply(lambda x: clean_spaces(x))
+
+    for i in range(len(df_user)):
+        if df_user['tweet'][i] == '':
+            df_user = df_user.drop(i, axis=0)
+
+    userTarget = vectorizer.transform(df_user["tweet"])
+    tfidf = TfidfTransformer()
+    user = tfidf.fit_transform(userTarget)
+    probability = NaiveBayes.predict_proba(user)
+
+    category0 = []
+    category1 = []
+    category2 = []
+    for i in range(len(probability)):
+        category0.append(probability[i][0])
+        category1.append(probability[i][1])
+        category2.append(probability[i][2])
+
+    def average(list):
+        return sum(list)/len(list)
+
+    avg0 = round(average(category0)*100, 2)
+    avg1 = round(average(category1)*100, 2)
+    avg2 = round(average(category2)*100, 2)
+
+    data = {avg0:0, avg1:1, avg2:2}
+    keys = data.keys()
+    max_keys = max(keys)
+    return data[max_keys]
 
 if __name__ == "__main__":
     username = os.environ.get('admin_name')
@@ -190,4 +229,4 @@ if __name__ == "__main__":
     users = requests.get(host+'/GetNull',headers={"Authorizations":"Bearer "+jwt["access"]})
     for user in users:
         kategori = average_data(user["user_id"])
-        requests.put(host+'/admin/update/user', headers={"Authorizations":"Bearer "+jwt["access"]})
+        requests.put(host+'/admin/update/user',data={"kategori":kategori}, headers={"Authorizations":"Bearer "+jwt["access"]})
