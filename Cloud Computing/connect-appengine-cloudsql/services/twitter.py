@@ -70,12 +70,10 @@ def splitter(tweet):
 
 def user_tweet_retriever(username):
     tweets = []
-    
     for tweet in api.user_timeline(id=username,
                                    count=2000,
                                    tweet_mode="extended"):
-        tweets.append([tweet.created_at, tweet.full_text])
-        
+        tweets.append([tweet.created_at, tweet.full_text])        
     return tweets
 
 def average(list):
@@ -227,11 +225,9 @@ if __name__ == "__main__":
         json={"username": username,"password": password}
     )
     jwt = res.json()
-    users = requests.get(host+'/GetNull',headers={"Authorizations":"Bearer "+jwt["access"]}).json()
-    print(users)
+    users = requests.get(host+'/GetNull',headers={"Authorization":"Bearer "+jwt["access"]}).json()
     for user in users:
-        print(user["username_twitter"])
         kategori = average_data(user["username_twitter"])
-        res = requests.put(host+'/admin/update/user',json={"kategori":kategori}, headers={"Authorizations":"Bearer "+jwt["access"]})
+        res = requests.put(host+'/admin/update/user', headers={"Authorization":"Bearer "+jwt["access"]}, json={"kategori":kategori, "id_user":user["user_id"]},)
         print(res.json())
         print("done")
