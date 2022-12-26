@@ -1,4 +1,5 @@
 .venv
 .env
 *.pem
+config.ini
 config.json
