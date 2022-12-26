@@ -126,7 +126,7 @@ def update_dataset():
     dict_of_dataset = df_all.to_dict('records')
     return dict_of_dataset
 
-def average_data(username,data):
+def average_data(username):
     header = ["created_at", "author", "tweet"]
 
     # Gunung
@@ -153,7 +153,7 @@ def average_data(username,data):
     # ke depannya gak pake csv
     # ke depannya baca data dari database
 
-    unique = pd.read_csv("_dataset/dataset_unique 2022-11-01.csv")
+    unique = pd.read_csv(os.getcwd()+"/_dataset/dataset_unique 2022-11-01.csv")
     df_all = pd.concat([unique, df_gunung, df_pantai, df_kuliner], ignore_index=True)
     df_all = df_all.drop_duplicates(subset=['tweet'])
 
@@ -222,11 +222,15 @@ if __name__ == "__main__":
     username = os.environ.get('admin_name')
     password = os.environ.get('admin_pass')
     host = os.environ.get('endpoint_host')
-    jwt = requests.post(host+'/login',{
-        "username":username,
-        "password":password
-    })
-    users = requests.get(host+'/GetNull',headers={"Authorizations":"Bearer "+jwt["access"]})
+    res = requests.post(
+        host+'/login',
+        json={"username": username,"password": password}
+    )
+    jwt = res.json()
+    users = requests.get(host+'/GetNull',headers={"Authorizations":"Bearer "+jwt["access"]}).json()
+    print(users)
     for user in users:
-        kategori = average_data(user["user_id"])
-        requests.put(host+'/admin/update/user',data={"kategori":kategori}, headers={"Authorizations":"Bearer "+jwt["access"]})
+        print(user["username_twitter"])
+        kategori = average_data(user["username_twitter"])
+        requests.put(host+'/admin/update/user',json={"kategori":kategori}, headers={"Authorizations":"Bearer "+jwt["access"]}).json()
+        print("done")
