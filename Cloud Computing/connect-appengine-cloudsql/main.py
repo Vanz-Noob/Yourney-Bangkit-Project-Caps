@@ -1038,7 +1038,7 @@ def update_user():
             cnx = pymysql.connect(user=db_user, password=db_password,
                                 unix_socket=unix_socket, db=db_name)
         with cnx.cursor() as cursor:
-            cursor.execute('UPDATE user SET id_kategori1=%s WHERE id_user=%s RETURNING id_user, id_kategori1;', (data["kategori"], current_user["id_user"]))
+            cursor.execute('UPDATE user SET id_kategori1=%s WHERE id_user=%s RETURNING id_user, id_kategori1;', (data["kategori"], data["id_user"]))
             cnx.commit()
             user = cursor.fetchone()
         cnx.close()
