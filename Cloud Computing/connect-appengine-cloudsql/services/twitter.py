@@ -73,7 +73,6 @@ def user_tweet_retriever(username):
     for tweet in api.user_timeline(id=username,
                                    count=2000,
                                    tweet_mode="extended"):
-        print(tweet)
         tweets.append([tweet.created_at, tweet.full_text])        
     return tweets
 
