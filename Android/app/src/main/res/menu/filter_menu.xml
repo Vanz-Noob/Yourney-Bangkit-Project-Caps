@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/btn_filter_pantai"
+        android:title="Pantai" />
+    <item
+        android:id="@+id/btn_filter_gunung"
+        android:title="Gunung" />
+    <item
+        android:id="@+id/btn_filter_kuliner"
+        android:title="Kuliner" />
+    <item
+        android:id="@+id/btn_show_all"
+        android:title="Semua" />
+</menu>
