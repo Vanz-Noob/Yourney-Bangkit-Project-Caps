@@ -40,8 +40,8 @@ function One() {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav" style={{justifyContent:'flex-end'}}>
           <Nav>
-            <Nav.Link href="#team">About Us</Nav.Link>
             <Nav.Link href="#portofolio">Portofolio</Nav.Link>
+            <Nav.Link href="#contact">Contact</Nav.Link>
           </Nav>
         </Navbar.Collapse>
       </Container>
@@ -51,12 +51,10 @@ function One() {
       <div className='body' id='home'>
         
         <div className='conTitle'>
-          <span className='tag' >MAKE IT JOURNEY IS YOURS</span>
+          <span className='tag anim' >MAKE YOUR OWN JOURNEY</span>
           {/* <Button variant='success' size='lg' href='#produk'>GET STARTED</Button> */}
         </div>
-        <a className='arw' href='#produk'>
-          <IoIosArrowDown color='#E08839' size={100} className='btmArrow'/>
-        </a>
+       
       </div>
     
     </div>
