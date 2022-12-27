@@ -1,6 +1,7 @@
 .App{
   margin: 0;
   padding: 0;
+  width: 100vw;
 }
 .Navbar{
   display: flex;
@@ -32,7 +33,7 @@ ul{
    
 .body{ 
   height: 100vh;
-  background-image: url('../img/bg1.png');
+  background-image: url('../img/bg1.jpg');
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -49,11 +50,15 @@ ul{
   width: 100%;
     /* border: 1px solid white; */
 }
+@font-face {
+  font-family: "Rodondo";
+  src: url("../Font/Rodondo.otf");
+}
 .tag{
-  font-family: 'Rodondo';
-  font-style: normal;
+  font-family: Rodondo;
+  letter-spacing: 3px;
   color: white;
-  font-size: 80px;
+  
   text-align: center;
 }
 .arw{
@@ -77,6 +82,18 @@ ul{
 
 .trans{
   transition: all 0.5s ease-in;
+}
+.anim{
+  animation: typewriter 4s steps(44) 1s 0.47 normal both,
+             blinkTextCursor 500ms steps(44) infinite normal;
+}
+@keyframes typewriter{
+  from{width: 0;}
+  to{width: 25em;}
+}
+@keyframes blinkTextCursor{
+  from{border-right-color: transparent;}
+  to{border-right-color: transparent;}
 }
 
 @media only screen and (min-width: 375px){
@@ -116,5 +133,9 @@ ul{
   .tag{
     padding-top: 100px;
     font-size: 80px;
+    overflow: hidden;
+    white-space: nowrap;
+    border-right: 1px solid rgba(255, 255, 255);
+    
   }
 }

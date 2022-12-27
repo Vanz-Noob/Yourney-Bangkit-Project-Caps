@@ -1,0 +1,44 @@
+[
+    {
+        "id": "alif",
+        "Name":"Muhammad Aliif Nurrahman",
+        "linkedin":"https://www.linkedin.com/in/aliifnrhmn/",
+        "github":"https://github.com/aliifnrhmn",
+        "img":"./img/Personil/modal alif.jpeg"
+    },
+    {
+        "id": "aulia",
+        "Name":"Aulia Annisa",
+        "linkedin":"https://www.linkedin.com/in/auliaann/",
+        "github":"https://github.com/auliaann",
+        "img":"./img/Personil/modal aul.jpg"
+    },
+    {
+        "id": "rochman",
+        "Name":"Rochman Setiono",
+        "linkedin":"https://www.linkedin.com/in/rochman-setiono-8212a4202/",
+        "github":"https://github.com/rochmans26",
+        "img":"./img/Personil/modal roh.jpg"
+    },
+    {
+        "id": 4,
+        "Name":"Mohammad Dafa Dhiyaul Haq",
+        "linkedin":"https://www.linkedin.com/in/mohammad-dafa-dhiyaul-haq-98516725a/",
+        "github":"https://github.com/Dafa2403",
+        "img":"./img/Personil/modal daf.jpg"
+    },
+    {
+        "id": 5,
+        "Name":"Renaldi Azhar",
+        "linkedin":"https://www.linkedin.com/in/RenaldiAzhar/",
+        "github":"https://github.com/Vanz-Noob",
+        "img":"./img/Personil/modal ren.jpg"
+    },
+    {
+        "id": 6,
+        "Name":"Berliana Putri Buwono",
+        "linkedin":"https://www.linkedin.com/in/berliana-putri-buwono/",
+        "github":"https://github.com/cocokelat",
+        "img":"./img/Personil/modals co.jpg"
+    }
+]

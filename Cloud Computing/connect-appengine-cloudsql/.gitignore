@@ -1,2 +1,7 @@
+.venv
+.env
+*.pem
+config.ini
+config.json
 kokoronatachi
-test.py
+__pycache__
