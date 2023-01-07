@@ -343,7 +343,7 @@ def login():
 
         #querying sql
         with cnx.cursor() as cursor:
-            cursor.execute('SELECT * FROM user WHERE username = %s', (username, ))
+            cursor.execute('SELECT * FROM user.* kategori.nama_kategori LEFT JOIN kategori ON user.id_kategori1 = id_kategori_user WHERE username = %s', (username, ))
             user = cursor.fetchone()
         cnx.close()
 
@@ -374,6 +374,7 @@ def login():
                     'jenis_kelamin': user[7],
                     'tempat_lahir': user[8],
                     'email':user[10],
+                    'recomendation':user[13],
                     'user_pic': user[11],
                     'username_twitter': user[12]
                 }
@@ -447,7 +448,8 @@ def user():
                     'tempat_lahir': user[8],
                     'email':user[10],
                     'user_pic': user[11],
-                    'username_twitter': user[12]
+                    'username_twitter': user[12],
+                    'recomendation': user[13]
                 }
             }
         ),200
