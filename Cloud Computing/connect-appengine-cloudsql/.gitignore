@@ -3,4 +3,5 @@
 *.pem
 config.ini
 config.json
-config.ini
+kokoronatachi
+__pycache__
