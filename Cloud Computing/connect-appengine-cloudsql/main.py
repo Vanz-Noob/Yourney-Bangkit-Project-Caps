@@ -343,7 +343,7 @@ def login():
 
         #querying sql
         with cnx.cursor() as cursor:
-            cursor.execute('SELECT user.*, kategori.nama_kategori FROM user LEFT JOIN kategori ON user.id_kategori1 = id_kategori_user WHERE username = %s', (username, ))
+            cursor.execute('SELECT * FROM user.* kategori.nama_kategori LEFT JOIN kategori ON user.id_kategori1 = id_kategori_user WHERE username = %s', (username, ))
             user = cursor.fetchone()
         cnx.close()
 
