@@ -1,21 +1,5 @@
-# Copyright 2018 Google LLC
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
-# [START gae_python38_cloudsql_mysql]
-# [START gae_python3_cloudsql_mysql]
-import os
 import re
+import flask_cors import CORS, cross_origin
 # import threading
 import pymysql
 import base64
@@ -31,22 +15,21 @@ from services.user import UserService
 from services.dataset import DatasetService
 # from services.twitter import average_data, update_dataset
 
-# ganti ke local DB
-# db_user = os.environ.get('CLOUD_SQL_USERNAME')
-# db_password = os.environ.get('CLOUD_SQL_PASSWORD')
-# db_name = os.environ.get('CLOUD_SQL_DATABASE_NAME')
-# db_connection_name = os.environ.get('CLOUD_SQL_CONNECTION_NAME')
+
+db_user = os.environ.get('CLOUD_SQL_USERNAME')
+db_password = os.environ.get('CLOUD_SQL_PASSWORD')
+db_name = os.environ.get('CLOUD_SQL_DATABASE_NAME')
+db_connection_name = os.environ.get('CLOUD_SQL_CONNECTION_NAME')
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 ACCESS_EXPIRES = timedelta(hours=1)
 SWAGGER_URL = '/api/docs'  # URL for exposing Swagger UI (without trailing '/')
 API_URL = '/static/spec.json'  # Our API url (can of course be a local resource)
-
-
 user_service = UserService(db_user,db_password,db_name,db_connection_name)
 data_service = DatasetService(db_user,db_password,db_name,db_connection_name)
 
 app = Flask(__name__)
+cors(app)
 app.config['MAX_CONTENT_LENGTH'] = 10 * 1000 * 1000
 app.config["JWT_SECRET_KEY"] =  str(os.environ.get("JWT_SECRET"))
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = ACCESS_EXPIRES
@@ -71,18 +54,15 @@ def allowed_file(filename):
 @jwt.token_in_blocklist_loader
 def check_if_token_revoked(jwt_header, jwt_payload: dict) -> bool:
     jti = jwt_payload["jti"]
-    #connect database
-    if os.environ.get('GAE_ENV') == 'standard':
-        unix_socket = '/cloudsql/{}'.format(db_connection_name)
-        cnx = pymysql.connect(user=db_user, password=db_password,
-                            unix_socket=unix_socket, db=db_name)
+
+    cnx = pymysql.connect(host=db_connection_name, user=db_user, 
+                          password=db_password, db=db_name)
 
         #querying sql
     with cnx.cursor() as cursor:
         cursor.execute('SELECT * FROM TokenBlocklist WHERE jti = %s', (jti, ))
         token = cursor.fetchone()
     cnx.close()
-
     return token is not None
 
 @app.route("/", methods=["GET"])
@@ -95,12 +75,8 @@ def get_likes():
     if request.method == 'GET':
         current_user = get_jwt_identity()
         id_user = current_user['id_user']
-        if os.environ.get('GAE_ENV') == 'standard':
-            # If deployed, use the local socket interface for accessing Cloud SQL
-            unix_socket = '/cloudsql/{}'.format(db_connection_name)
-            cnx = pymysql.connect(user=db_user, password=db_password,
-                                unix_socket=unix_socket, db=db_name)
-        
+        cnx = pymysql.connect(host=db_connection_name, user=db_user, 
+                          password=db_password, db=db_name)
         destinasi = []
         with cnx.cursor() as cursor:
             cursor.execute('SELECT destinasi.* FROM user_liked LEFT JOIN destinasi ON user_liked.id_destination_like = destinasi.id_destinasi WHERE user_liked.id_user_liked=%s', (id_user))
@@ -116,12 +92,8 @@ def destinasi():
     if request.method == 'GET':
         query = request.args
         destinasi = []
-        if os.environ.get('GAE_ENV') == 'standard':
-            # If deployed, use the local socket interface for accessing Cloud SQL
-            unix_socket = '/cloudsql/{}'.format(db_connection_name)
-            cnx = pymysql.connect(user=db_user, password=db_password,
-                                unix_socket=unix_socket, db=db_name)
-
+        cnx = pymysql.connect(host=db_connection_name, user=db_user, 
+                          password=db_password, db=db_name)
         sql = 'SELECT * FROM destinasi '
         payload = []
         if query.get('category'):
@@ -150,14 +122,12 @@ def destinasi():
 @jwt_required(refresh=False)
 def destinasi_detail(destinasi_id):
     if request.method == 'GET':
-        if os.environ.get('GAE_ENV') == 'standard':
-            # If deployed, use the local socket interface for accessing Cloud SQL
-            unix_socket = '/cloudsql/{}'.format(db_connection_name)
-            cnx = pymysql.connect(user=db_user, password=db_password,
-                                unix_socket=unix_socket, db=db_name)
+        cnx = pymysql.connect(host=db_connection_name, user=db_user, 
+                          password=db_password, db=db_name)
 
         sql = 'SELECT * FROM destinasi WHERE id_destinasi = %s'
 
+        #destinasi_id diganti id_destinasi?
         with cnx.cursor() as cursor:
             cursor.execute(sql, (destinasi_id, ))
             data = cursor.fetchone()
@@ -181,11 +151,8 @@ def destinasi_detail(destinasi_id):
 @app.route('/destinasi/<int:destinasi_id>/likes', methods=['GET','POST','DELETE'])
 @jwt_required(refresh=False)
 def destinasi_likes(destinasi_id):
-    if os.environ.get('GAE_ENV') == 'standard':
-        # If deployed, use the local socket interface for accessing Cloud SQL
-        unix_socket = '/cloudsql/{}'.format(db_connection_name)
-        cnx = pymysql.connect(user=db_user, password=db_password,
-                            unix_socket=unix_socket, db=db_name)
+    cnx = pymysql.connect(host=db_connection_name, user=db_user, 
+                          password=db_password, db=db_name)
     current_user = get_jwt_identity()
     user = current_user['id_user']
 
@@ -245,11 +212,8 @@ def destinasi_likes(destinasi_id):
 def kategori():
     kategori = []
     if request.method == 'GET':
-        if os.environ.get('GAE_ENV') == 'standard':
-            # If deployed, use the local socket interface for accessing Cloud SQL
-            unix_socket = '/cloudsql/{}'.format(db_connection_name)
-            cnx = pymysql.connect(user=db_user, password=db_password,
-                                unix_socket=unix_socket, db=db_name)
+        cnx = pymysql.connect(host=db_connection_name, user=db_user, 
+                          password=db_password, db=db_name)
         with cnx.cursor() as cursor:
             cursor.execute('SELECT id_kategori, nama_kategori FROM kategori;')
             for row in cursor:
@@ -267,11 +231,8 @@ def db():
     #sudah okay
     users = []
     if request.method == 'GET':
-        if os.environ.get('GAE_ENV') == 'standard':
-            # If deployed, use the local socket interface for accessing Cloud SQL
-            unix_socket = '/cloudsql/{}'.format(db_connection_name)
-            cnx = pymysql.connect(user=db_user, password=db_password,
-                                unix_socket=unix_socket, db=db_name)
+        cnx = pymysql.connect(host=db_connection_name, user=db_user, 
+                          password=db_password, db=db_name)
         with cnx.cursor() as cursor:
             cursor.execute('SELECT * FROM user;')
             for row in cursor:
@@ -281,21 +242,6 @@ def db():
     else:
         return 'Invalid request'
 
-# def twitter_dataset():
-#     newData = update_dataset()
-#     values = []
-#     for data in newData:
-#         sql = (data['created_at'], data['author'], data['tweet'], data['category'])
-#         values.append(sql)
-#     if os.environ.get('GAE_ENV') == 'standard':
-#         unix_socket = '/cloudsql/{}'.format(db_connection_name)
-#         cnx = pymysql.connect(user=db_user, password=db_password,
-#                             unix_socket=unix_socket, db=db_name)
-#     with cnx.cursor() as cursor:
-#         cursor.executemany('INSERT INTO dataset(create_time,author,tweet,kategori) VALUES (%s,%s,%s,%s) ;',values)
-#         cnx.commit()
-#     cnx.close()
-    
 # cek dataset
 @app.route('/dataset',methods=['GET','POST'])
 @jwt_required(refresh=False)
@@ -303,28 +249,14 @@ def dataset():
     #sudah okay
     datasets = []
     if request.method == 'GET':
-        if os.environ.get('GAE_ENV') == 'standard':
-            # If deployed, use the local socket interface for accessing Cloud SQL
-            unix_socket = '/cloudsql/{}'.format(db_connection_name)
-            cnx = pymysql.connect(user=db_user, password=db_password,
-                                unix_socket=unix_socket, db=db_name)
+        cnx = pymysql.connect(host=db_connection_name, user=db_user, 
+                          password=db_password, db=db_name)
         with cnx.cursor() as cursor:
             cursor.execute('SELECT * FROM dataset;')
             for row in cursor:
                 datasets.append({'created_time': row[0], 'author': row[1], 'tweet': row[2], 'kategori': row[3]})
             cnx.close()
         return jsonify(datasets)
-    # elif request.method == 'POST':
-    #     try:
-    #         # Thread = threading.Thread(target=twitter_dataset)
-    #         # Thread.start()
-    #         return jsonify({
-    #              'message':'success' 
-    #         }),200
-    #     except Exception as e:
-    #         return jsonify({
-    #             'message': str(e)
-    #         })
     else:
         return 'Invalid request'
        
@@ -337,14 +269,11 @@ def login():
         username = request_data['username']
         password = request_data['password']
         #connect database
-        if os.environ.get('GAE_ENV') == 'standard':
-            unix_socket = '/cloudsql/{}'.format(db_connection_name)
-            cnx = pymysql.connect(user=db_user, password=db_password,
-                                unix_socket=unix_socket, db=db_name)
-
+        cnx = pymysql.connect(host=db_connection_name, user=db_user, 
+                          password=db_password, db=db_name)
         #querying sql
         with cnx.cursor() as cursor:
-            cursor.execute('SELECT * FROM user.* kategori.nama_kategori LEFT JOIN kategori ON user.id_kategori1 = id_kategori_user WHERE username = %s', (username, ))
+            cursor.execute('SELECT user.*, kategori.nama_kategori FROM user LEFT JOIN kategori ON user.id_kategori1 = id_kategori_user WHERE username = %s', (username, ))
             user = cursor.fetchone()
         cnx.close()
 
@@ -401,10 +330,8 @@ def logout():
     ttype = token["type"]
     now = datetime.now(timezone.utc)
 
-    if os.environ.get('GAE_ENV') == 'standard':
-        unix_socket = '/cloudsql/{}'.format(db_connection_name)
-        cnx = pymysql.connect(user=db_user, password=db_password,
-                            unix_socket=unix_socket, db=db_name)
+    cnx = pymysql.connect(host=db_connection_name, user=db_user, 
+                          password=db_password, db=db_name)
     with cnx.cursor() as cursor:
         cursor.execute('INSERT INTO TokenBlocklist(jti,type,created_at) VALUES (%s, %s, %s);', (jti, ttype, now))
         cnx.commit()
@@ -422,14 +349,13 @@ def logout():
 #     return jsonify(logged_in_as=current_user['username']), 200
 
 # get user profile
+
 @app.route("/user/profile", methods=["PUT","GET"])
 @jwt_required(refresh=False)
 def user():
         #connect database
-    if os.environ.get('GAE_ENV') == 'standard':
-        unix_socket = '/cloudsql/{}'.format(db_connection_name)
-        cnx = pymysql.connect(user=db_user, password=db_password,
-                            unix_socket=unix_socket, db=db_name)
+    cnx = pymysql.connect(host=db_connection_name, user=db_user, 
+                          password=db_password, db=db_name)
     if request.method == "GET":
         current_user = get_jwt_identity()
         id_user = current_user['id_user']
@@ -437,7 +363,7 @@ def user():
         #querying sql
         user = user_service.get_user_by_id(id_user)
 
-
+        # tabelnya belum di sesuaikan
         return jsonify(
             {
                 'status': 'success',
@@ -498,10 +424,8 @@ def user():
         payload = tuple(payload)
     
         #connect database
-        if os.environ.get('GAE_ENV') == 'standard':
-            unix_socket = '/cloudsql/{}'.format(db_connection_name)
-            cnx = pymysql.connect(user=db_user, password=db_password,
-                                unix_socket=unix_socket, db=db_name)
+        cnx = pymysql.connect(host=db_connection_name, user=db_user, 
+                          password=db_password, db=db_name)
 
         #querying sql
         with cnx.cursor() as cursor:
@@ -615,38 +539,6 @@ def register():
             "message": str(e)
         })
 
-# # update category to user
-# @app.route("/UpdateKateUser",methods=["POST", "GET"])
-# def UpdateKateUser():
-#     request_data = request.get_json()
-#     id_user = request_data['id_user']
-#     id_kategori1 = request_data['id_kategori1']
-    
-#     #connect database
-#     if os.environ.get('GAE_ENV') == 'standard':
-#         unix_socket = '/cloudsql/{}'.format(db_connection_name)
-#         cnx = pymysql.connect(user=db_user, password=db_password,
-#                               unix_socket=unix_socket, db=db_name)
-#     else:
-#         host = '127.0.0.1'
-#         cnx = pymysql.connect(user=db_user, password=db_password,
-#                               host=host, db=db_name)
-#     #querying sql
-#     with cnx.cursor() as cursor:
-#         cursor.execute('UPDATE user SET id_kategori1=%s WHERE id_user=%s ;', (id_kategori1, id_user))
-#         result = cursor.fetchone()
-#         cnx.commit()
-#     cnx.close()
-    
-#     if result == 0:
-#         js = {
-#             "code": "gagal",
-#         }
-#     else:
-#         js = {
-#             "code": "sukses",
-#         }
-#     return jsonify(js)
 
 # change status admin user
 @app.route("/UpStatUser",methods=["POST", "GET"])
@@ -663,14 +555,8 @@ def UpStatUser():
     status = request_data['status']
     
     #connect database
-    if os.environ.get('GAE_ENV') == 'standard':
-        unix_socket = '/cloudsql/{}'.format(db_connection_name)
-        cnx = pymysql.connect(user=db_user, password=db_password,
-                              unix_socket=unix_socket, db=db_name)
-    else:
-        host = '127.0.0.1'
-        cnx = pymysql.connect(user=db_user, password=db_password,
-                              host=host, db=db_name)
+    cnx = pymysql.connect(host=db_connection_name, user=db_user, 
+                          password=db_password, db=db_name)
     #querying sql
     with cnx.cursor() as cursor:
         cursor.execute('UPDATE user SET status=%s WHERE id_user=%s ;', (status, id_user))
@@ -740,14 +626,8 @@ def addKate():
     nama_kategori = request_data['nama_kategori']
     
     #connect database
-    if os.environ.get('GAE_ENV') == 'standard':
-        unix_socket = '/cloudsql/{}'.format(db_connection_name)
-        cnx = pymysql.connect(user=db_user, password=db_password,
-                              unix_socket=unix_socket, db=db_name)
-    else:
-        host = '127.0.0.1'
-        cnx = pymysql.connect(user=db_user, password=db_password,
-                              host=host, db=db_name)
+    cnx = pymysql.connect(host=db_connection_name, user=db_user, 
+                          password=db_password, db=db_name)
     #querying sql
     with cnx.cursor() as cursor:
         cursor.execute('UPDATE kategori SET id_kategori=%s, nama_kategori=%s where id_kategori_user=%s;', (id_kategori, nama_kategori, id_kategori_user))
@@ -777,14 +657,8 @@ def updateKateSet():
     cleaned_tweet = request_data['cleaned_tweet']
     
     #connect database
-    if os.environ.get('GAE_ENV') == 'standard':
-        unix_socket = '/cloudsql/{}'.format(db_connection_name)
-        cnx = pymysql.connect(user=db_user, password=db_password,
-                              unix_socket=unix_socket, db=db_name)
-    else:
-        host = '127.0.0.1'
-        cnx = pymysql.connect(user=db_user, password=db_password,
-                              host=host, db=db_name)
+    cnx = pymysql.connect(host=db_connection_name, user=db_user, 
+                          password=db_password, db=db_name)
     #querying sql
     with cnx.cursor() as cursor:
         cursor.execute('INSERT INTO dataset (id_kategori_dataset, cleaned_tweet) VALUES (%s, %s);', (id_kategori_dataset, cleaned_tweet))
@@ -808,56 +682,6 @@ def updateKateSet():
         }
     return jsonify(js)
 
-# #adding dataset
-# @app.route("/addData",methods=["POST", "GET"])
-# def addData():
-#     request_data = request.get_json()
-#     id_kategori_dataset = request_data['id_kategori_dataset']
-#     cleaned_tweet = request_data['cleaned_tweet']
-    
-#     #connect database
-#     if os.environ.get('GAE_ENV') == 'standard':
-#         unix_socket = '/cloudsql/{}'.format(db_connection_name)
-#         cnx = pymysql.connect(user=db_user, password=db_password,
-#                               unix_socket=unix_socket, db=db_name)
-#     else:
-#         host = '127.0.0.1'
-#         cnx = pymysql.connect(user=db_user, password=db_password,
-#                               host=host, db=db_name)
-#     #querying sql
-#     with cnx.cursor() as cursor:
-#         cursor.execute('INSERT INTO dataset (id_kategori_dataset, cleaned_tweet) VALUES(%s, %s);', (id_kategori_dataset, cleaned_tweet))
-#         result = cursor.fetchone()
-#         cnx.commit()
-#     cnx.close()
-    
-#     if result == 0:
-#         js = {
-#             "code": "gagal",
-#         }
-#     else:
-#         js = {
-#             "id_kategori_dataset": id_kategori_dataset,
-#             "cleaned_tweet": cleaned_tweet
-#         }
-#     return jsonify(js)
-
-# @app.route('/GetDesc',methods=["POST", "GET"])
-# def GetDesc():
-#     request_data = request.get_json()
-#     nama_destinasi = request_data['nama_destinasi']
-#     deskripsi = []
-#     if request.method == 'GET':
-#         if os.environ.get('GAE_ENV') == 'standard':
-#             # If deployed, use the local socket interface for accessing Cloud SQL
-#             unix_socket = '/cloudsql/{}'.format(db_connection_name)
-#             cnx = pymysql.connect(user=db_user, password=db_password,
-#                                 unix_socket=unix_socket, db=db_name)
-#         with cnx.cursor() as cursor:
-#             cursor.execute('SELECT deskripsi FROM destinasi WHERE nama_destinasi=%s;', (nama_destinasi))
-#             result =cursor.fetchone()
-#             deskripsi.append({result})
-
 #dapatin deskripsi dari nama destinasi tertentu
 @app.route("/GetDesc",methods=["POST", "GET"])
 @jwt_required(refresh=False)
@@ -867,14 +691,8 @@ def GetDesc():
 
     
     #connect database
-    if os.environ.get('GAE_ENV') == 'standard':
-        unix_socket = '/cloudsql/{}'.format(db_connection_name)
-        cnx = pymysql.connect(user=db_user, password=db_password,
-                              unix_socket=unix_socket, db=db_name)
-    else:
-        host = '127.0.0.1'
-        cnx = pymysql.connect(user=db_user, password=db_password,
-                              host=host, db=db_name)
+    cnx = pymysql.connect(host=db_connection_name, user=db_user, 
+                          password=db_password, db=db_name)
     #querying sql
     with cnx.cursor() as cursor:
         cursor.execute('SELECT deskripsi FROM destinasi WHERE nama_destinasi=%s;', (nama_destinasi))
@@ -896,36 +714,11 @@ def GetDesc():
 @app.route('/search',methods=["GET"])
 @jwt_required(refresh=False)
 def search():
-    # request_data = request.get_json()
-    # nama_destinasi = request_data['nama_destinasi']
     search = []
-    # if request.method == 'POST':
-    #     if os.environ.get('GAE_ENV') == 'standard':
-    #         # If deployed, use the local socket interface for accessing Cloud SQL
-    #         unix_socket = '/cloudsql/{}'.format(db_connection_name)
-    #         cnx = pymysql.connect(user=db_user, password=db_password,
-    #                             unix_socket=unix_socket, db=db_name)
-    # #     with cnx.cursor() as cursor:
-    # #         cursor.execute('SELECT * FROM destinasi WHERE nama_destinasi LIKE %s ORDER BY nama_destinasi;', (nama_destinasi))
-    # #         result = cursor.fetchall()
-    # #     cnx.close()
-    # #     return jsonify(result)
-    # # else:
-    # #     return 'invalid request'
-    #     with cnx.cursor() as cursor:
-    #         cursor.execute('SELECT * FROM destinasi WHERE LOWER(nama_destinasi) LIKE LOWER(%s) ORDER BY nama_destinasi;', (nama_destinasi))
-    #         for row in cursor:
-    #             search.append({'id_destinasi': row[0], 'id_kategori_destinasi': row[1], 'nama_desinasi': row[2], 'deskripsi': row[3], 'pic_destinasi': row[4], 'url_destinasi': row[5]})
-    #         cnx.close()
-    #     return jsonify(search)
-    # else:
-    #     return 'Invalid request'
     args = request.args
     nama_destinasi = f"%{args.get('nama_destinasi')}%"
-    if os.environ.get('GAE_ENV') == 'standard':
-        unix_socket = '/cloudsql/{}'.format(db_connection_name)
-        cnx = pymysql.connect(user=db_user, password=db_password,
-                            unix_socket=unix_socket, db=db_name)
+    cnx = pymysql.connect(host=db_connection_name, user=db_user, 
+                          password=db_password, db=db_name)
     with cnx.cursor() as cursor:
         cursor.execute('SELECT * FROM destinasi WHERE LOWER(nama_destinasi) LIKE LOWER(%s) ORDER BY nama_destinasi;', (nama_destinasi))
         for row in cursor:
@@ -954,10 +747,8 @@ def upload():
         encoded = base64.b64encode(img['image'].read())
         
 
-        if os.environ.get('GAE_ENV') == 'standard':
-            unix_socket = '/cloudsql/{}'.format(db_connection_name)
-            cnx = pymysql.connect(user=db_user, password=db_password,
-                                unix_socket=unix_socket, db=db_name)
+        cnx = pymysql.connect(host=db_connection_name, user=db_user, 
+                          password=db_password, db=db_name)
         try:
             with cnx.cursor() as cursor:
                 cursor.execute('INSERT INTO pictures(pic,title) VALUES (%s, %s);', (encoded, title))
@@ -980,10 +771,8 @@ def get_image(title):
                 "message": "title need to be specified"
             }), 400
 
-        if os.environ.get('GAE_ENV') == 'standard':
-            unix_socket = '/cloudsql/{}'.format(db_connection_name)
-            cnx = pymysql.connect(user=db_user, password=db_password,
-                                unix_socket=unix_socket, db=db_name)
+        cnx = pymysql.connect(host=db_connection_name, user=db_user, 
+                          password=db_password, db=db_name)
         try:
             with cnx.cursor() as cursor:
                 cursor.execute('SELECT pic, title FROM  pictures WHERE title=%s;', (title))
@@ -1002,10 +791,8 @@ def GetNull():
     null = []
     #connect database
     if request.method == 'GET':
-        if os.environ.get('GAE_ENV') == 'standard':
-            unix_socket = '/cloudsql/{}'.format(db_connection_name)
-            cnx = pymysql.connect(user=db_user, password=db_password,
-                                unix_socket=unix_socket, db=db_name)
+        cnx = pymysql.connect(host=db_connection_name, user=db_user, 
+                          password=db_password, db=db_name)
         #querying sql
         with cnx.cursor() as cursor:
             cursor.execute('SELECT kategori.id_kategori_user, kategori.id_kategori, user.username_twitter, user.id_user FROM kategori LEFT JOIN user ON kategori.id_kategori_user = user.id_user WHERE kategori.id_kategori is NULL AND user.username_twitter IS NOT NULL;')
@@ -1036,10 +823,8 @@ def update_user():
             }
             return jsonify(js),403
         data = request.get_json()
-        if os.environ.get('GAE_ENV') == 'standard':
-            unix_socket = '/cloudsql/{}'.format(db_connection_name)
-            cnx = pymysql.connect(user=db_user, password=db_password,
-                                unix_socket=unix_socket, db=db_name)
+        cnx = pymysql.connect(host=db_connection_name, user=db_user, 
+                          password=db_password, db=db_name)
         with cnx.cursor() as cursor:
             cursor.execute('UPDATE kategori SET id_kategori=%s, nama_kategori= %s WHERE id_kategori_user=%s;', (data["kategori"],data["nama_kategori"], data["id_user"]))
             cnx.commit()
