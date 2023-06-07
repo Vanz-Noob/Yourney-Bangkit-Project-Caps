@@ -1,6 +1,6 @@
 import os
 import re
-import flask_cors
+from flask_cors import CORS
 # import threading
 import pymysql
 import base64
@@ -17,10 +17,10 @@ from services.dataset import DatasetService
 from services.twitter import average_data, update_dataset
 
 
-db_user = os.environ.get('CLOUD_SQL_USERNAME')
-db_password = os.environ.get('CLOUD_SQL_PASSWORD')
-db_name = os.environ.get('CLOUD_SQL_DATABASE_NAME')
-db_connection_name = os.environ.get('CLOUD_SQL_CONNECTION_NAME')
+db_user = 'root'
+db_password = ''
+db_name = 'yourney'
+db_connection_name = '127.0.0.1:8080'
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 ACCESS_EXPIRES = timedelta(hours=1)
@@ -30,7 +30,7 @@ user_service = UserService(db_user,db_password,db_name,db_connection_name)
 data_service = DatasetService(db_user,db_password,db_name,db_connection_name)
 
 app = Flask(__name__)
-# cors(app)
+CORS(app)
 app.config['MAX_CONTENT_LENGTH'] = 10 * 1000 * 1000
 app.config["JWT_SECRET_KEY"] =  str(os.environ.get("JWT_SECRET"))
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = ACCESS_EXPIRES

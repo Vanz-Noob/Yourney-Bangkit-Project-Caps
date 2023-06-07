@@ -49,7 +49,7 @@ class UserService:
             cnx = pymysql.connect(user=self.db_user, password=self.db_password,
                                 host=host, db=self.db_name)
         with cnx.cursor() as cursor:
-            cursor.execute('SELECT user.*, kategori.nama_kategori FROM user LEFT JOIN kategori ON user.id_kategori1 = kategori.id_kategori_user WHERE id_user = %s;',(id_user))
+            cursor.execute('SELECT * FROM user WHERE id_user = %s;',(id_user))
             result = cursor.fetchone()
         cnx.close()
         return result
