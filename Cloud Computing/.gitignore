@@ -5,3 +5,5 @@ connect-ML-to-cloud
 yourney.sql
 datbases.txt
 .venv
+.env
+config.ini

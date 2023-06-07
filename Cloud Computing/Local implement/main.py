@@ -1,5 +1,6 @@
+import os
 import re
-import flask_cors import CORS, cross_origin
+import flask_cors
 # import threading
 import pymysql
 import base64
@@ -13,7 +14,7 @@ from flask_swagger_ui import get_swaggerui_blueprint
 from datetime import datetime, timedelta, timezone
 from services.user import UserService
 from services.dataset import DatasetService
-# from services.twitter import average_data, update_dataset
+from services.twitter import average_data, update_dataset
 
 
 db_user = os.environ.get('CLOUD_SQL_USERNAME')
@@ -29,7 +30,7 @@ user_service = UserService(db_user,db_password,db_name,db_connection_name)
 data_service = DatasetService(db_user,db_password,db_name,db_connection_name)
 
 app = Flask(__name__)
-cors(app)
+# cors(app)
 app.config['MAX_CONTENT_LENGTH'] = 10 * 1000 * 1000
 app.config["JWT_SECRET_KEY"] =  str(os.environ.get("JWT_SECRET"))
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = ACCESS_EXPIRES
@@ -465,7 +466,7 @@ def register():
         password = request_data['password']
         jenis_kelamin = request_data['jenis_kelamin']
         tempat_lahir = request_data['tempat_lahir']
-        Hpassword = sha256_crypt.encrypt(password)   
+        Hpassword = hash(password)   
         
         #connect database
         if os.environ.get('GAE_ENV') == 'standard':
