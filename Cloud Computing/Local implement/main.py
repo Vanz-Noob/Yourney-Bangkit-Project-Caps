@@ -20,7 +20,7 @@ from services.twitter import average_data, update_dataset
 db_user = 'root'
 db_password = ''
 db_name = 'yourney'
-db_connection_name = '127.0.0.1:8080'
+db_connection_name = '127.0.0.1'
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 ACCESS_EXPIRES = timedelta(hours=1)
@@ -466,7 +466,7 @@ def register():
         password = request_data['password']
         jenis_kelamin = request_data['jenis_kelamin']
         tempat_lahir = request_data['tempat_lahir']
-        Hpassword = hash(password)   
+        Hpassword = sha256_crypt.encrypt(password)   
         
         #connect database
         if os.environ.get('GAE_ENV') == 'standard':
