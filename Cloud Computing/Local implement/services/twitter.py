@@ -217,9 +217,9 @@ def average_data(username):
     return data[max_keys]
 
 if __name__ == "__main__":
-    username = os.environ.get('admin_name')
-    password = os.environ.get('admin_pass')
-    host = os.environ.get('endpoint_host')
+    username = 'Rafli2.0'
+    password = 'Rafliaja123'
+    host = '127.0.0.1'
     res = requests.post(
         host+'/login',
         json={"username": username,"password": password}
