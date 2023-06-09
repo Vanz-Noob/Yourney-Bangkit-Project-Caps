@@ -333,11 +333,14 @@ def logout():
 
     cnx = pymysql.connect(host=db_connection_name, user=db_user, 
                           password=db_password, db=db_name)
+
     with cnx.cursor() as cursor:
         cursor.execute('INSERT INTO tokenblocklist(jti,type,created_at) VALUES (%s, %s, %s);', (jti, ttype, now))
         cnx.commit()
     cnx.close()
     return jsonify({"msg": "logout successful"})
+  
+    
 
 # endpoint to verify jwt token works properly
 # Protect a route with jwt_required, which will kick out requests
