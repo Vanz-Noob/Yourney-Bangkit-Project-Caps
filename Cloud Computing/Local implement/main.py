@@ -237,7 +237,8 @@ def db():
         with cnx.cursor() as cursor:
             cursor.execute('SELECT * FROM user;')
             for row in cursor:
-                users.append({'created_time': row[2], 'id_user': row[0], 'id_kategori': row[1], 'username': row[3], 'password': row[4], 'status': row[7]})
+                users.append({'created_time': row[3], 'id_user': row[0], 'id_kategori': row[1], 
+                              'username': row[5], 'email':row[10], 'usename_twitter':row[12], 'status': row[7]})
             cnx.close()
         return jsonify(users)
     else:
