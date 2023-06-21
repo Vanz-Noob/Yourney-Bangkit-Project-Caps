@@ -156,7 +156,7 @@ def destinasi_likes(destinasi_id):
                           password=db_password, db=db_name)
     current_user = get_jwt_identity()
     user = current_user['id_user']
-
+    likes = []
     if request.method == 'GET':
 
         with cnx.cursor() as cursor:
@@ -172,14 +172,21 @@ def destinasi_likes(destinasi_id):
                 'message': 'data not found'
             }),404
     elif request.method == 'POST':
-
         with cnx.cursor() as cursor:
+            cursor.execute('SELECT * FROM user_liked WHERE id_user_liked=%s AND id_destination_like=%s;',(user,destinasi_id))
+            result = cursor.fetchone()
+            if result:
+                cursor.execute('SELECT * FROM user_liked WHERE id_user_liked=%s;',(user))
+                for row in cursor:
+                    likes.append({'id_user':row[1], 'id_destinasi_liked':row[2]})
+                cnx.close()
+                return jsonify({'likes': likes}), 200
             cursor.execute('INSERT INTO user_liked(id_user_liked,id_destination_like) VALUES (%s, %s);', (user, destinasi_id))
             cnx.commit()
             cursor.execute('SELECT * FROM user_liked WHERE id_user_liked=%s AND id_destination_like=%s;',(user,destinasi_id))
-            liked = cursor.fetchone()
+            liked=cursor.fetchone()
         cnx.close()
-
+            
         if liked:
             return jsonify({
                 'message':'destination like success'
@@ -188,6 +195,7 @@ def destinasi_likes(destinasi_id):
             return jsonify({
                 'message':'destination like failed'
             }),400
+
     elif request.method == 'DELETE':
         try:
 
