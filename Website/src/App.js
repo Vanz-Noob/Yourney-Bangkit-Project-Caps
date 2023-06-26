@@ -1,40 +1,42 @@
-import One from "./src/page1";
-import Two from "./src/page2";
-import Three from "./src/page3";
-import {FaCircle} from "react-icons/fa";
-import './App.css';
-import Four from "./src/page4";
-import Five from "./src/page5";
-import Footer from "./src/footer";
-import { useState } from "react";
+import React, { Component, Suspense } from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import "./scss/style.scss";
+import "./Font/font.css";
+import RequireAuth from "./commponents/Admin/RequireAuth";
+import getCookie from "./hooks/getCookie";
 
+const cookie = getCookie("usrin");
 
-function App(){
-    const[dot,setDot] = useState('white')
-    // let team = document.getElementById("team");
-    // let home = document.getElementById("home");
-    // console.log('test',team.id)
+const DefaultLayout = React.lazy(() => import("./layout/DefaultLayout"));
+const loading = (
+  <div className="pt-3 text-center">
+    <div className="sk-spinner sk-spinner-pulse"></div>
+  </div>
+);
+const Login = React.lazy(() => import("./commponents/Admin/login/Login"));
+const DefaultLayoutPortal = React.lazy(() =>
+  import("./layout/DefaultLayoutPortal")
+);
 
-
-    return(
-        <body >
-             {/* <div className="dotNavigation">
-            <FaCircle color="orange"/>
-            <FaCircle color={dot}/>
-            <FaCircle color={dot}/>
-            <FaCircle color={dot}/>
-        </div> */}
-        <One/>
-        <Two/>
-        <Three/>
-        <Four/>
-        {/* <Five/> */}
-       <Footer/>
-       
-
-        </body>
-        
-    )
+function App() {
+  return (
+    <BrowserRouter>
+      <Suspense fallback={loading}>
+        <Routes>
+          <Route
+            exact
+            path="/"
+            name="Portal"
+            element={<DefaultLayoutPortal />}
+          />
+          <Route path="/adminYourney" name="login" element={<Login />} />
+          <Route element={<RequireAuth />}>
+            <Route path="*" name="admin" element={<DefaultLayout />} />
+          </Route>
+        </Routes>
+      </Suspense>
+    </BrowserRouter>
+  );
 }
 
 export default App;

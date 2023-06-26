@@ -1,0 +1,41 @@
+.Htext {
+  height: 20vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #e08839;
+  overflow-y: hidden;
+}
+.Hcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20%;
+  flex-direction: column;
+  overflow-y: hidden;
+  text-align: center;
+  z-index: 99;
+  font-family: Montserrat;
+  color: #fff;
+}
+.containterH {
+  width: 100%;
+  height: 100vh;
+  border: 1px solid;
+}
+.square {
+  position: absolute;
+  border-radius: 15px;
+  width: 250px;
+  height: 250px;
+  transform: rotate(45deg);
+  background-color: #e08839;
+  left: 41.8%;
+  top: 93%;
+}
+.Header {
+  font-family: Montserrat;
+  font-size: 45px;
+  text-shadow: 4px 4px 2px rgba(0, 0, 0, 0.6);
+  width: 100%;
+}

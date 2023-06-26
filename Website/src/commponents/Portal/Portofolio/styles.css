@@ -1,0 +1,89 @@
+.Portofolio {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+}
+.Pdesk {
+  width: 100%;
+  height: 100%;
+  overflow-y: hidden;
+}
+.Pcard {
+  margin: 10px;
+  background-color: rgba(180, 179, 179, 0.3);
+  width: 80%;
+  backdrop-filter: blur(10px);
+  height: 70%;
+  border-radius: 25px;
+}
+
+.Ptext {
+  text-align: justify;
+  margin: 50px;
+  color: #fff;
+  font-size: 18px;
+  font-family: Montserrat-Medium;
+}
+.Ptitle {
+  text-align: center;
+  font-family: Montserrat-ExtraBold;
+  font-size: 35px;
+  margin-top: 50px;
+  color: #e08839;
+  text-shadow: 1px 4px 2px rgba(255, 255, 255, 0.79);
+}
+.col1 {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  max-height: 100vh;
+  /* border: 1px solid; */
+}
+.Pflex {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+.col-img {
+  overflow-y: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.Pimg-left1 {
+  width: 100%;
+  height: 30vh;
+  object-fit: cover;
+  object-position: 0 100%;
+  margin-bottom: 10px;
+}
+.Pimg-left2 {
+  width: 100%;
+  height: 60vh;
+  object-fit: cover;
+  object-position: 0 100%;
+  /* clip-path: inset(0 0 10px 0); */
+  margin-bottom: 10px;
+}
+.Pimg-right1 {
+  width: 100%;
+  height: 70vh;
+  object-fit: cover;
+  object-position: 100% 0;
+}
+.Pimg-right2 {
+  width: 100%;
+  height: 40vh;
+  object-fit: cover;
+  object-position: 0 0;
+  /* clip-path: inset(0 0 10px 0); */
+}
+.Plink {
+  overflow-y: hidden;
+}
+.Limg {
+  width: 300px;
+  object-fit: contain;
+}

@@ -1,0 +1,44 @@
+[
+  {
+    "id": "alif",
+    "Name": "Muhammad Aliif Nurrahman",
+    "Job": "Machine Learning",
+    "linkedin": "https://www.linkedin.com/in/aliifnrhmn/",
+    "github": "https://github.com/aliifnrhmn"
+  },
+  {
+    "id": "aul",
+    "Name": "Aulia Annisa",
+    "Job": "Machine Learning",
+    "linkedin": "https://www.linkedin.com/in/auliaann/",
+    "github": "https://github.com/auliaann"
+  },
+  {
+    "id": "roh",
+    "Name": "Rochman Setiono",
+    "Job": "Machine Learning",
+    "linkedin": "https://www.linkedin.com/in/rochman-setiono-8212a4202/",
+    "github": "https://github.com/rochmans26"
+  },
+  {
+    "id": "daf",
+    "Name": "Mohammad Dafa Dhiyaul Haq",
+    "Job": "Website Dev",
+    "linkedin": "https://www.linkedin.com/in/mohammad-dafa-dhiyaul-haq-98516725a/",
+    "github": "https://github.com/Dafa2403"
+  },
+  {
+    "id": "ren",
+    "Name": "Renaldi Azhar",
+    "Job": "Cloud Computing",
+    "linkedin": "https://www.linkedin.com/in/RenaldiAzhar/",
+    "github": "https://github.com/Vanz-Noob"
+  },
+  {
+    "id": "coo",
+    "Name": "Berliana Putri Buwono",
+    "Job": "Cloud Computing",
+    "linkedin": "https://www.linkedin.com/in/berliana-putri-buwono/",
+    "github": "https://github.com/cocokelat"
+  }
+]

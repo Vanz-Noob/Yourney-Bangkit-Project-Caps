@@ -1,0 +1,24 @@
+@font-face {
+  font-family: "Rodondo";
+  src: url(./Rodondo.otf);
+}
+@font-face {
+  font-family: "Montserrat-Regular";
+  src: url(./Montserrat/static/Montserrat-Regular.ttf);
+}
+@font-face {
+  font-family: "Montserrat-Bold";
+  src: url(./Montserrat/static/Montserrat-Bold.ttf);
+}
+@font-face {
+  font-family: "Montserrat-ExtraBold";
+  src: url(./Montserrat/static/Montserrat-ExtraBold.ttf);
+}
+@font-face {
+  font-family: "Montserrat-Black";
+  src: url(./Montserrat/static/Montserrat-Black.ttf);
+}
+@font-face {
+  font-family: "Montserrat-Medium";
+  src: url(./Montserrat/static/Montserrat-Medium.ttf);
+}

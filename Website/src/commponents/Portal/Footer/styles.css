@@ -1,0 +1,23 @@
+.Footer {
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 30px;
+  font-size: 20px;
+  /* font-family: Montserrat-Light; */
+}
+.Ficons {
+  display: flex;
+  gap: 50px;
+}
+.Ficons > a {
+  color: #fff;
+}
+.Ficons > a:hover {
+  color: #e08839;
+}
+.Footer > p5 {
+  font-family: Montserrat-Medium;
+}
