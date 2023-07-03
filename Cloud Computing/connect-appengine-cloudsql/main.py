@@ -673,6 +673,7 @@ def UpStatUser():
 def editDest():
     request_data = request.get_json()
     id_kategori_destinasi = request_data['id_kategori_destinasi']
+    id_destinasi = request_data['id_destinasi']
     nama_destinasi = request_data['nama_destinasi']
     deskripsi = request_data['deskripsi']
     pic_destinasi = request_data['pic_destinasi']
@@ -688,9 +689,8 @@ def editDest():
         cnx = pymysql.connect(user=db_user, password=db_password, host=host, db=db_name)
     #querying sql
     with cnx.cursor() as cursor:
-        # cursor.execute('INSERT INTO destinasi (id_kategori_destinasi, nama_destinasi, deskripsi, pic_destinasi, url_destinasi) VALUES (%s, %s, %s, %s, %s);', (id_kategori_destinasi, nama_destinasi, deskripsi, pic_destinasi, url_destinasi))
-        cursor.execute('UPDATE destinasi SET nama_destinasi=%s, deskripsi=%s, pic_destinasi=%s, url_destinasi=%s WHERE id_kategori_destinasi=%s',
-                       (nama_destinasi, deskripsi, pic_destinasi, url_destinasi, id_kategori_destinasi))
+        cursor.execute('UPDATE destinasi SET id_kategori_destinasi=%s, nama_destinasi=%s, deskripsi=%s, pic_destinasi=%s, url_destinasi=%s WHERE id_destinasi=%s',
+                       (id_kategori_destinasi, nama_destinasi, deskripsi, pic_destinasi, url_destinasi, id_destinasi))
         result = cursor.fetchone()
         cnx.commit()
     cnx.close()
@@ -701,6 +701,7 @@ def editDest():
         }
     else:
         js = {
+            "id_destinasi" : id_destinasi,
             "id_kategori_destinasi" : id_kategori_destinasi,
             "nama_destinasi": nama_destinasi,
             "deskripsi": deskripsi,
@@ -717,7 +718,7 @@ def editDest():
 @cross_origin(origin='https://yourney-api.et.r.appspot.com/delDest')
 def delDest():
     request_data = request.get_json()
-    id_kategori_destinasi = request_data['id_kategori_destinasi']
+    id_destinasi = request_data['id_destinasi']
     #connect database
     if os.environ.get("GAE_ENV") == "standard":
         unix_socket = f"/cloudsql/{db_connection_name}"
@@ -729,7 +730,7 @@ def delDest():
         cnx = pymysql.connect(user=db_user, password=db_password, host=host, db=db_name)
         
     with cnx.cursor() as cursor:
-        cursor.execute('DELETE FROM destinasi WHERE id_kategori_destinasi=%s',(id_kategori_destinasi))
+        cursor.execute('DELETE FROM destinasi WHERE id_destinasi=%s',(id_destinasi))
         result = cursor.fetchone()
         cnx.commit()
     cnx.close()
