@@ -1,6 +1,6 @@
 import os
 import re
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 # import threading
 import pymysql
 import base64
@@ -30,7 +30,7 @@ user_service = UserService(db_user,db_password,db_name,db_connection_name)
 data_service = DatasetService(db_user,db_password,db_name,db_connection_name)
 
 app = Flask(__name__)
-CORS(app, resources={r'/addDest/*': {'origins':'https://yourney-api.et.r.appspot.com/'}})
+CORS(app)
 app.config['MAX_CONTENT_LENGTH'] = 10 * 1000 * 1000
 app.config["JWT_SECRET_KEY"] =  str(os.environ.get("JWT_SECRET"))
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = ACCESS_EXPIRES
@@ -321,6 +321,7 @@ def dataset():
     
 #login
 @app.route("/login",methods=["POST", "GET"])
+@cross_origin()
 def login():
     try:
         request_data = request.get_json()
@@ -668,6 +669,7 @@ def UpStatUser():
 #adding destinasi sesuai kategori
 @app.route("/addDest",methods=["POST", "GET"])
 @jwt_required(refresh=False)
+@cross_origin()
 def addDest():
     request_data = request.get_json()
     id_kategori_destinasi = request_data['id_kategori_destinasi']
