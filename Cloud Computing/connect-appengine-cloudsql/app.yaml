@@ -1,5 +1,5 @@
 # [START gae_python37_cloudsql_config]
-runtime: python37
+runtime: python310
 
 env_variables:
   CLOUD_SQL_USERNAME: root
