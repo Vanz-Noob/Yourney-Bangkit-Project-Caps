@@ -1,19 +1,3 @@
-# Copyright 2018 Google LLC
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
-# [START gae_python38_cloudsql_mysql]
-# [START gae_python3_cloudsql_mysql]
 import os
 import re
 import flask_cors import CORS, cross_origin
@@ -41,8 +25,6 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 ACCESS_EXPIRES = timedelta(hours=1)
 SWAGGER_URL = '/api/docs'  # URL for exposing Swagger UI (without trailing '/')
 API_URL = '/static/spec.json'  # Our API url (can of course be a local resource)
-
-
 user_service = UserService(db_user,db_password,db_name,db_connection_name)
 data_service = DatasetService(db_user,db_password,db_name,db_connection_name)
 
@@ -83,7 +65,6 @@ def check_if_token_revoked(jwt_header, jwt_payload: dict) -> bool:
         cursor.execute('SELECT * FROM TokenBlocklist WHERE jti = %s', (jti, ))
         token = cursor.fetchone()
     cnx.close()
-
     return token is not None
 
 @app.route("/", methods=["GET"])
@@ -205,7 +186,6 @@ def destinasi_likes(destinasi_id):
                 'message': 'data not found'
             }),404
     elif request.method == 'POST':
-
         with cnx.cursor() as cursor:
             cursor.execute('INSERT INTO user_liked(id_user_liked,id_destination_like) VALUES (%s, %s);', (user, destinasi_id))
             cnx.commit()
@@ -282,21 +262,6 @@ def db():
     else:
         return 'Invalid request'
 
-# def twitter_dataset():
-#     newData = update_dataset()
-#     values = []
-#     for data in newData:
-#         sql = (data['created_at'], data['author'], data['tweet'], data['category'])
-#         values.append(sql)
-#     if os.environ.get('GAE_ENV') == 'standard':
-#         unix_socket = '/cloudsql/{}'.format(db_connection_name)
-#         cnx = pymysql.connect(user=db_user, password=db_password,
-#                             unix_socket=unix_socket, db=db_name)
-#     with cnx.cursor() as cursor:
-#         cursor.executemany('INSERT INTO dataset(create_time,author,tweet,kategori) VALUES (%s,%s,%s,%s) ;',values)
-#         cnx.commit()
-#     cnx.close()
-    
 # cek dataset
 @app.route('/dataset',methods=['GET','POST'])
 @jwt_required(refresh=False)
@@ -315,17 +280,6 @@ def dataset():
                 datasets.append({'created_time': row[0], 'author': row[1], 'tweet': row[2], 'kategori': row[3]})
             cnx.close()
         return jsonify(datasets)
-    # elif request.method == 'POST':
-    #     try:
-    #         # Thread = threading.Thread(target=twitter_dataset)
-    #         # Thread.start()
-    #         return jsonify({
-    #              'message':'success' 
-    #         }),200
-    #     except Exception as e:
-    #         return jsonify({
-    #             'message': str(e)
-    #         })
     else:
         return 'Invalid request'
        
@@ -616,38 +570,6 @@ def register():
             "message": str(e)
         })
 
-# # update category to user
-# @app.route("/UpdateKateUser",methods=["POST", "GET"])
-# def UpdateKateUser():
-#     request_data = request.get_json()
-#     id_user = request_data['id_user']
-#     id_kategori1 = request_data['id_kategori1']
-    
-#     #connect database
-#     if os.environ.get('GAE_ENV') == 'standard':
-#         unix_socket = '/cloudsql/{}'.format(db_connection_name)
-#         cnx = pymysql.connect(user=db_user, password=db_password,
-#                               unix_socket=unix_socket, db=db_name)
-#     else:
-#         host = '127.0.0.1'
-#         cnx = pymysql.connect(user=db_user, password=db_password,
-#                               host=host, db=db_name)
-#     #querying sql
-#     with cnx.cursor() as cursor:
-#         cursor.execute('UPDATE user SET id_kategori1=%s WHERE id_user=%s ;', (id_kategori1, id_user))
-#         result = cursor.fetchone()
-#         cnx.commit()
-#     cnx.close()
-    
-#     if result == 0:
-#         js = {
-#             "code": "gagal",
-#         }
-#     else:
-#         js = {
-#             "code": "sukses",
-#         }
-#     return jsonify(js)
 
 # change status admin user
 @app.route("/UpStatUser",methods=["POST", "GET"])
@@ -809,56 +731,6 @@ def updateKateSet():
         }
     return jsonify(js)
 
-# #adding dataset
-# @app.route("/addData",methods=["POST", "GET"])
-# def addData():
-#     request_data = request.get_json()
-#     id_kategori_dataset = request_data['id_kategori_dataset']
-#     cleaned_tweet = request_data['cleaned_tweet']
-    
-#     #connect database
-#     if os.environ.get('GAE_ENV') == 'standard':
-#         unix_socket = '/cloudsql/{}'.format(db_connection_name)
-#         cnx = pymysql.connect(user=db_user, password=db_password,
-#                               unix_socket=unix_socket, db=db_name)
-#     else:
-#         host = '127.0.0.1'
-#         cnx = pymysql.connect(user=db_user, password=db_password,
-#                               host=host, db=db_name)
-#     #querying sql
-#     with cnx.cursor() as cursor:
-#         cursor.execute('INSERT INTO dataset (id_kategori_dataset, cleaned_tweet) VALUES(%s, %s);', (id_kategori_dataset, cleaned_tweet))
-#         result = cursor.fetchone()
-#         cnx.commit()
-#     cnx.close()
-    
-#     if result == 0:
-#         js = {
-#             "code": "gagal",
-#         }
-#     else:
-#         js = {
-#             "id_kategori_dataset": id_kategori_dataset,
-#             "cleaned_tweet": cleaned_tweet
-#         }
-#     return jsonify(js)
-
-# @app.route('/GetDesc',methods=["POST", "GET"])
-# def GetDesc():
-#     request_data = request.get_json()
-#     nama_destinasi = request_data['nama_destinasi']
-#     deskripsi = []
-#     if request.method == 'GET':
-#         if os.environ.get('GAE_ENV') == 'standard':
-#             # If deployed, use the local socket interface for accessing Cloud SQL
-#             unix_socket = '/cloudsql/{}'.format(db_connection_name)
-#             cnx = pymysql.connect(user=db_user, password=db_password,
-#                                 unix_socket=unix_socket, db=db_name)
-#         with cnx.cursor() as cursor:
-#             cursor.execute('SELECT deskripsi FROM destinasi WHERE nama_destinasi=%s;', (nama_destinasi))
-#             result =cursor.fetchone()
-#             deskripsi.append({result})
-
 #dapatin deskripsi dari nama destinasi tertentu
 @app.route("/GetDesc",methods=["POST", "GET"])
 @jwt_required(refresh=False)
@@ -897,30 +769,7 @@ def GetDesc():
 @app.route('/search',methods=["GET"])
 @jwt_required(refresh=False)
 def search():
-    # request_data = request.get_json()
-    # nama_destinasi = request_data['nama_destinasi']
     search = []
-    # if request.method == 'POST':
-    #     if os.environ.get('GAE_ENV') == 'standard':
-    #         # If deployed, use the local socket interface for accessing Cloud SQL
-    #         unix_socket = '/cloudsql/{}'.format(db_connection_name)
-    #         cnx = pymysql.connect(user=db_user, password=db_password,
-    #                             unix_socket=unix_socket, db=db_name)
-    # #     with cnx.cursor() as cursor:
-    # #         cursor.execute('SELECT * FROM destinasi WHERE nama_destinasi LIKE %s ORDER BY nama_destinasi;', (nama_destinasi))
-    # #         result = cursor.fetchall()
-    # #     cnx.close()
-    # #     return jsonify(result)
-    # # else:
-    # #     return 'invalid request'
-    #     with cnx.cursor() as cursor:
-    #         cursor.execute('SELECT * FROM destinasi WHERE LOWER(nama_destinasi) LIKE LOWER(%s) ORDER BY nama_destinasi;', (nama_destinasi))
-    #         for row in cursor:
-    #             search.append({'id_destinasi': row[0], 'id_kategori_destinasi': row[1], 'nama_desinasi': row[2], 'deskripsi': row[3], 'pic_destinasi': row[4], 'url_destinasi': row[5]})
-    #         cnx.close()
-    #     return jsonify(search)
-    # else:
-    #     return 'Invalid request'
     args = request.args
     nama_destinasi = f"%{args.get('nama_destinasi')}%"
     if os.environ.get('GAE_ENV') == 'standard':
