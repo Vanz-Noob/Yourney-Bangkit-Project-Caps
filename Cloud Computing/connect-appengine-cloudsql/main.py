@@ -666,6 +666,83 @@ def UpStatUser():
         }
     return jsonify(js)
 
+# edit destinasi 
+@app.route("/editDest", methods=["PUT"])
+@jwt_required(refresh=False)
+@cross_origin(origin='https://yourney-api.et.r.appspot.com/editDest')
+def editDest():
+    request_data = request.get_json()
+    id_kategori_destinasi = request_data['id_kategori_destinasi']
+    nama_destinasi = request_data['nama_destinasi']
+    deskripsi = request_data['deskripsi']
+    pic_destinasi = request_data['pic_destinasi']
+    url_destinasi = request_data['url_destinasi']
+        #connect database
+    if os.environ.get("GAE_ENV") == "standard":
+        unix_socket = f"/cloudsql/{db_connection_name}"
+        cnx = pymysql.connect(
+            user=db_user, password=db_password, unix_socket=unix_socket, db=db_name
+        )
+    else:
+        host = "127.0.0.1"
+        cnx = pymysql.connect(user=db_user, password=db_password, host=host, db=db_name)
+    #querying sql
+    with cnx.cursor() as cursor:
+        # cursor.execute('INSERT INTO destinasi (id_kategori_destinasi, nama_destinasi, deskripsi, pic_destinasi, url_destinasi) VALUES (%s, %s, %s, %s, %s);', (id_kategori_destinasi, nama_destinasi, deskripsi, pic_destinasi, url_destinasi))
+        cursor.execute('UPDATE destinasi SET nama_destinasi=%s, deskripsi=%s, pic_destinasi=%s, url_destinasi=%s WHERE id_kategori_destinasi=%s',
+                       (nama_destinasi, deskripsi, pic_destinasi, url_destinasi, id_kategori_destinasi))
+        result = cursor.fetchone()
+        cnx.commit()
+    cnx.close()
+    
+    if result == 0:
+        js = {
+            "code": "gagal",
+        }
+    else:
+        js = {
+            "id_kategori_destinasi" : id_kategori_destinasi,
+            "nama_destinasi": nama_destinasi,
+            "deskripsi": deskripsi,
+            "URL gambar" : pic_destinasi,
+            "URL destinasi" : url_destinasi,
+            "code": "sukses",
+        }
+    return jsonify(js)    
+
+
+# hapus destinasi
+@app.route("/delDest", methods=["DELETE"])
+@jwt_required(refresh=False)
+@cross_origin(origin='https://yourney-api.et.r.appspot.com/delDest')
+def delDest():
+    request_data = request.get_json()
+    id_kategori_destinasi = request_data['id_kategori_destinasi']
+    #connect database
+    if os.environ.get("GAE_ENV") == "standard":
+        unix_socket = f"/cloudsql/{db_connection_name}"
+        cnx = pymysql.connect(
+            user=db_user, password=db_password, unix_socket=unix_socket, db=db_name
+        )
+    else:
+        host = "127.0.0.1"
+        cnx = pymysql.connect(user=db_user, password=db_password, host=host, db=db_name)
+        
+    with cnx.cursor() as cursor:
+        cursor.execute('DELETE FROM destinasi WHERE id_kategori_destinasi=%s',(id_kategori_destinasi))
+        result = cursor.fetchone()
+        cnx.commit()
+    cnx.close()
+    if result == 0:
+        js = {
+            "code": "gagal",
+        }
+    else:
+        js = {
+            "code": "sukses",
+        }
+    return jsonify(js)
+
 #adding destinasi sesuai kategori
 @app.route("/addDest",methods=["POST", "GET"])
 @jwt_required(refresh=False)
