@@ -2,6 +2,7 @@ import React from "react";
 import {
   Brand,
   Footer,
+  Highlight,
   Home,
   Member,
   Navigation,
@@ -10,9 +11,10 @@ import {
 
 const DefaultLayoutPortal = () => {
   return (
-    <div>
+    <div style={{ width: "100vw", overflowX: "hidden" }}>
       <Navigation />
       <Home />
+      <Highlight />
       <Brand />
       <Portofolio />
       <Member />

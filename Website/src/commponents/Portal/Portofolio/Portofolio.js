@@ -44,7 +44,7 @@ function Portofolio() {
             <img src={Iplaystore} className="Limg"></img>
           </a>
         </CCol>
-        <CCol sm={7} className="col1 ">
+        <CCol sm={7} className="col1">
           <CCol className="col-img">
             <img src={Ismartphone5} className="Pimg-left1" />
             <img src={Ismartphone2} className="Pimg-right1" />

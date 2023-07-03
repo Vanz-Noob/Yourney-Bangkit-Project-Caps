@@ -17,7 +17,7 @@ import {
 } from "@coreui/react";
 
 import { Ibackground1 } from "../../../assets/bg/index";
-import axios from "axios";
+import axios from "../../../api/axios";
 import { FaRegUser, FaLock } from "react-icons/fa";
 import useAuth from "../../../hooks/useAuth";
 import setCookie from "../../../hooks/setCookie";
@@ -51,7 +51,7 @@ const Login = () => {
     e.preventDefault();
     try {
       const res = await axios.post(
-        "http://127.0.0.1:8080/login",
+        "/login",
         JSON.stringify({ username, password }),
         {
           headers: {

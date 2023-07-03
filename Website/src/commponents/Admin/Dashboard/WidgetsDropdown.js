@@ -24,14 +24,14 @@ const WidgetsDropdown = () => {
   const { auth } = useAuth();
   const [des, setDes] = useState({});
   const [User, setUser] = useState({});
-  console.log("auth", getCookie("usrin"));
+  console.log("auth", auth.accessToken);
   const arr = [];
   const arrUser = [];
   useEffect(() => {
     axios
       .get("/destinasi", {
         headers: {
-          Authorization: `Bearer ${getCookie("usrin").slice(1, -1)}`,
+          Authorization: `Bearer ${auth.accessToken}`,
         },
       })
       .then((res) => {
@@ -45,7 +45,7 @@ const WidgetsDropdown = () => {
     axios
       .get("/db", {
         headers: {
-          Authorization: `Bearer ${getCookie("usrin").slice(1, -1)}`,
+          Authorization: `Bearer ${auth.accessToken}`,
         },
       })
       .then((res) => {

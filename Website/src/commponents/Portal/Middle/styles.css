@@ -1,41 +1,76 @@
-.Htext {
+.containerHighlight {
   height: 20vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   background-color: #e08839;
-  overflow-y: hidden;
 }
-.Hcon {
+.middle {
   display: flex;
-  align-items: center;
   justify-content: center;
-  width: 20%;
-  flex-direction: column;
-  overflow-y: hidden;
-  text-align: center;
-  z-index: 99;
-  font-family: Montserrat;
-  color: #fff;
 }
-.containterH {
-  width: 100%;
-  height: 100vh;
-  border: 1px solid;
-}
-.square {
+.Rhombus {
+  width: 240px;
+  height: 240px;
+  background-color: #e08839;
   position: absolute;
+  margin-top: -3.3vw;
+  /* z-index: -1; */
   border-radius: 15px;
-  width: 250px;
-  height: 250px;
   transform: rotate(45deg);
-  background-color: #e08839;
-  left: 41.8%;
-  top: 93%;
+  /* margin-left: -60%; */
 }
-.Header {
-  font-family: Montserrat;
-  font-size: 45px;
-  text-shadow: 4px 4px 2px rgba(0, 0, 0, 0.6);
-  width: 100%;
+.containterText {
+  font-family: Montserrat-bold;
+  display: flex;
+  width: 40vh;
+  color: #fff;
+  flex-direction: column;
+  justify-content: center;
+  /* align-items: center; */
+  z-index: 1;
+}
+.Htext {
+  font-size: 50px;
+  text-shadow: 3px 3px 0px rgba(0, 0, 0, 1);
+}
+.header5 {
+  font-size: 20px;
+}
+
+@media screen and (max-width: 768px) {
+  .containerHighlight {
+    height: 15vh;
+  }
+  .Rhombus {
+    width: 200px;
+    height: 200px;
+    margin-top: -4vw;
+  }
+  .containterText {
+    width: 25vh;
+  }
+  .Htext {
+    font-size: 35px;
+  }
+  .header5 {
+    font-size: 18px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .containerHighlight {
+    height: 10vh;
+  }
+  .Rhombus {
+    width: 150px;
+    height: 150px;
+    margin-top: -5vw;
+  }
+  .containterText {
+    width: 20vh;
+  }
+  .Htext {
+    font-size: 25px;
+  }
+  .header5 {
+    font-size: 15px;
+  }
 }

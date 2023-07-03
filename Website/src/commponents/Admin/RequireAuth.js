@@ -9,7 +9,7 @@ const RequireAuth = () => {
   const uid = getCookie("usrin");
   console.log("test", uid);
 
-  return uid ? (
+  return auth?.accessToken ? (
     <Outlet />
   ) : (
     <Navigate to="/adminYourney" state={{ from: location }} replace />

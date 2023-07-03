@@ -1,9 +1,9 @@
-.ML {
+.Mem {
   display: flex;
   height: 100vh;
   background-color: #878787;
 }
-.ML > div {
+.Mem > div {
   flex: 1;
   height: 100vh;
   background-position: center;
@@ -12,7 +12,7 @@
 
   transition: all 0.8s cubic-bezier(0.25, 0.4, 0.45, 1.4);
 }
-.ML > div:hover {
+.Mem > div:hover {
   flex: 6;
 }
 .Mimg {
@@ -31,4 +31,39 @@
 }
 .Mtext {
   font-family: Montserrat-Medium;
+}
+
+@media screen and (max-width: 768px) {
+  .Mem {
+    /* flex-direction: column; */
+  }
+  .Mfooter {
+    /* flex-direction: column; */
+  }
+  .Mtitle {
+    font-size: 20px;
+  }
+  .Mtext {
+    font-size: 15px;
+  }
+}
+@media screen and (max-width: 480px) {
+  .Mem {
+    flex-direction: column;
+  }
+  .Mfooter {
+    /* flex-direction: column; */
+  }
+  .Mtitle {
+    font-size: 20px;
+  }
+  .Mtext {
+    font-size: 15px;
+  }
+  .Mem > div {
+    background-position: 70% 30%;
+    background-repeat: no-repeat;
+    background-size: 100%;
+    transition: all 0.8s cubic-bezier(0.25, 0.4, 0.45, 1.4);
+  }
 }

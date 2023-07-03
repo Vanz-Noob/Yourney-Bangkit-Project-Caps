@@ -152,7 +152,7 @@ function Member() {
           </CButton>
         </CModalFooter>
       </CModal>
-      <div className="ML">
+      <div className="Mem">
         <div
           style={{ backgroundImage: `url(${Alif})` }}
           id="alif"

@@ -21,3 +21,33 @@
 .Footer > p5 {
   font-family: Montserrat-Medium;
 }
+
+@media screen and (max-width: 768px) {
+  .Footer {
+    font-size: 15px;
+  }
+  .Ficons {
+    gap: 30px;
+  }
+  .Ficons > a {
+    font-size: 20px;
+  }
+  .Footer > p5 {
+    font-size: 15px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .Footer {
+    font-size: 15px;
+  }
+  .Ficons {
+    gap: 30px;
+  }
+  .Ficons > a {
+    font-size: 20px;
+  }
+  .Footer > p5 {
+    font-size: 15px;
+  }
+}

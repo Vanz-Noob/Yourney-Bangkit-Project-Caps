@@ -17,18 +17,12 @@ import "./styles.css";
 
 function Brand() {
   return (
-    <CContainer style={{ marginTop: 100, marginBottom: 100 }}>
-      <CRow className="align-items-center justify-content-center">
-        <CCol>
+    <CContainer className="containerBrand">
+      <CRow className=" containterRow">
+        <CCol className="side">
           {[{ color: "light" }].map((item, index) => (
             <CCard
-              style={{
-                backgroundColor: "#dfebd9",
-                width: "35rem",
-                borderRadius: 20,
-                color: "#8A4200",
-              }}
-              className={`text-center border-${item.color} text`}
+              className={`text-center border-${item.color} text containerCard`}
               key={index}
             >
               <CCardTitle>Funded by:</CCardTitle>
@@ -49,16 +43,10 @@ function Brand() {
             </CCard>
           ))}
         </CCol>
-        <CCol>
+        <CCol className="side">
           {[{ color: "light" }].map((item, index) => (
             <CCard
-              style={{
-                backgroundColor: "#dfebd9",
-                width: "35rem",
-                borderRadius: 20,
-                color: "#8A4200",
-              }}
-              className={`text-center border-${item.color} text`}
+              className={`text-center border-${item.color} text containerCard`}
             >
               <CCardTitle>Supported by:</CCardTitle>
               <CCardBody>

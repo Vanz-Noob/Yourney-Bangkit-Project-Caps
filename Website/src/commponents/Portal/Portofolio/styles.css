@@ -87,3 +87,46 @@
   width: 300px;
   object-fit: contain;
 }
+
+@media screen and (max-width: 768px) {
+  .Pcard {
+    width: 90%;
+    height: 50%;
+  }
+  .Ptext {
+    margin: 20px;
+    font-size: 15px;
+  }
+  .Ptitle {
+    font-size: 25px;
+  }
+  .Pimg-left1 {
+    height: 49vh;
+  }
+  .Pimg-left2 {
+    height: 49vh;
+  }
+  .Pimg-right1 {
+    height: 49vh;
+  }
+  .Pimg-right2 {
+    height: 49vh;
+  }
+  .Limg {
+    width: 200px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .Pcard {
+    width: 90%;
+    height: 50%;
+  }
+  .Ptext {
+    margin: 20px;
+    font-size: 15px;
+  }
+  .Ptitle {
+    font-size: 25px;
+  }
+}

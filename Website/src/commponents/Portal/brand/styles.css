@@ -2,3 +2,54 @@
   font-family: Montserrat-Bold;
   text-align: center;
 }
+.containerBrand {
+  margin-top: 100px;
+  margin-bottom: 100px;
+}
+
+.containterRow {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+.containerCard {
+  background-color: #dfebd9;
+  width: 35rem;
+  border-radius: 20px;
+  color: #8a4200;
+}
+@media screen and (max-width: 768px) {
+  .containerBrand {
+    margin-top: 90px;
+    margin-bottom: 90px;
+  }
+  .containterRow {
+    flex-direction: column;
+  }
+  .side {
+    padding-left: 70px;
+    padding-right: 70px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .containerBrand {
+    margin-top: 70px;
+    margin-bottom: 70px;
+  }
+  .containterRow {
+    flex-direction: column;
+  }
+  .side {
+    padding-left: 50px;
+    padding-right: 50px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+  .containerCard {
+    width: 25rem;
+  }
+}

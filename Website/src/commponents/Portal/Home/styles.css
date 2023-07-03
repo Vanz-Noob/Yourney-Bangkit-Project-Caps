@@ -5,3 +5,15 @@
   text-align: center;
   font-size: 64px;
 }
+
+@media screen and (max-width: 768px) {
+  .tag {
+    font-size: 42px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .tag {
+    font-size: 30px;
+  }
+}
