@@ -30,7 +30,7 @@ user_service = UserService(db_user,db_password,db_name,db_connection_name)
 data_service = DatasetService(db_user,db_password,db_name,db_connection_name)
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r'/addDest/*': {'origins':'https://yourney-api.et.r.appspot.com/'}})
 app.config['MAX_CONTENT_LENGTH'] = 10 * 1000 * 1000
 app.config["JWT_SECRET_KEY"] =  str(os.environ.get("JWT_SECRET"))
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = ACCESS_EXPIRES
