@@ -669,7 +669,7 @@ def UpStatUser():
 #adding destinasi sesuai kategori
 @app.route("/addDest",methods=["POST", "GET"])
 @jwt_required(refresh=False)
-@cross_origin()
+@cross_origin(origin='https://yourney-api.et.r.appspot.com/addDest')
 def addDest():
     request_data = request.get_json()
     id_kategori_destinasi = request_data['id_kategori_destinasi']
