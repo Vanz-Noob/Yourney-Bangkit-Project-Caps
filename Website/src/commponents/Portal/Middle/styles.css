@@ -35,6 +35,20 @@
   font-size: 20px;
 }
 
+@media screen and (max-width: 1400px) {
+  .containerHighlight {
+    height: 15vh;
+  }
+  .Rhombus {
+    width: 220px;
+    height: 220px;
+    margin-top: -3vw;
+  }
+  .containterText {
+    width: 25vh;
+  }
+}
+
 @media screen and (max-width: 768px) {
   .containerHighlight {
     height: 15vh;

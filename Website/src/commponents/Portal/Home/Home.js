@@ -12,6 +12,8 @@ function Home() {
         backgroundSize: "cover",
         height: "100vh",
         width: "100%",
+
+        backgroundPosition: "center center",
         zIndex: -99,
       }}
       id="Home"

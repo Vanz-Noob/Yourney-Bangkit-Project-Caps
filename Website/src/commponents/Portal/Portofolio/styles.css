@@ -20,7 +20,7 @@
 
 .Ptext {
   text-align: justify;
-  margin: 50px;
+  margin: 30px 50px;
   color: #fff;
   font-size: 18px;
   font-family: Montserrat-Medium;
@@ -86,6 +86,35 @@
 .Limg {
   width: 300px;
   object-fit: contain;
+}
+
+@media screen and (max-width: 1400px) {
+  .Pcard {
+    width: 90%;
+    height: 50%;
+  }
+  .Ptext {
+    margin: 20px;
+    font-size: 15px;
+  }
+  .Ptitle {
+    font-size: 25px;
+  }
+  .Pimg-left1 {
+    height: 49vh;
+  }
+  .Pimg-left2 {
+    height: 49vh;
+  }
+  .Pimg-right1 {
+    height: 50vh;
+  }
+  .Pimg-right2 {
+    height: 50vh;
+  }
+  .Limg {
+    width: 200px;
+  }
 }
 
 @media screen and (max-width: 768px) {

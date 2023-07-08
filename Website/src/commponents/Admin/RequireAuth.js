@@ -7,7 +7,6 @@ const RequireAuth = () => {
   const { auth } = useAuth();
   const location = useLocation();
   const uid = getCookie("usrin");
-  console.log("test", uid);
 
   return auth?.accessToken ? (
     <Outlet />

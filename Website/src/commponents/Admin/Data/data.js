@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import axios from "../../../api/axios";
 import {
   CButton,
@@ -16,10 +16,16 @@ import {
 } from "@coreui/react";
 import useAuth from "../../../hooks/useAuth";
 import getCookie from "../../../hooks/getCookie";
+import GetDestinasi from "../../../hooks/getDestinasi";
+import { useNavigate } from "react-router-dom";
 
 const Destinasi = () => {
+  const { setDatadestinasi } = useContext(GetDestinasi);
   const [Destinasi, setDestinasi] = useState([]);
+  const [loop, setLoop] = useState();
   const { auth } = useAuth();
+  const navigate = useNavigate();
+
   const arr = [];
   useEffect(() => {
     axios
@@ -37,7 +43,11 @@ const Destinasi = () => {
       });
     // console.log(arr);
   }, []);
-  console.log(Destinasi);
+
+  const clickDestinasi = () => {
+    setDatadestinasi(Destinasi[loop].id_destinasi);
+    navigate("/adminYourney/forms");
+  };
 
   return (
     <>
@@ -72,7 +82,15 @@ const Destinasi = () => {
                         </div>
                       </CTableDataCell>
                       <CTableDataCell>
-                        <CButton color="warning">Edit</CButton>
+                        <CButton
+                          color="warning"
+                          onClick={() => {
+                            setLoop(index);
+                            clickDestinasi();
+                          }}
+                        >
+                          Edit
+                        </CButton>
                       </CTableDataCell>
                     </CTableRow>
                   ))}

@@ -3,6 +3,9 @@
   height: 100vh;
   background-color: #878787;
 }
+.Pgallery {
+  overflow-y: hidden;
+}
 .Mem > div {
   flex: 1;
   height: 100vh;

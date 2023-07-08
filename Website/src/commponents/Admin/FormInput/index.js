@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   CButton,
   CCard,
@@ -10,20 +10,26 @@ import {
   CInputGroup,
   CInputGroupText,
   CFormTextarea,
+  CAlert,
 } from "@coreui/react";
 import axios from "../../../api/axios";
 import useAuth from "../../../hooks/useAuth";
 import getCookie from "../../../hooks/getCookie";
+import GetDestinasi from "../../../hooks/getDestinasi";
 
 const FormControl = () => {
   const { auth } = useAuth();
-
-  // const [idDestinasi, setIdDestinasi] = useState();
+  const { dataDestinasi } = useContext(GetDestinasi);
   const [idKetegori, setIdKategori] = useState();
   const [nama_desinasi, setNama_Destinasi] = useState("");
   const [deskripsi, setDeskripsi] = useState("");
   const [link, setLink] = useState("");
   const [url, setUrl] = useState("");
+  const [success, setSuccess] = useState(false);
+  const [color, setColor] = useState("success");
+  const [desk, setDesk] = useState("");
+  const arr = [];
+  const [des, setDes] = useState([]);
 
   const handleSubmit = async (e) => {
     try {
@@ -42,10 +48,31 @@ const FormControl = () => {
       setDeskripsi("");
       setLink("");
       setUrl("");
+      setDesk("Input Berhasil!");
+      setSuccess(true);
     } catch (err) {
-      console.log(err);
+      setColor("warning");
+      setSuccess(true);
+      setDesk(err);
     }
   };
+  // (-) select from ID destinasi
+  useEffect(() => {
+    axios
+      .get("/destinasi", {
+        headers: {
+          Authorization: `Bearer ${getCookie("usrin").slice(1, -1)}`,
+        },
+      })
+      .then((res) => {
+        arr.push(res.data);
+        for (let i = 0; i < arr.length; i++) {
+          const element = arr[i];
+        }
+      });
+  }, []);
+
+  console.log(dataDestinasi);
 
   return (
     <CRow>
@@ -55,20 +82,13 @@ const FormControl = () => {
             <strong>Input Data Destinasi</strong>
           </CCardHeader>
           <CCardBody>
-            {/* <CFormInput
-              type="number"
-              placeholder="ID Destinasi"
-              aria-label="default input example"
-              label="ID Destinasi"
-              onChange={(e) => setIdDestinasi(e.target.value)}
-              required
-            /> */}
             <br />
             <CFormInput
               type="number"
               placeholder="ID Kategori Destinasi"
               aria-label="default input example"
               label="ID Kategori Destinasi"
+              value={idKetegori}
               onChange={(e) => setIdKategori(e.target.value)}
               required
             />
@@ -78,6 +98,7 @@ const FormControl = () => {
               placeholder="Nama Destinasi"
               aria-label="default input example"
               label="Nama Desitinasi"
+              value={nama_desinasi}
               onChange={(e) => setNama_Destinasi(e.target.value)}
               required
             />
@@ -87,6 +108,7 @@ const FormControl = () => {
 
               <CFormTextarea
                 aria-label="With textarea"
+                value={deskripsi}
                 onChange={(e) => setDeskripsi(e.target.value)}
                 required
               ></CFormTextarea>
@@ -94,6 +116,7 @@ const FormControl = () => {
             <br />
             <CFormInput
               type="text"
+              value={link}
               placeholder="Link Gambar Destinasi"
               aria-label="default input example"
               label="Link Gambar Destinasi"
@@ -104,6 +127,7 @@ const FormControl = () => {
             <CFormInput
               type="text"
               placeholder="Url Destinasi"
+              value={url}
               aria-label="default input example"
               label="Url Destinasi"
               onChange={(e) => setUrl(e.target.value)}
@@ -113,6 +137,14 @@ const FormControl = () => {
             <CButton type="submit" className="mb-3" onClick={handleSubmit}>
               Submit
             </CButton>
+            <CAlert
+              color={color}
+              dismissible
+              visible={success}
+              onClose={() => setSuccess(false)}
+            >
+              {desk}
+            </CAlert>
           </CCardBody>
         </CCard>
       </CCol>

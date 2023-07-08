@@ -8,13 +8,16 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { AuthProvider } from "./middleware/authProvider";
 import { Provider } from "react-redux";
 import store from "./store";
+import { DestinasiProvider } from "./hooks/getDestinasi";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <Provider store={store}>
       <AuthProvider>
-        <App />
+        <DestinasiProvider>
+          <App />
+        </DestinasiProvider>
       </AuthProvider>
     </Provider>
   </React.StrictMode>,

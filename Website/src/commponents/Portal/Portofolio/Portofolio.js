@@ -28,11 +28,13 @@ function Portofolio() {
             <CCard className={`Pcard border-${item.color}`} key={index}>
               <CCardTitle className="Ptitle">OUR APPLICATATION</CCardTitle>
               <CCardText className="Ptext">
-                lacus viverra vitae congue eu consequat ac felis donec et odio
-                pellentesque diam volutpat commodo sed egestas egestas fringilla
-                phasellus <br></br> ac tortor vitae purus faucibus ornare
-                suspendisse sed nisi lacus sed viverra tellus in hac habitasse
-                platea dictumst vestibulum rhoncus
+                Yourney merupakan aplikasi rekomendasi traveling berbasis
+                android yang bertujuan untuk membantu meningkatkan pendapatan
+                kepariwisataan Indonesia dan dapat membantu pengguna untuk
+                mendapatkan rekomendasi wisata. Pengguna akan mendapatkan
+                rekomendasi berdasarkan sosial media Twitter dan diproses
+                menggunakan Machine Learning untuk mendapatkan hasil rekomendasi
+                wisatanya.
               </CCardText>
             </CCard>
           ))}

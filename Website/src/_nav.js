@@ -19,28 +19,28 @@ const _nav = [
 
   {
     component: CNavItem,
-    name: "Forms",
+    name: "Tambah Destinasi",
     to: "/adminYourney/forms",
     icon: <CIcon icon={cilNotes} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
-    name: "Data",
+    name: "List Destinasi",
     to: "/adminYourney/data",
     icon: <CIcon icon={cilFile} customClassName="nav-icon" />,
   },
-  {
-    component: CNavGroup,
-    name: "Data",
-    icon: <CIcon icon={cilStar} customClassName="nav-icon" />,
-    items: [
-      {
-        component: CNavItem,
-        name: "Edit Data",
-        to: "?",
-      },
-    ],
-  },
+  // {
+  //   component: CNavGroup,
+  //   name: "Data",
+  //   icon: <CIcon icon={cilStar} customClassName="nav-icon" />,
+  //   items: [
+  //     {
+  //       component: CNavItem,
+  //       name: "Edit Data",
+  //       to: "?",
+  //     },
+  //   ],
+  // },
 ];
 
 export default _nav;

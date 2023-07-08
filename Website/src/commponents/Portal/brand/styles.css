@@ -5,6 +5,10 @@
 .containerBrand {
   margin-top: 100px;
   margin-bottom: 100px;
+  width: 80%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .containterRow {
@@ -19,10 +23,33 @@
   border-radius: 20px;
   color: #8a4200;
 }
+
+@media screen and (max-width: 1400px) {
+  .containerBrand {
+    margin-top: 90px;
+    margin-bottom: 90px;
+    width: 100vw !important;
+  }
+  .containterRow {
+    flex-direction: column;
+  }
+  .side {
+    padding-left: 70px;
+    padding-right: 70px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+  .containerCard {
+    width: 30rem;
+    /* border: 1px solid; */
+  }
+}
+
 @media screen and (max-width: 768px) {
   .containerBrand {
     margin-top: 90px;
     margin-bottom: 90px;
+    width: 100px;
   }
   .containterRow {
     flex-direction: column;
