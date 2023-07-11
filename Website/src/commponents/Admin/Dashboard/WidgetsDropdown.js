@@ -24,7 +24,6 @@ const WidgetsDropdown = () => {
   const { auth } = useAuth();
   const [des, setDes] = useState({});
   const [User, setUser] = useState({});
-  console.log("auth", auth.accessToken);
   const arr = [];
   const arrUser = [];
   useEffect(() => {

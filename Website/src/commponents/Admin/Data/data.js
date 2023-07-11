@@ -28,7 +28,7 @@ const Destinasi = () => {
 
   const arr = [];
   useEffect(() => {
-    axios
+    const res = axios
       .get("/destinasi", {
         headers: {
           Authorization: `Bearer ${getCookie("usrin").slice(1, -1)}`,
@@ -41,7 +41,6 @@ const Destinasi = () => {
           setDestinasi(element);
         }
       });
-    // console.log(arr);
   }, []);
 
   const clickDestinasi = () => {

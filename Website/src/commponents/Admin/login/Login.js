@@ -14,6 +14,7 @@ import {
   CInputGroupText,
   CRow,
   CAlert,
+  CSpinner,
 } from "@coreui/react";
 
 import { Ibackground1 } from "../../../assets/bg/index";
@@ -34,6 +35,7 @@ const Login = () => {
   const [password, setPass] = useState("");
   const [visible, setVisible] = useState(false);
   const [errmsg, setErrmsg] = useState("");
+  const [visual, setVisual] = useState("visually-hidden");
 
   const userRef = useRef();
   const errRef = useRef();
@@ -48,8 +50,12 @@ const Login = () => {
   removeCookie("usrin");
 
   const handleSubmit = async (e) => {
+    setVisual("");
+
     e.preventDefault();
     try {
+      // Using Axios
+
       const res = await axios.post(
         "/login",
         JSON.stringify({ username, password }),
@@ -57,11 +63,24 @@ const Login = () => {
           headers: {
             "Content-Type": "application/json",
             withCredentials: true,
-            "Access-Control-Allow-Origin": "*", // Required for CORS support to work
-            "Access-Control-Allow-Credentials": true, // Required for cookies, authorization headers with HTTPS
+            // "Access-Control-Allow-Origin": "*", // Required for CORS support to work
+            // "Access-Control-Allow-Credentials": true, // Required for cookies, authorization headers with HTTPS
           },
+          // timeout: 5000,
         }
       );
+
+      // Using Fetch
+
+      // const res = await fetch("https://yourney-api.et.r.appspot.com/login", {
+      //   method: "POST",
+      //   mode: "cors",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   credentials: "same-origin",
+      //   body: JSON.stringify({ username, password }),
+      // });
       setCookie("usrin", JSON.stringify(res.data.access));
       const accessToken = res?.data?.access;
       setAuth({ username, password, accessToken });
@@ -69,12 +88,14 @@ const Login = () => {
       setUsername("");
       setPass("");
       navigate(from, { replace: true });
+
+      return res;
     } catch (err) {
+      setVisual("visually-hidden");
+
       if (!err.response) {
-        console.log();
         setErrmsg("No server respone");
         setVisible(true);
-        console.log(username, password);
       } else if (err.response.status === 400) {
         setErrmsg("Username atau password salah");
         setVisible(true);
@@ -85,7 +106,7 @@ const Login = () => {
         setErrmsg("Login Failed");
         setVisible(true);
       }
-      errRef.current.focus();
+      // errRef.current.focus();
     }
   };
 
@@ -141,6 +162,13 @@ const Login = () => {
                           type="submit"
                         >
                           Login
+                          <CSpinner
+                            className={`${visual}`}
+                            component="span"
+                            size="sm"
+                            aria-hidden="true"
+                            style={{ marginLeft: 10 }}
+                          />
                         </CButton>
                       </CCol>
                     </CRow>
