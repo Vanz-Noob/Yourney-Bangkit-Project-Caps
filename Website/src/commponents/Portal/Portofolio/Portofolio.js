@@ -26,7 +26,7 @@ function Portofolio() {
         <CCol className="col1 Pflex" sm={5}>
           {[{ color: "rgb(1,1,1,0)" }].map((item, index) => (
             <CCard className={`Pcard border-${item.color}`} key={index}>
-              <CCardTitle className="Ptitle">OUR APPLICATATION</CCardTitle>
+              <CCardTitle className="Ptitle">OUR APPLICATION</CCardTitle>
               <CCardText className="Ptext">
                 Yourney merupakan aplikasi rekomendasi traveling berbasis
                 android yang bertujuan untuk membantu meningkatkan pendapatan

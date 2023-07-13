@@ -4,6 +4,7 @@ import "./scss/style.scss";
 import "./Font/font.css";
 import RequireAuth from "./commponents/Admin/RequireAuth";
 import getCookie from "./hooks/getCookie";
+import EditData from "./commponents/Admin/Editdata/editData";
 
 const cookie = getCookie("usrin");
 

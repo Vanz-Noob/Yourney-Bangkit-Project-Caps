@@ -8,6 +8,10 @@ const Data = React.lazy(() => import("./commponents/Admin/Data/data"));
 //Forms
 const FormControl = React.lazy(() => import("./commponents/Admin/FormInput"));
 
+const editDest = React.lazy(() =>
+  import("./commponents/Admin/Editdata/editData")
+);
+
 // const Widgets = React.lazy(() => import("./commponents/Admin/widgets/Widgets"));
 
 const routes = [
@@ -19,6 +23,7 @@ const routes = [
     element: FormControl,
   },
   { path: "/adminYourney/data", name: "Data", element: Data },
+  { path: "/adminYourney/editDest", name: "editDest", element: editDest },
 ];
 
 export default routes;

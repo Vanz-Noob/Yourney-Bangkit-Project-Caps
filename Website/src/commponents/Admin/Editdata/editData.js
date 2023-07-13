@@ -15,31 +15,35 @@ import {
 import axios from "../../../api/axios";
 import useAuth from "../../../hooks/useAuth";
 import getCookie from "../../../hooks/getCookie";
+import GetDestinasi from "../../../hooks/getDestinasi";
 
-const FormControl = () => {
+const EditData = () => {
   const { auth } = useAuth();
+  const { dataDestinasi } = useContext(GetDestinasi);
   const [idKetegori, setIdKategori] = useState();
   const [nama_desinasi, setNama_Destinasi] = useState("");
   const [deskripsi, setDeskripsi] = useState("");
   const [link, setLink] = useState("");
   const [url, setUrl] = useState("");
-  const [success, setSuccess] = useState(false);
-  const [color, setColor] = useState("success");
+  const [alert, setAlert] = useState(false);
+  const [color, setColor] = useState("alert");
   const [desk, setDesk] = useState("");
   const arr = [];
   const [des, setDes] = useState([]);
+  const number = parseInt(localStorage.getItem("index"));
 
   const handleSubmit = async () => {
     try {
-      const res = await axios.post(
-        "/addDest",
+      const res = await axios.put(
+        "/editDest",
         JSON.stringify({
+          id_destinasi: number,
           id_kategori_destinasi: idKetegori,
-          nama_desinasi,
-          deskripsi,
+          nama_desinasi: nama_desinasi,
           pic_destinasi: link,
           url_destinasi: url,
         }),
+
         {
           headers: {
             "Content-Type": "application/json",
@@ -53,13 +57,51 @@ const FormControl = () => {
       setLink("");
       setUrl("");
       setDesk("Input Berhasil!");
-      setSuccess(true);
+      setAlert(true);
+      return res;
     } catch (err) {
       setColor("warning");
-      setSuccess(true);
+      setAlert(true);
       setDesk(err);
     }
   };
+  // (-) select from ID destinasi
+  useEffect(() => {
+    axios
+      .get("/destinasi", {
+        headers: {
+          Authorization: `Bearer ${getCookie("usrin").slice(1, -1)}`,
+        },
+      })
+      .then((res) => {
+        arr.push(res.data);
+
+        for (let i = 0; i < arr.length; i++) {
+          const element = arr[i];
+          console.log(element);
+          setIdKategori(element[number].id_kategori_destinasi);
+          setDeskripsi(element[number].deskripsi);
+          setNama_Destinasi(element[number].nama_desinasi);
+          setLink(element[number].pic_destinasi);
+          setUrl(element[number].url_destinasi);
+          console.log("local", localStorage.getItem("index"));
+          // if (
+          //   element[i].id_destinasi === parseInt(localStorage.getItem("index"))
+          // ) {
+          //   console.log("test", dataDestinasi);
+          //   setIdKategori(element[i].id_kategori_destinasi);
+          //   setDeskripsi(element[i].deskripsi);
+          //   setNama_Destinasi(element[i].nama_desinasi);
+          //   setLink(element[i].pic_destinasi);
+          //   setUrl(element[i].url_destinasi);
+          // } else {
+          //   console.log("er");
+          // }
+        }
+      });
+  }, []);
+
+  // console.log(dataDestinasi);
 
   return (
     <CRow>
@@ -124,14 +166,14 @@ const FormControl = () => {
             <CButton type="submit" className="mb-3" onClick={handleSubmit}>
               Submit
             </CButton>
-            {/* <CAlert
+            <CAlert
               color={color}
               dismissible
-              visible={success}
-              onClose={() => setSuccess(false)}
+              visible={alert}
+              onClose={() => setAlert(false)}
             >
               {desk}
-            </CAlert> */}
+            </CAlert>
           </CCardBody>
         </CCard>
       </CCol>
@@ -139,4 +181,4 @@ const FormControl = () => {
   );
 };
 
-export default FormControl;
+export default EditData;

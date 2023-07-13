@@ -26,7 +26,6 @@ const Dashboard = () => {
         arr.push(respone.data);
         for (let i = 0; i < arr.length; i++) {
           const element = arr[i];
-          console.log("tes", element.created_time);
           setDate(element);
         }
       });

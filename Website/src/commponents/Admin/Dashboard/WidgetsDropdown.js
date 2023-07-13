@@ -30,7 +30,7 @@ const WidgetsDropdown = () => {
     axios
       .get("/destinasi", {
         headers: {
-          Authorization: `Bearer ${auth.accessToken}`,
+          Authorization: `Bearer ${getCookie("usrin").slice(1, -1)}`,
         },
       })
       .then((res) => {
@@ -44,7 +44,7 @@ const WidgetsDropdown = () => {
     axios
       .get("/db", {
         headers: {
-          Authorization: `Bearer ${auth.accessToken}`,
+          Authorization: `Bearer ${getCookie("usrin").slice(1, -1)}`,
         },
       })
       .then((res) => {

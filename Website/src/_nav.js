@@ -37,7 +37,7 @@ const _nav = [
   //     {
   //       component: CNavItem,
   //       name: "Edit Data",
-  //       to: "?",
+  //       to: "/adminYourney/editDest",
   //     },
   //   ],
   // },

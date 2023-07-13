@@ -28,24 +28,28 @@ const Destinasi = () => {
 
   const arr = [];
   useEffect(() => {
-    const res = axios
-      .get("/destinasi", {
-        headers: {
-          Authorization: `Bearer ${getCookie("usrin").slice(1, -1)}`,
-        },
-      })
-      .then((res) => {
-        arr.push(res.data);
-        for (let i = 0; i < arr.length; i++) {
-          const element = arr[i];
-          setDestinasi(element);
-        }
-      });
+    const getData = async () => {
+      const res = await axios
+        .get("/destinasi", {
+          headers: {
+            Authorization: `Bearer ${getCookie("usrin").slice(1, -1)}`,
+          },
+        })
+        .then((res) => {
+          arr.push(res.data);
+          for (let i = 0; i < arr.length; i++) {
+            const element = arr[i];
+            setDestinasi(element);
+          }
+        });
+      return res;
+    };
+    return getData;
   }, []);
 
   const clickDestinasi = () => {
     setDatadestinasi(Destinasi[loop].id_destinasi);
-    navigate("/adminYourney/forms");
+    navigate("/adminYourney/editDest");
   };
 
   return (
@@ -84,6 +88,7 @@ const Destinasi = () => {
                         <CButton
                           color="warning"
                           onClick={() => {
+                            localStorage.setItem("index", index);
                             setLoop(index);
                             clickDestinasi();
                           }}
