@@ -13,6 +13,11 @@ import {
   CTableHead,
   CTableHeaderCell,
   CTableRow,
+  CModal,
+  CModalHeader,
+  CModalTitle,
+  CModalBody,
+  CModalFooter,
 } from "@coreui/react";
 import useAuth from "../../../hooks/useAuth";
 import getCookie from "../../../hooks/getCookie";
@@ -24,6 +29,7 @@ const Destinasi = () => {
   const [Destinasi, setDestinasi] = useState([]);
   const [loop, setLoop] = useState();
   const { auth } = useAuth();
+  const [length, setLength] = useState(200);
   const navigate = useNavigate();
 
   const arr = [];
@@ -48,9 +54,11 @@ const Destinasi = () => {
   }, []);
 
   const clickDestinasi = () => {
-    setDatadestinasi(Destinasi[loop].id_destinasi);
+    setDatadestinasi(Destinasi[localStorage.getItem("index")].id_destinasi);
     navigate("/adminYourney/editDest");
   };
+
+  // localStorage.setItem("modal", 0);
 
   return (
     <>
@@ -80,7 +88,7 @@ const Destinasi = () => {
                         </div>
                       </CTableDataCell>
                       <CTableDataCell>
-                        <div size="xl">
+                        <div style={{ width: 200 }}>
                           <p>{item.pic_destinasi}</p>
                         </div>
                       </CTableDataCell>
@@ -89,7 +97,6 @@ const Destinasi = () => {
                           color="warning"
                           onClick={() => {
                             localStorage.setItem("index", index);
-                            setLoop(index);
                             clickDestinasi();
                           }}
                         >

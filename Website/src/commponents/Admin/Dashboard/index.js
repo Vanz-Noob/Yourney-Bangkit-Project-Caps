@@ -11,8 +11,18 @@ import getCookie from "../../../hooks/getCookie";
 
 const Dashboard = () => {
   const { auth } = useAuth();
-  const [date, setDate] = useState([]);
-  const arr = [];
+  const [jan, setJan] = useState(0);
+  const [feb, setFeb] = useState(0);
+  const [mar, setMar] = useState(0);
+  const [apr, setApr] = useState(0);
+  const [mei, setMei] = useState(0);
+  const [jun, setJun] = useState(0);
+  const [jul, setJul] = useState(0);
+  const [aug, setAug] = useState(0);
+  const [sep, setSep] = useState(0);
+  const [oct, setOct] = useState(0);
+  const [nov, setNov] = useState(0);
+  const [des, setDes] = useState(0);
 
   useEffect(() => {
     axios
@@ -22,16 +32,41 @@ const Dashboard = () => {
         },
       })
       .then((respone) => {
-        // console.log(respone.data[1].created_time);
-        arr.push(respone.data);
-        for (let i = 0; i < arr.length; i++) {
-          const element = arr[i];
-          setDate(element);
+        // console.log(respone.data[0].username.slice(5, 16));
+        // arr.push(respone.data);
+        for (let i = 0; i < respone.data.length; i++) {
+          const element = respone.data[i].username;
+          // console.log(element.slice(0, 3));
+          if ("Jan" === element.slice(8, 11)) {
+            setJan(jan + i);
+          } else if ("Feb" === element.slice(8, 11)) {
+            setFeb(feb + i);
+          } else if ("Mar" === element.slice(8, 11)) {
+            setMar(mar + i);
+          } else if ("Apr" === element.slice(8, 11)) {
+            setApr(apr + i);
+          } else if ("Mei" === element.slice(8, 11)) {
+            setMei(mei + i);
+          } else if ("Jun" === element.slice(8, 11)) {
+            setJun(jun + i);
+          } else if ("Jul" === element.slice(8, 11)) {
+            setJul(jul + i);
+          } else if ("Aug" === element.slice(8, 11)) {
+            setAug(aug + i);
+          } else if ("Sep" === element.slice(8, 11)) {
+            setSep(sep + i);
+          } else if ("Oct" === element.slice(8, 11)) {
+            setOct(oct + i);
+          } else if ("Nov" === element.slice(8, 11)) {
+            setNov(nov + i);
+          } else if ("Des" === element.slice(8, 11)) {
+            setDes(des + i);
+          } else {
+            console.log("err");
+          }
         }
       });
   }, []);
-
-  console.log(date.created_time);
 
   const random = (min, max) =>
     Math.floor(Math.random() * (max - min + 1) + min);
@@ -77,50 +112,20 @@ const Dashboard = () => {
                   pointHoverBackgroundColor: getStyle("--cui-info"),
                   borderWidth: 2,
                   data: [
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
+                    jan,
+                    feb,
+                    mar,
+                    apr,
+                    mei,
+                    jun,
+                    jul,
+                    aug,
+                    sep,
+                    oct,
+                    nov,
+                    des,
                   ],
                   fill: true,
-                },
-                {
-                  label: "My Second dataset",
-                  backgroundColor: "transparent",
-                  borderColor: getStyle("--cui-success"),
-                  pointHoverBackgroundColor: getStyle("--cui-success"),
-                  borderWidth: 2,
-                  data: [
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                  ],
-                },
-                {
-                  label: "My Third dataset",
-                  backgroundColor: "transparent",
-                  borderColor: getStyle("--cui-danger"),
-                  pointHoverBackgroundColor: getStyle("--cui-danger"),
-                  borderWidth: 1,
-                  borderDash: [8, 5],
-                  data: [65, 65, 65, 65, 65, 65, 65],
                 },
               ],
             }}
@@ -138,11 +143,11 @@ const Dashboard = () => {
                   },
                 },
                 y: {
+                  grid: {
+                    drawOnChartArea: true,
+                  },
                   ticks: {
-                    beginAtZero: true,
                     maxTicksLimit: 5,
-                    stepSize: Math.ceil(250 / 5),
-                    max: 250,
                   },
                 },
               },
@@ -154,7 +159,6 @@ const Dashboard = () => {
                   radius: 0,
                   hitRadius: 10,
                   hoverRadius: 4,
-                  hoverBorderWidth: 3,
                 },
               },
             }}

@@ -44,6 +44,8 @@ const FormControl = () => {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${getCookie("usrin").slice(1, -1)}`,
+            "Access-Control-Allow-Origin": "*", // Required for CORS support to work
+            "Access-Control-Allow-Credentials": true,
           },
         }
       );
@@ -53,10 +55,13 @@ const FormControl = () => {
       setLink("");
       setUrl("");
       setDesk("Input Berhasil!");
+      console.log("input berhasil");
       setSuccess(true);
     } catch (err) {
       setColor("warning");
       setSuccess(true);
+      console.log(err);
+
       setDesk(err);
     }
   };
