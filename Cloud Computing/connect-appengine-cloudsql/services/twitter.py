@@ -33,6 +33,7 @@ stopwords_id = df_id[0].to_list()
 df_en = pd.read_csv("stopwords_en.txt", header=None)
 stopwords_en = df_en[0].to_list()
 
+#query itu di set dari awal ex:pantai gunung kuliner
 def category_tweet_retriever(query):
     tweets = []
     
@@ -43,11 +44,18 @@ def category_tweet_retriever(query):
         tweets.append([tweet.created_at, tweet.author.screen_name, tweet.full_text])
     return tweets
 
+#proses splitting (pre-processing)
 def clean_tweet(tweet):
     process = tweet.lower()
     process = process.split()
+    # stopword kumpulan kata" yang gak akan merubah makna asli (nge hapus yang mengandung 
+    # stopword)
     process = [word for word in process if not process in stopwords_en]
     process = [word for word in process if not process in stopwords_id]
+    # kegunaannya sendiri biar gak nabrakin model machine learning, biar datanya bisa lebih 
+    # relevan ketika di machine learning
+    # kurang di normalisasi dan stemming (kegunaan normalisasi mengubah kata non baku
+    # ke baku) (kegunaan stemming menghapus imbuhan menjadi kata dasar)
     process = " ".join(word for word in process)
     process = re.sub("'", "", process) # to avoid removing contractions in english
     process = re.sub("^rt ", "", process)
@@ -59,15 +67,18 @@ def clean_tweet(tweet):
     process = re.sub("[^a-z0-9]"," ", process)
     return process
 
+# kegunaan untuk hapus spasi
 def clean_spaces(tweet):
     process = tweet
     process = process.split()
     process = " ".join(word for word in process)
     return process
 
+# buat TF-IDF (split jadi kata-kata)
 def splitter(tweet):
     return tweet.split()
 
+# crawling data tweet twitter
 def user_tweet_retriever(username):
     tweets = []
     for tweet in api.user_timeline(id=username,
@@ -76,9 +87,11 @@ def user_tweet_retriever(username):
         tweets.append([tweet.created_at, tweet.full_text])        
     return tweets
 
+# hitung rata" probabilitas setiap tweet naive bayes
 def average(list):
     return sum(list)/len(list)
 
+# untuk tabel dataset
 def update_dataset():
     header = ["created_at", "author", "tweet"]
 
@@ -109,7 +122,10 @@ def update_dataset():
 
     # unique = pd.read_csv("_dataset/dataset_unique 2022-11-01.csv")
     # df_all = pd.concat([unique, df_gunung, df_pantai, df_kuliner], ignore_index=True)
+    
+    # dataset digabung menjadi satu (yang di retrieve)
     df_all = pd.concat([df_gunung, df_pantai, df_kuliner], ignore_index=True)
+    # menghapus yang kata duplikat
     df_all = df_all.drop_duplicates(subset=['tweet'])
 
     # baca data dari database
