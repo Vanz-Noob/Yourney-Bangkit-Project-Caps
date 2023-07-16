@@ -26,12 +26,9 @@ const EditData = () => {
   const [link, setLink] = useState("");
   const [url, setUrl] = useState("");
   const [alert, setAlert] = useState(false);
-  const [color, setColor] = useState("alert");
-  const [desk, setDesk] = useState("");
+  const [color, setColor] = useState("success");
   const arr = [];
-  const [des, setDes] = useState([]);
   const number = parseInt(localStorage.getItem("index"));
-
   const handleSubmit = async () => {
     try {
       const res = await axios.put(
@@ -39,7 +36,7 @@ const EditData = () => {
         JSON.stringify({
           id_destinasi: number,
           id_kategori_destinasi: idKetegori,
-          nama_desinasi: nama_desinasi,
+          nama_destinasi: nama_desinasi,
           pic_destinasi: link,
           url_destinasi: url,
         }),
@@ -56,13 +53,10 @@ const EditData = () => {
       setDeskripsi("");
       setLink("");
       setUrl("");
-      setDesk("Input Berhasil!");
-      setAlert(true);
       return res;
     } catch (err) {
       setColor("warning");
-      setAlert(true);
-      setDesk(err);
+      console.log(err);
     }
   };
   // (-) select from ID destinasi
@@ -85,18 +79,6 @@ const EditData = () => {
           setLink(element[number].pic_destinasi);
           setUrl(element[number].url_destinasi);
           console.log("local", localStorage.getItem("index"));
-          // if (
-          //   element[i].id_destinasi === parseInt(localStorage.getItem("index"))
-          // ) {
-          //   console.log("test", dataDestinasi);
-          //   setIdKategori(element[i].id_kategori_destinasi);
-          //   setDeskripsi(element[i].deskripsi);
-          //   setNama_Destinasi(element[i].nama_desinasi);
-          //   setLink(element[i].pic_destinasi);
-          //   setUrl(element[i].url_destinasi);
-          // } else {
-          //   console.log("er");
-          // }
         }
       });
   }, []);
@@ -172,7 +154,7 @@ const EditData = () => {
               visible={alert}
               onClose={() => setAlert(false)}
             >
-              {desk}
+              success
             </CAlert>
           </CCardBody>
         </CCard>

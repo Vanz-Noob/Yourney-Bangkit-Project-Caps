@@ -35,7 +35,7 @@ const FormControl = () => {
         "/addDest",
         JSON.stringify({
           id_kategori_destinasi: idKetegori,
-          nama_desinasi,
+          nama_destinasi: nama_desinasi,
           deskripsi,
           pic_destinasi: link,
           url_destinasi: url,
