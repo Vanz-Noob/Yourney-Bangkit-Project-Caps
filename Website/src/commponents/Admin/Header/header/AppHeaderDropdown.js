@@ -20,13 +20,20 @@ const AppHeaderDropdown = () => {
   const { auth } = useAuth();
   const navigate = useNavigate();
   const handleOut = () => {
-    axios.delete("/logout", {
-      headers: {
-        Authorization: `Bearer ${getCookie("usrin").slice(1, -1)}`,
-      },
-    });
-    removeCookie("usrin");
-    navigate("/adminYourney");
+    axios
+      .delete("/logout", {
+        headers: {
+          Authorization: `Bearer ${auth.accessToken}`,
+        },
+      })
+      .then((res) => {
+        removeCookie("usrin");
+        navigate("/adminYourney");
+        return res;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   return (

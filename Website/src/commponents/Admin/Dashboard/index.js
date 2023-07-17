@@ -28,7 +28,7 @@ const Dashboard = () => {
     axios
       .get("/db", {
         headers: {
-          Authorization: `Bearer ${getCookie("usrin").slice(1, -1)}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       })
       .then((respone) => {
@@ -65,9 +65,6 @@ const Dashboard = () => {
         }
       });
   }, []);
-
-  const random = (min, max) =>
-    Math.floor(Math.random() * (max - min + 1) + min);
 
   return (
     <>

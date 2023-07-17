@@ -20,8 +20,9 @@ import GetDestinasi from "../../../hooks/getDestinasi";
 const EditData = () => {
   const { auth } = useAuth();
   const { dataDestinasi } = useContext(GetDestinasi);
-  const [idKetegori, setIdKategori] = useState();
+  const [idKetegori, setIdKategori] = useState(0);
   const [nama_desinasi, setNama_Destinasi] = useState("");
+  const [idDestinasi, setIdDestinasi] = useState(0);
   const [deskripsi, setDeskripsi] = useState("");
   const [link, setLink] = useState("");
   const [url, setUrl] = useState("");
@@ -29,42 +30,42 @@ const EditData = () => {
   const [color, setColor] = useState("success");
   const arr = [];
   const number = parseInt(localStorage.getItem("index"));
-  const handleSubmit = async () => {
-    try {
-      const res = await axios.put(
+  const handleSubmit = () => {
+    axios
+      .put(
         "/editDest",
-        JSON.stringify({
-          id_destinasi: number,
+        {
+          id_destinasi: idDestinasi,
           id_kategori_destinasi: idKetegori,
           nama_destinasi: nama_desinasi,
+          deskripsi: deskripsi,
           pic_destinasi: link,
           url_destinasi: url,
-        }),
-
+        },
         {
           headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${getCookie("usrin").slice(1, -1)}`,
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         }
-      );
-      setIdKategori();
-      setNama_Destinasi("");
-      setDeskripsi("");
-      setLink("");
-      setUrl("");
-      return res;
-    } catch (err) {
-      setColor("warning");
-      console.log(err);
-    }
+      )
+      .then((res) => {
+        setIdKategori();
+        setNama_Destinasi("");
+        setDeskripsi("");
+        setLink("");
+        setUrl("");
+        return res;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
   // (-) select from ID destinasi
   useEffect(() => {
     axios
       .get("/destinasi", {
         headers: {
-          Authorization: `Bearer ${getCookie("usrin").slice(1, -1)}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       })
       .then((res) => {
@@ -73,17 +74,17 @@ const EditData = () => {
         for (let i = 0; i < arr.length; i++) {
           const element = arr[i];
           console.log(element);
+          setIdDestinasi(element[number].id_destinasi);
           setIdKategori(element[number].id_kategori_destinasi);
           setDeskripsi(element[number].deskripsi);
           setNama_Destinasi(element[number].nama_desinasi);
           setLink(element[number].pic_destinasi);
           setUrl(element[number].url_destinasi);
-          console.log("local", localStorage.getItem("index"));
         }
       });
   }, []);
 
-  // console.log(dataDestinasi);
+  // console.log(idDestinasi);
 
   return (
     <CRow>
@@ -93,6 +94,16 @@ const EditData = () => {
             <strong>Input Data Destinasi</strong>
           </CCardHeader>
           <CCardBody>
+            <br />
+            <CFormInput
+              placeholder="ID Destinasi"
+              aria-label="default input example"
+              label="ID Destinasi"
+              value={idDestinasi}
+              onChange={(e) => setIdDestinasi(e.target.value)}
+              style={{ pointerEvents: "none" }}
+              required
+            />
             <br />
             <CFormInput
               type="number"

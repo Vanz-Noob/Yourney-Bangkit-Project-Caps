@@ -53,6 +53,7 @@ const Login = () => {
     setVisual("");
 
     e.preventDefault();
+
     try {
       // Using Axios
 
@@ -63,8 +64,8 @@ const Login = () => {
           headers: {
             "Content-Type": "application/json",
             withCredentials: true,
-            // "Access-Control-Allow-Origin": "*", // Required for CORS support to work
-            // "Access-Control-Allow-Credentials": true, // Required for cookies, authorization headers with HTTPS
+            "Access-Control-Allow-Origin": "*", // Required for CORS support to work
+            "Access-Control-Allow-Credentials": true, // Required for cookies, authorization headers with HTTPS
           },
           // timeout: 5000,
         }
@@ -83,6 +84,7 @@ const Login = () => {
       // });
       setCookie("usrin", JSON.stringify(res.data.access));
       const accessToken = res?.data?.access;
+      localStorage.setItem("token", accessToken);
       setAuth({ username, password, accessToken });
       console.log("berhasil");
       setUsername("");
