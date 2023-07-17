@@ -1,0 +1,5 @@
+matplotlib==3.7.2
+pandas==2.0.3
+wordcloud==1.9.2
+numpy==1.25.1
+Pillow==10.0.0
