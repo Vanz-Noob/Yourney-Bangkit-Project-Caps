@@ -21,7 +21,7 @@ File data untuk WordCloud diganti dengan sesuai kebutuhan
 ## Run
 
 untuk menjalankan script bisa di VENV atau di global
-```bash
+```python
   python ./main.py
 ```
 
