@@ -1,5 +1,5 @@
 import Ibackground from "./img/bg.png";
-import Ibackground1 from "./img/bg1.png";
+import Ibackground1 from "./img/bg1fix.jpg";
 import Ibackground2 from "./img/bg2.png";
 import Ipattern from "./img/Pattern.jpg";
 import Ivector from "./img/Vector 3.png";

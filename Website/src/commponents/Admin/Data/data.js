@@ -34,25 +34,21 @@ const Destinasi = () => {
 
   const arr = [];
   useEffect(() => {
-    const getData = async () => {
-      const res = await axios
-        .get("/destinasi", {
-          headers: {
-            Authorization: `Bearer ${getCookie("usrin").slice(1, -1)}`,
-          },
-        })
-        .then((res) => {
-          arr.push(res.data);
-          for (let i = 0; i < arr.length; i++) {
-            const element = arr[i];
-            setDestinasi(element);
-          }
-        });
-      return res;
-    };
-    return getData;
+    axios
+      .get("/destinasi", {
+        headers: {
+          Authorization: `Bearer ${getCookie("usrin").slice(1, -1)}`,
+        },
+      })
+      .then((res) => {
+        arr.push(res.data);
+        for (let i = 0; i < arr.length; i++) {
+          const element = arr[i];
+          setDestinasi(element);
+        }
+      });
   }, []);
-
+  console.log(Destinasi);
   const clickDestinasi = () => {
     setDatadestinasi(Destinasi[localStorage.getItem("index")].id_destinasi);
     navigate("/adminYourney/editDest");
