@@ -6,7 +6,7 @@ import pymysql
 import base64
 import uuid
 import io
-from flask import Flask, request, jsonify, send_file
+from flask import Flask, request, jsonify, send_file, make_response
 from werkzeug.utils import secure_filename
 from flask_jwt_extended import *
 from passlib.hash import sha256_crypt
@@ -31,6 +31,21 @@ data_service = DatasetService(db_user,db_password,db_name,db_connection_name)
 
 app = Flask(__name__)
 CORS(app)
+CORS = CORS(app)
+
+def _build_cors_preflight_response():
+    response = make_response()
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add('Access-Control-Allow-Headers', "*")
+    response.headers.add('Access-Control-Allow-Methods', "*")
+    return response
+
+def _corsify_actual_response(response):
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response
+
+
+app.config['CORS_HEADERS'] = 'Content-Type'
 app.config['MAX_CONTENT_LENGTH'] = 10 * 1000 * 1000
 app.config["JWT_SECRET_KEY"] =  str(os.environ.get("JWT_SECRET"))
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = ACCESS_EXPIRES
@@ -669,7 +684,7 @@ def UpStatUser():
 # edit destinasi 
 @app.route("/editDest", methods=["PUT"])
 @jwt_required(refresh=False)
-@cross_origin(origin='https://yourney-api.et.r.appspot.com/editDest')
+@cross_origin()
 def editDest():
     request_data = request.get_json()
     id_kategori_destinasi = request_data['id_kategori_destinasi']
@@ -678,7 +693,8 @@ def editDest():
     deskripsi = request_data['deskripsi']
     pic_destinasi = request_data['pic_destinasi']
     url_destinasi = request_data['url_destinasi']
-        #connect database
+
+    # Connect to the database
     if os.environ.get("GAE_ENV") == "standard":
         unix_socket = f"/cloudsql/{db_connection_name}"
         cnx = pymysql.connect(
@@ -687,29 +703,49 @@ def editDest():
     else:
         host = "127.0.0.1"
         cnx = pymysql.connect(user=db_user, password=db_password, host=host, db=db_name)
-    #querying sql
-    with cnx.cursor() as cursor:
-        cursor.execute('UPDATE destinasi SET id_kategori_destinasi=%s, nama_destinasi=%s, deskripsi=%s, pic_destinasi=%s, url_destinasi=%s WHERE id_destinasi=%s',
-                       (id_kategori_destinasi, nama_destinasi, deskripsi, pic_destinasi, url_destinasi, id_destinasi))
-        result = cursor.fetchone()
-        cnx.commit()
-    cnx.close()
-    
-    if result == 0:
-        js = {
-            "code": "gagal",
-        }
+
+    # Query SQL
+    if request.method == "OPTIONS":
+        return _build_cors_preflight_response()
+    elif request.method == "PUT":
+        with cnx.cursor() as cursor:
+            cursor.execute('UPDATE destinasi SET id_kategori_destinasi=%s, nama_destinasi=%s, deskripsi=%s, pic_destinasi=%s, url_destinasi=%s WHERE id_destinasi=%s',
+                        (id_kategori_destinasi, nama_destinasi, deskripsi, pic_destinasi, url_destinasi, id_destinasi))
+            result = cursor.fetchone()
+            cnx.commit()
+        cnx.close()
+
+        if result == 0:
+            js = {
+                "code": "gagal",
+            }
+        else:
+            js = {
+                "id_destinasi": id_destinasi,
+                "id_kategori_destinasi": id_kategori_destinasi,
+                "nama_destinasi": nama_destinasi,
+                "deskripsi": deskripsi,
+                "URL gambar": pic_destinasi,
+                "URL destinasi": url_destinasi,
+                "code": "sukses",
+            }
+        return jsonify(js)
     else:
-        js = {
-            "id_destinasi" : id_destinasi,
-            "id_kategori_destinasi" : id_kategori_destinasi,
-            "nama_destinasi": nama_destinasi,
-            "deskripsi": deskripsi,
-            "URL gambar" : pic_destinasi,
-            "URL destinasi" : url_destinasi,
-            "code": "sukses",
-        }
-    return jsonify(js)    
+        raise RuntimeError("We don't know how to handle that {}".format(request.method))
+
+
+def _build_cors_preflight_response():
+    response = make_response()
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add('Access-Control-Allow-Headers', "*")
+    response.headers.add('Access-Control-Allow-Methods', "*")
+    return response
+
+def _corsify_actual_response(response):
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response
+
+
 
 
 # hapus destinasi
