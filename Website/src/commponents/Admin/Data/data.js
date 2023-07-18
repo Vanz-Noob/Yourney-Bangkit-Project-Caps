@@ -29,9 +29,8 @@ import { cilTrash } from "@coreui/icons";
 const Destinasi = () => {
   const { setDatadestinasi } = useContext(GetDestinasi);
   const [Destinasi, setDestinasi] = useState([]);
-  const [loop, setLoop] = useState();
+  const [idDes, setIdDes] = useState(0);
   const { auth } = useAuth();
-  const [length, setLength] = useState(200);
   const navigate = useNavigate();
   const [visibleXL, setVisibleXL] = useState(false);
   const [n, setN] = useState(0);
@@ -55,7 +54,7 @@ const Destinasi = () => {
   }, []);
   console.log(Destinasi);
   const clickDestinasi = () => {
-    setDatadestinasi(Destinasi[localStorage.getItem("index")].id_destinasi);
+    setDatadestinasi(idDes);
     navigate("/adminYourney/editDest");
   };
   // console.log(Destinasi[n].id_destinasi);
@@ -137,6 +136,7 @@ const Destinasi = () => {
                           color="warning"
                           onClick={() => {
                             localStorage.setItem("index", index);
+                            setN(item.id_destinasi);
                             clickDestinasi();
                           }}
                         >
