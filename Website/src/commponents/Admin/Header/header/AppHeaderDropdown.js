@@ -27,6 +27,7 @@ const AppHeaderDropdown = () => {
         },
       })
       .then((res) => {
+        localStorage.removeItem("token");
         removeCookie("usrin");
         navigate("/adminYourney");
         return res;
