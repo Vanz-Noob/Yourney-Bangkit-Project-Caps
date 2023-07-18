@@ -83,7 +83,6 @@ const EditData = () => {
 
         for (let i = 0; i < arr.length; i++) {
           const element = arr[i];
-          console.log(element);
           setIdDestinasi(element[number].id_destinasi);
           setIdKategori(element[number].id_kategori_destinasi);
           setDeskripsi(element[number].deskripsi);
@@ -93,8 +92,6 @@ const EditData = () => {
         }
       });
   }, []);
-
-  // console.log(idDestinasi);
 
   return (
     <CRow>

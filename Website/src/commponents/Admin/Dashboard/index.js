@@ -34,7 +34,6 @@ const Dashboard = () => {
       .then((respone) => {
         for (let i = 0; i < respone.data.length; i++) {
           const element = respone.data[i].created_time;
-          console.log(element.slice(0, 3));
           if ("Jan" === element.slice(8, 11)) {
             setJan(jan + i);
           } else if ("Feb" === element.slice(8, 11)) {

@@ -67,21 +67,9 @@ const Login = () => {
             "Access-Control-Allow-Origin": "*", // Required for CORS support to work
             "Access-Control-Allow-Credentials": true, // Required for cookies, authorization headers with HTTPS
           },
-          // timeout: 5000,
         }
       );
 
-      // Using Fetch
-
-      // const res = await fetch("https://yourney-api.et.r.appspot.com/login", {
-      //   method: "POST",
-      //   mode: "cors",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   credentials: "same-origin",
-      //   body: JSON.stringify({ username, password }),
-      // });
       setCookie("usrin", JSON.stringify(res.data.access));
       const accessToken = res?.data?.access;
       localStorage.setItem("token", accessToken);

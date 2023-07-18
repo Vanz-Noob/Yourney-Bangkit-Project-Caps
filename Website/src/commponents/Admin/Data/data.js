@@ -33,6 +33,7 @@ const Destinasi = () => {
   const { auth } = useAuth();
   const navigate = useNavigate();
   const [visibleXL, setVisibleXL] = useState(false);
+  const [visible, setVisible] = useState(false);
   const [n, setN] = useState(0);
 
   const arr = [];
@@ -52,29 +53,23 @@ const Destinasi = () => {
         }
       });
   }, []);
-  console.log(Destinasi);
   const clickDestinasi = () => {
     setDatadestinasi(idDes);
     navigate("/adminYourney/editDest");
   };
-  // console.log(Destinasi[n].id_destinasi);
 
   const handleDelete = () => {
     axios
-      .delete(
-        "/delDest",
-
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-          data: {
-            id_destinasi: localStorage.getItem("idDes"),
-          },
-        }
-      )
+      .delete("/delDest", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        data: {
+          id_destinasi: localStorage.getItem("idDes"),
+        },
+      })
       .then((res) => {
-        setVisibleXL(false);
+        setVisible(false);
         window.location.reload();
         return res;
       })
@@ -90,7 +85,13 @@ const Destinasi = () => {
           <CCard className="mb-4">
             <CCardHeader>List Data</CCardHeader>
             <CCardBody>
-              <CTable align="middle" className="mb-0 border" hover responsive>
+              <CTable
+                align="middle"
+                className="mb-0 border"
+                hover
+                responsive
+                style={{ overflowX: "hidden" }}
+              >
                 <CTableHead color="light">
                   <CTableRow>
                     <CTableHeaderCell>Nama Destinasi</CTableHeaderCell>
@@ -101,23 +102,7 @@ const Destinasi = () => {
                 </CTableHead>
                 <CTableBody>
                   {Destinasi.map((item, index) => (
-                    <CTableRow
-                      v-for="item in tableItems"
-                      key={index}
-                      onClick={() => {
-                        setN(index);
-                        localStorage.setItem("idDes", item.id_destinasi);
-                        localStorage.setItem(
-                          "idKatDes",
-                          item.id_kategori_destinasi
-                        );
-                        localStorage.setItem("NamaDest", item.nama_desinasi);
-                        localStorage.setItem("Desk", item.deskripsi);
-                        localStorage.setItem("pic", item.pic_destinasi);
-                        localStorage.setItem("url", item.url_destinasi);
-                        setVisibleXL(true);
-                      }}
-                    >
+                    <CTableRow v-for="item in tableItems" key={index}>
                       <CTableDataCell>
                         <div>{item.nama_desinasi}</div>
                       </CTableDataCell>
@@ -132,16 +117,63 @@ const Destinasi = () => {
                         </div>
                       </CTableDataCell>
                       <CTableDataCell>
-                        <CButton
-                          color="warning"
-                          onClick={() => {
-                            localStorage.setItem("index", index);
-                            setN(item.id_destinasi);
-                            clickDestinasi();
-                          }}
-                        >
-                          Edit
-                        </CButton>
+                        <CRow xs={{ gutter: 2 }}>
+                          <CCol xs lg={4}>
+                            <CButton
+                              color="success"
+                              onClick={() => {
+                                localStorage.setItem(
+                                  "idDes",
+                                  item.id_destinasi
+                                );
+                                localStorage.setItem(
+                                  "idKatDes",
+                                  item.id_kategori_destinasi
+                                );
+                                localStorage.setItem(
+                                  "NamaDest",
+                                  item.nama_desinasi
+                                );
+                                localStorage.setItem("Desk", item.deskripsi);
+                                localStorage.setItem("pic", item.pic_destinasi);
+                                localStorage.setItem("url", item.url_destinasi);
+                                setVisibleXL(true);
+                              }}
+                            >
+                              Detail
+                            </CButton>
+                          </CCol>
+                          <CCol xs lg={3}>
+                            <CButton
+                              color="warning"
+                              onClick={() => {
+                                localStorage.setItem("index", index);
+                                setIdDes(item.id_destinasi);
+                                clickDestinasi();
+                              }}
+                            >
+                              Edit
+                            </CButton>
+                          </CCol>
+                          <CCol xs lg={2}>
+                            <CButton
+                              color="danger"
+                              onClick={() => {
+                                localStorage.setItem(
+                                  "idDes",
+                                  item.id_destinasi
+                                );
+                                localStorage.setItem(
+                                  "NamaDest",
+                                  item.nama_desinasi
+                                );
+                                setVisible(!visible);
+                              }}
+                            >
+                              <CIcon icon={cilTrash} />
+                            </CButton>
+                          </CCol>
+                        </CRow>
                       </CTableDataCell>
                     </CTableRow>
                   ))}
@@ -195,10 +227,25 @@ const Destinasi = () => {
             </CTableBody>
           </CTable>
         </CModalBody>
+        <CModalFooter></CModalFooter>
+      </CModal>
+
+      {/* alert modal */}
+
+      <CModal visible={visible} onClose={() => setVisible(false)}>
+        <CModalHeader>
+          <CModalTitle>Delete destinasi?</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          <p>
+            Anda yakin menghapus destinasi ini id:
+            {localStorage.getItem("idDes")} dan Nama Destinasi :{" "}
+            {localStorage.getItem("NamaDest")}?
+          </p>
+        </CModalBody>
         <CModalFooter>
-          <CButton color="danger" onClick={handleDelete}>
-            <CIcon icon={cilTrash} />
-          </CButton>
+          <CButton onClick={() => setVisible(false)}>Tidak</CButton>
+          <CButton onClick={handleDelete}>Iya</CButton>
         </CModalFooter>
       </CModal>
     </>
