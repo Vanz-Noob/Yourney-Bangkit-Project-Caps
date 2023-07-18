@@ -18,7 +18,7 @@ import getCookie from "../../../hooks/getCookie";
 
 const FormControl = () => {
   const { auth } = useAuth();
-  const [idKetegori, setIdKategori] = useState();
+  const [idKetegori, setIdKategori] = useState(0);
   const [nama_desinasi, setNama_Destinasi] = useState("");
   const [deskripsi, setDeskripsi] = useState("");
   const [link, setLink] = useState("");
@@ -27,9 +27,9 @@ const FormControl = () => {
   const [color, setColor] = useState("success");
   const [desk, setDesk] = useState("");
   const arr = [];
-  const [des, setDes] = useState([]);
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     try {
       const res = await axios.post(
         "/addDest",
@@ -49,7 +49,7 @@ const FormControl = () => {
           },
         }
       );
-      setIdKategori();
+      setIdKategori(0);
       setNama_Destinasi("");
       setDeskripsi("");
       setLink("");
@@ -57,8 +57,9 @@ const FormControl = () => {
       setDesk("Input Berhasil!");
       console.log("input berhasil");
       setSuccess(true);
+      return res;
     } catch (err) {
-      setColor("warning");
+      setColor("danger");
       setSuccess(true);
       console.log(err);
 
@@ -80,6 +81,7 @@ const FormControl = () => {
               placeholder="ID Kategori Destinasi"
               aria-label="default input example"
               label="ID Kategori Destinasi"
+              id="kat"
               value={idKetegori}
               onChange={(e) => setIdKategori(e.target.value)}
               required
@@ -126,17 +128,18 @@ const FormControl = () => {
               required
             />
             <br />
-            <CButton type="submit" className="mb-3" onClick={handleSubmit}>
-              Submit
-            </CButton>
-            {/* <CAlert
+            <CAlert
               color={color}
               dismissible
               visible={success}
               onClose={() => setSuccess(false)}
             >
               {desk}
-            </CAlert> */}
+            </CAlert>
+
+            <CButton type="submit" className="mb-3" onClick={handleSubmit}>
+              {desk}
+            </CButton>
           </CCardBody>
         </CCard>
       </CCol>

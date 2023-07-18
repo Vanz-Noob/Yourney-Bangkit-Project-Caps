@@ -59,6 +59,7 @@ const Destinasi = () => {
     navigate("/adminYourney/editDest");
   };
   // console.log(Destinasi[n].id_destinasi);
+
   const handleDelete = () => {
     axios
       .delete(
@@ -66,7 +67,7 @@ const Destinasi = () => {
 
         {
           headers: {
-            Authorization: `Bearer ${auth.accessToken}`,
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
           data: {
             id_destinasi: localStorage.getItem("idDes"),
@@ -75,6 +76,7 @@ const Destinasi = () => {
       )
       .then((res) => {
         setVisibleXL(false);
+        window.location.reload();
         return res;
       })
       .catch((err) => {

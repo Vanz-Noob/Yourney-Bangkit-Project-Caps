@@ -90,6 +90,7 @@ const Login = () => {
       setUsername("");
       setPass("");
       navigate(from, { replace: true });
+      window.location.reload();
 
       return res;
     } catch (err) {

@@ -23,13 +23,14 @@ const AppHeaderDropdown = () => {
     axios
       .delete("/logout", {
         headers: {
-          Authorization: `Bearer ${auth.accessToken}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       })
       .then((res) => {
         localStorage.removeItem("token");
         removeCookie("usrin");
         navigate("/adminYourney");
+        window.location.reload();
         return res;
       })
       .catch((err) => {

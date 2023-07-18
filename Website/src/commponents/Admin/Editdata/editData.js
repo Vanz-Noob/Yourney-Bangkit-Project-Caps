@@ -16,6 +16,7 @@ import axios from "../../../api/axios";
 import useAuth from "../../../hooks/useAuth";
 import getCookie from "../../../hooks/getCookie";
 import GetDestinasi from "../../../hooks/getDestinasi";
+import { useNavigate } from "react-router-dom";
 
 const EditData = () => {
   const { auth } = useAuth();
@@ -30,7 +31,11 @@ const EditData = () => {
   const [color, setColor] = useState("success");
   const arr = [];
   const number = parseInt(localStorage.getItem("index"));
-  const handleSubmit = () => {
+
+  const navigate = useNavigate();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
     axios
       .put(
         "/editDest",
@@ -54,9 +59,14 @@ const EditData = () => {
         setDeskripsi("");
         setLink("");
         setUrl("");
+        setColor("success");
+        setAlert(true);
+        navigate("/adminYourney/data");
         return res;
       })
       .catch((err) => {
+        setColor("danger");
+        setAlert(true);
         console.log(err);
       });
   };
