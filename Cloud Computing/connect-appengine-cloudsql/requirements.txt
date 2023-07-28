@@ -62,3 +62,4 @@ tzdata==2023.3
 urllib3==1.26.15
 wcwidth==0.2.6
 Werkzeug==2.3.4
+email-validator==2.0.0.post2 
