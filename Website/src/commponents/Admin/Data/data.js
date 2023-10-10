@@ -18,6 +18,8 @@ import {
   CModalTitle,
   CModalBody,
   CModalFooter,
+  CForm,
+  CFormInput,
 } from "@coreui/react";
 import useAuth from "../../../hooks/useAuth";
 import getCookie from "../../../hooks/getCookie";
@@ -34,7 +36,7 @@ const Destinasi = () => {
   const navigate = useNavigate();
   const [visibleXL, setVisibleXL] = useState(false);
   const [visible, setVisible] = useState(false);
-  const [n, setN] = useState(0);
+  const [keyword, setKeyword] = useState("");
 
   const arr = [];
 
@@ -77,13 +79,58 @@ const Destinasi = () => {
         console.log(err);
       });
   };
+  const handleSearch = () => {
+    axios
+      .get(`/search?nama_destinasi=${keyword}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      })
+      .then((res) => {
+        arr.push(res.data);
+        for (let i = 0; i < arr.length; i++) {
+          const element = arr[i];
+          setDestinasi(element);
+        }
+      });
+  };
 
   return (
     <>
       <CRow>
         <CCol xs>
           <CCard className="mb-4">
-            <CCardHeader>List Data</CCardHeader>
+            <CCardHeader>
+              <CCol
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <CRow>
+                  <span>List Data</span>
+                </CRow>
+                <CRow>
+                  <CForm
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                    }}
+                  >
+                    <CFormInput
+                      type="text"
+                      id="search"
+                      placeholder="Search..."
+                      onChange={(e) => setKeyword(e.target.value)}
+                      style={{ width: "80%", marginRight: 10 }}
+                    />
+                    <CButton onClick={handleSearch}>Search</CButton>
+                  </CForm>
+                </CRow>
+              </CCol>
+              <CCol></CCol>
+            </CCardHeader>
             <CCardBody>
               <CTable
                 align="middle"

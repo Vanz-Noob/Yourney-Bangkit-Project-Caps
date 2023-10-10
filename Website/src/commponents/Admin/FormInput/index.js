@@ -11,6 +11,8 @@ import {
   CInputGroupText,
   CFormTextarea,
   CAlert,
+  CSpinner,
+  CForm,
 } from "@coreui/react";
 import axios from "../../../api/axios";
 import useAuth from "../../../hooks/useAuth";
@@ -27,6 +29,7 @@ const FormControl = () => {
   const [color, setColor] = useState("success");
   const [desk, setDesk] = useState("");
   const arr = [];
+  const [visual, setVisual] = useState("visually-hidden");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -139,6 +142,13 @@ const FormControl = () => {
 
             <CButton type="submit" className="mb-3" onClick={handleSubmit}>
               Submit
+              <CSpinner
+                className={`${visual}`}
+                component="span"
+                size="sm"
+                aria-hidden="true"
+                style={{ marginLeft: 10 }}
+              />
             </CButton>
           </CCardBody>
         </CCard>

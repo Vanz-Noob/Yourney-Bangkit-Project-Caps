@@ -11,6 +11,7 @@ import {
   CInputGroupText,
   CFormTextarea,
   CAlert,
+  CSpinner,
 } from "@coreui/react";
 import axios from "../../../api/axios";
 import useAuth from "../../../hooks/useAuth";
@@ -31,6 +32,7 @@ const EditData = () => {
   const [color, setColor] = useState("success");
   const arr = [];
   const number = parseInt(localStorage.getItem("index"));
+  const [visual, setVisual] = useState("visually-hidden");
 
   const navigate = useNavigate();
 
